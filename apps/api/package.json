@@ -45,7 +45,7 @@
 		"amqplib": "catalog:",
 		"better-auth": "catalog:",
 		"drizzle-orm": "catalog:",
-		"effect": "4.0.0-rc.115",
+		"effect": "4.0.0-rc.117",
 		"hono": "^4.13.8",
 		"ioredis": "^6.0.0",
 		"pg": "catalog:",
