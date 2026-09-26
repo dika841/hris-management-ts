@@ -1,0 +1,23 @@
+{
+	"name": "@app/storage",
+	"version": "0.8.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"build": "tsc --noEmit",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@app/messages": "workspace:*",
+		"@mobily/ts-belt": "catalog:",
+		"aws4fetch": "^1.0.20",
+		"ts-pattern": "catalog:"
+	},
+	"devDependencies": {
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}

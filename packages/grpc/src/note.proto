@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package note;
+
+service NoteService {
+  rpc GetNote (GetNoteRequest) returns (Note);
+  rpc CreateNote (CreateNoteRequest) returns (Note);
+}
+
+message GetNoteRequest {
+  string id = 1;
+}
+
+message CreateNoteRequest {
+  string title = 1;
+  string content = 2;
+}
+
+message Note {
+  string id = 1;
+  string title = 2;
+  string content = 3;
+}
