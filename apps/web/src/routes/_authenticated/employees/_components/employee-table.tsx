@@ -9,7 +9,8 @@ import {
 } from "@app/components/ui/table";
 import { formatRupiah } from "@app/format";
 import type { TEmployee, TEmployeeList } from "@app/schemas";
-import { Trash2 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Eye, Trash2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import {
 	EmploymentStatusBadge,
@@ -57,7 +58,7 @@ export const EmployeeTable: FC<TEmployeeTableProps> = ({
 						<TableHead className="text-xs font-semibold text-center">
 							UU PDP
 						</TableHead>
-						<TableHead className="text-xs font-semibold text-right w-16">
+						<TableHead className="text-xs font-semibold text-right w-24">
 							Aksi
 						</TableHead>
 					</TableRow>
@@ -80,15 +81,27 @@ export const EmployeeTable: FC<TEmployeeTableProps> = ({
 								className="border-b border-border/30 hover:bg-muted/20"
 							>
 								<TableCell className="font-mono text-xs font-medium text-foreground">
-									{emp.employeeCode}
+									<Link
+										to="/employees/$employeeId"
+										params={{ employeeId: emp.id }}
+										className="text-primary hover:underline font-semibold"
+									>
+										{emp.employeeCode}
+									</Link>
 								</TableCell>
 								<TableCell>
-									<div className="text-xs font-semibold text-foreground">
-										{emp.fullName}
-									</div>
-									<div className="text-[11px] text-muted-foreground">
-										{emp.email}
-									</div>
+									<Link
+										to="/employees/$employeeId"
+										params={{ employeeId: emp.id }}
+										className="block hover:underline"
+									>
+										<div className="text-xs font-semibold text-foreground">
+											{emp.fullName}
+										</div>
+										<div className="text-[11px] text-muted-foreground">
+											{emp.email}
+										</div>
+									</Link>
 								</TableCell>
 								<TableCell>
 									<div className="text-xs text-foreground font-medium">
@@ -116,14 +129,31 @@ export const EmployeeTable: FC<TEmployeeTableProps> = ({
 									<PdpConsentBadge consent={emp.pdpConsentGiven} />
 								</TableCell>
 								<TableCell className="text-right">
-									<Button
-										variant="ghost"
-										size="sm"
-										onClick={() => handleDelete(emp.id, emp.fullName)}
-										className="size-8 p-0 text-muted-foreground hover:text-destructive"
-									>
-										<Trash2 className="size-3.5" />
-									</Button>
+									<div className="flex items-center justify-end gap-1">
+										<Button
+											variant="ghost"
+											size="sm"
+											asChild
+											className="size-8 p-0 text-muted-foreground hover:text-foreground"
+											title="Lihat Detail & Kontrak"
+										>
+											<Link
+												to="/employees/$employeeId"
+												params={{ employeeId: emp.id }}
+											>
+												<Eye className="size-3.5" />
+											</Link>
+										</Button>
+										<Button
+											variant="ghost"
+											size="sm"
+											onClick={() => handleDelete(emp.id, emp.fullName)}
+											className="size-8 p-0 text-muted-foreground hover:text-destructive"
+											title="Hapus Karyawan"
+										>
+											<Trash2 className="size-3.5" />
+										</Button>
+									</div>
 								</TableCell>
 							</TableRow>
 						))

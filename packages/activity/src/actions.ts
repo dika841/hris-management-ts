@@ -4,6 +4,9 @@ export const ACTIVITY_RESOURCE_TYPE = {
 	SESSION: "session",
 	EMPLOYEE: "employee",
 	PAYROLL: "payroll",
+	CONTRACT: "contract",
+	DEPARTMENT: "department",
+	POSITION: "position",
 } as const;
 
 export type TActivityResourceType =
@@ -21,6 +24,10 @@ export const ACTIVITY_ACTION = {
 	EMPLOYEE_CREATE: "employee.create",
 	EMPLOYEE_UPDATE: "employee.update",
 	EMPLOYEE_DELETE: "employee.delete",
+	CONTRACT_CREATE: "contract.create",
+	CONTRACT_RENEW: "contract.renew",
+	CONTRACT_CONVERT: "contract.convert",
+	CONTRACT_COMPENSATION_PAY: "contract.compensation_pay",
 	PAYROLL_PERIOD_CREATE: "payroll.period_create",
 	PAYROLL_CALCULATE: "payroll.calculate",
 	PAYROLL_APPROVE: "payroll.approve",
