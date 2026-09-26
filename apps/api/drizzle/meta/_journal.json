@@ -43,6 +43,13 @@
       "when": 1790418222555,
       "tag": "0005_tricky_layla_miller",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790427206706,
+      "tag": "0006_lyrical_vapor",
+      "breakpoints": true
     }
   ]
 }

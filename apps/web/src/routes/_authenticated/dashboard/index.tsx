@@ -1,3 +1,4 @@
+import { ContractExpirationAlertCard } from "#/routes/_authenticated/dashboard/_components/contract-expiration-alert-card.tsx";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { ActivitySection } from "#/routes/_authenticated/dashboard/_components/activity-section.tsx";
@@ -34,6 +35,7 @@ const DashboardPage: FC = (): ReactElement => {
 
 				{/* Kolom Kanan: Governance, Quick Actions, System Health */}
 				<div className="flex flex-col gap-6 lg:col-span-5">
+					<ContractExpirationAlertCard />
 					<ComplianceOverviewCard />
 					<QuickActions />
 					<HealthCard health={health} />

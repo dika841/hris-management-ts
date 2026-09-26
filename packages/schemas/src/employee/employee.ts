@@ -120,6 +120,7 @@ export const employeeCreateInputSchema = z.object({
 	employmentStatus: employmentStatusSchema.default(EMPLOYMENT_STATUS.PERMANENT),
 	joinDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 	endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+	managerId: employeeIdSchema.optional(),
 	basicSalary: z.number().int().nonnegative(),
 	taxMethod: taxMethodSchema.default(TAX_METHOD.GROSS),
 	ptkpCode: ptkpCodeSchema.default(PTKP_CODE.TK_0),
