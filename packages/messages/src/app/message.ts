@@ -1,5 +1,5 @@
 export const APP_MESSAGE = {
-	NAME: "Standard",
+	NAME: "HRIS Management",
 	NAVIGATION: "Navigation",
 	ROOT_MISSING: "Root element not found",
 	LOADING: "Loading…",
