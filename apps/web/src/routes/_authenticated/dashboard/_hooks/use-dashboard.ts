@@ -42,6 +42,28 @@ export const useDashboardActivity = (): TActivityOut["list"] => {
 	return data;
 };
 
+export const useDashboardEmployees = () => {
+	return useQuery(
+		orpc.employee.list.queryOptions({
+			input: { page: 1, pageSize: 100 },
+			queryKey: orpc.employee.list.key({
+				input: { page: 1, pageSize: 100 },
+			}),
+		}),
+	);
+};
+
+export const useDashboardPayrollPeriods = () => {
+	return useQuery(
+		orpc.payroll.listPeriods.queryOptions({
+			input: { page: 1, pageSize: 10 },
+			queryKey: orpc.payroll.listPeriods.key({
+				input: { page: 1, pageSize: 10 },
+			}),
+		}),
+	);
+};
+
 export const useDashboardHealth = (): TDashboardHealth => {
 	const query = useQuery(
 		orpc.health.check.queryOptions({ queryKey: orpc.health.check.key() }),

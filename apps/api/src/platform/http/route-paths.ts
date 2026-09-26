@@ -1,5 +1,4 @@
 const RESOURCE = {
-	NOTES: "/notes",
 	USERS: "/users",
 	ROLES: "/roles",
 	EMPLOYEES: "/employees",
@@ -14,8 +13,6 @@ export const ROUTE_PATH = {
 	ME: "/me",
 	PERMISSIONS: "/permissions",
 	ACTIVITY: "/activity",
-	NOTES: RESOURCE.NOTES,
-	NOTE: `${RESOURCE.NOTES}/{id}`,
 	USERS: RESOURCE.USERS,
 	USER: `${RESOURCE.USERS}/{id}`,
 	USER_PASSWORD: `${RESOURCE.USERS}/{id}/password`,

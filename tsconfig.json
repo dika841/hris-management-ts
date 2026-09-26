@@ -1,9 +1,9 @@
 {
-	"extends": "./tsconfig.base.json",
-	"compilerOptions": {
-		"paths": {
-			"@/*": ["./packages/components/src/*"]
-		}
-	},
-	"include": []
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./packages/components/src/*"]
+    }
+  },
+  "include": []
 }

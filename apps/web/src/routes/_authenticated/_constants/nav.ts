@@ -5,6 +5,8 @@ import type { LucideIcon } from "lucide-react";
 import {
 	Activity,
 	CircleUser,
+	Coins,
+	ContactRound,
 	KeyRound,
 	LayoutDashboard,
 	Shield,
@@ -24,6 +26,18 @@ export const NAV_ITEMS: readonly TNavItem[] = [
 		label: NAV_MESSAGE.DASHBOARD,
 		permissions: [],
 		icon: LayoutDashboard,
+	},
+	{
+		to: "/employees",
+		label: NAV_MESSAGE.EMPLOYEES,
+		permissions: [PERMISSION.EMPLOYEE_READ],
+		icon: ContactRound,
+	},
+	{
+		to: "/payroll",
+		label: NAV_MESSAGE.PAYROLL,
+		permissions: [PERMISSION.PAYROLL_READ],
+		icon: Coins,
 	},
 	{
 		to: "/users",
