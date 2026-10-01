@@ -15,8 +15,11 @@ const REDIS_TOKEN = {
 	OK: "OK",
 } as const;
 
+const sanitizeRedisUrl = (url: string): string =>
+	url.trim().replace(/^["']|["']$/g, "");
+
 export const cacheClientCreate = (redisUrl: string): Redis =>
-	new Redis(redisUrl, {
+	new Redis(sanitizeRedisUrl(redisUrl), {
 		maxRetriesPerRequest: MAX_RETRIES_PER_REQUEST,
 		commandTimeout: COMMAND_TIMEOUT_MS,
 		enableOfflineQueue: false,
