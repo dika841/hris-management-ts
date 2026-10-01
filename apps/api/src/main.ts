@@ -104,13 +104,33 @@ app.use("*", requestId());
 
 observabilityMount(app, { logger, metrics, tracing });
 
+const configuredOrigin = new URL(env.WEB_ORIGIN).origin;
+
 app.use(
 	"*",
 	cors({
-		origin: env.WEB_ORIGIN,
+		origin: (origin) => {
+			if (!origin) return configuredOrigin;
+			const cleanOrigin = origin.endsWith("/") ? origin.slice(0, -1) : origin;
+			if (
+				cleanOrigin === configuredOrigin ||
+				cleanOrigin.endsWith(".pages.dev") ||
+				cleanOrigin.endsWith(".onrender.com") ||
+				cleanOrigin.startsWith("http://localhost:")
+			) {
+				return origin;
+			}
+			return null;
+		},
 		credentials: true,
 		allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
-		allowHeaders: ["Content-Type", "Authorization"],
+		allowHeaders: [
+			"Content-Type",
+			"Authorization",
+			"x-orpc-batch",
+			"x-orpc-source",
+			"x-request-id",
+		],
 	}),
 );
 

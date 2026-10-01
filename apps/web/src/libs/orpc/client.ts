@@ -4,9 +4,11 @@ import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 
-const API_BASE = import.meta.env.DEV
+const rawApiBase = import.meta.env.DEV
 	? window.location.origin
 	: (import.meta.env.VITE_API_URL ?? window.location.origin);
+
+const API_BASE = rawApiBase.endsWith("/") ? rawApiBase.slice(0, -1) : rawApiBase;
 
 const link = new RPCLink({
 	url: `${API_BASE}/rpc`,
