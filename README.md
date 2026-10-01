@@ -1,137 +1,212 @@
-# Standard
+# HRIS Management System (Indonesia Enterprise Edition)
 
-Full-stack TypeScript boilerplate: moon + pnpm workspaces, Hono + oRPC, Drizzle, better-auth, React 19 + TanStack + Vite + Tailwind v4, Biome, Vitest, Playwright.
+Sistem Informasi Sumber Daya Manusia (HRIS) tingkat *enterprise* yang dirancang secara khusus untuk memenuhi kepatuhan regulasi ketenagakerjaan, perpajakan, dan jaminan sosial di Indonesia, termasuk penanganan kondisi operasional kompleks (*real-world edge cases*).
 
-## Stack
+Dibangun dengan arsitektur modern TypeScript monorepo berbasis Clean Architecture & Domain-Driven Design:
+- **Backend**: Hono + oRPC (type-safe RPC & OpenAPI) + Effect-TS + Drizzle ORM + PostgreSQL.
+- **Frontend**: React 19 + TanStack Router (Dedicated Full-Page Navigation) + TanStack Query + Tailwind CSS v4 + shadcn/ui.
+- **Asinkron & Kualitas**: RabbitMQ + Redis Cache + Biome + Vitest + Playwright.
 
-| Concern | Choice |
-|---|---|
-| Monorepo | moon + pnpm workspaces |
-| API | Hono, oRPC (typed RPC + REST/OpenAPI from one router), Effect for business logic |
-| DB | Drizzle ORM + Postgres |
-| Auth | better-auth, one role per user |
-| Jobs | RabbitMQ + Redis |
-| Mail | nodemailer over SMTP, mailpit in dev |
-| Web | React 19, TanStack (Router, Query, Form, Store), Vite, Tailwind v4, shadcn/ui |
-| Quality | Biome, Vitest, Playwright |
+---
 
-## Layout
+## Modul & Fitur Utama
+
+### 1. Kepegawaian & Manajemen Kontrak (Core HR)
+- **Kepatuhan PP 35/2021 & UU Cipta Kerja**:
+  - Pengelolaan Perjanjian Kerja Waktu Tertentu (PKWT) dan Waktu Tidak Tertentu (PKWTT).
+  - Pelacakan akumulasi durasi kontrak PKWT (maksimal 5 tahun) beserta sistem peringatan dini jatuh tempo (H-60 dan H-30).
+  - Kalkulasi otomatis **Uang Kompensasi Pengakhiran/Perpanjangan Kontrak PKWT**:
+    $$\text{Uang Kompensasi} = \frac{\text{Masa Kerja (Bulan)}}{12} \times \text{Upah Sebulan}$$
+  - Validasi pencegahan masa percobaan (*probation*) ilegal pada kontrak PKWT (demi hukum batal jika diterapkan pada PKWT).
+- **Hierarki Organisasi & Karir**:
+  - Struktur Departemen, Posisi/Jabatan, dan Atasan Langsung (*Reporting Manager*).
+  - Mutasi jabatan, promosi, dan penyesuaian gaji dengan jejak riwayat karir.
+- **Perlindungan Data Pribadi (UU PDP No. 27/2022)**:
+  - Enkripsi dan kontrol akses data sensitif (NIK/KTP, NPWP, Rekening Payroll, BPJS Kesehatan & Ketenagakerjaan).
+  - Jejak persetujuan privasi data (*consent audit trail*).
+
+### 2. Waktu, Absensi, Cuti & Lembur (Time & Attendance)
+- **Presensi Harian Multi-Status**:
+  - Pencatatan jam kerja aktual, clock-in, clock-out, menit keterlambatan (*late minutes*), dan durasi kerja efektif.
+  - Klasifikasi status: Hadir (*Present*), Sakit (*Sick*), Izin Resmi (*Permitted*), Cuti (*Leave*), Mangkir (*Absent*), Libur (*Holiday/Off*).
+- **Manajemen Cuti & Regulasi Terpadu**:
+  - **UU Kesejahteraan Ibu dan Anak (UU KIA No. 4/2024)**: Cuti melahirkan 3 bulan pertama bergaji 100%, dapat diperpanjang hingga bulan ke-4 s.d. ke-6 dengan gaji 75% atas rekomendasi dokter.
+  - **Sakit Berkepanjangan (Pasal 93 UU Ketenagakerjaan)**: Upah bertingkat (Bulan 1–4: 100%, Bulan 5–8: 75%, Bulan 9–12: 50%, Bulan 13+: 25%).
+  - Cuti khusus berbayar: Cuti haid, cuti keguguran, cuti menikah, cuti khitanan/baptis, duka cita keluarga.
+  - Kuota Cuti Tahunan & kebijakan hangus otomatis (*forfeiture*) per 30 Juni untuk saldo *carry-over*.
+- **Surat Perintah Lembur (SPL) & PP 35/2021**:
+  - Kalkulasi upah per jam standar Kemnaker: $\frac{1}{173} \times \text{Upah Sebulan}$.
+  - Pengali bertingkat resmi:
+    - *Hari Kerja*: Jam ke-1 = $1.5\times$, Jam ke-2 dst = $2.0\times$.
+    - *Hari Libur Mingguan / Nasional (5 hari kerja)*: Jam 1–8 = $2.0\times$, Jam ke-9 = $3.0\times$, Jam ke-10 dst = $4.0\times$.
+    - *Hari Libur Mingguan / Nasional (6 hari kerja)*: Jam 1–7 = $2.0\times$, Jam ke-8 = $3.0\times$, Jam ke-9 dst = $4.0\times$.
+  - **Compliance Alert**: Peringatan otomatis apabila penugasan lembur melebihi batas legal 4 jam/hari atau 18 jam/minggu.
+- **Kalender Hari Libur Nasional & Cuti Bersama**:
+  - Pendaftaran hari libur resmi berdasarkan SKB 3 Menteri dengan integrasi otomatis ke perhitungan payroll dan SPL.
+
+### 3. Penggajian & Pajak Penghasilan (Payroll & Tax)
+- **Kalkulasi PPh 21 TER (PMK 168/2023)**:
+  - Penentuan otomatis Kategori Tarif Efektif Rata-rata (TER A, TER B, atau TER C) berdasarkan status PTKP.
+  - Metode pemotongan pajak fleksibel: Gross, Gross-Up (Tunjangan Pajak ditanggung perusahaan), dan Nett.
+- **Iuran Jaminan Sosial (BPJS)**:
+  - BPJS Ketenagakerjaan: JKK (sesuai tingkat risiko lingkungan kerja I s.d. V), JKM (0.30%), JHT (3.70% perusahaan, 2% karyawan), dan JP (2% perusahaan, 1% karyawan dengan batas plafon upah maksimal tahunan).
+  - BPJS Kesehatan: 4% perusahaan dan 1% karyawan dengan batas plafon upah maksimal Rp 12.000.000.
+- **Rekonsiliasi PPh 21 Tahunan (Pasal 17 UU HPP)**:
+  - Perhitungan pajak tahunan di masa Desember dan penanganan otomatis kondisi Lebih Bayar (LB) / Kurang Bayar (KB).
+
+### 4. Keamanan, RBAC & Audit Trail
+- **Dynamic Role-Based Access Control (RBAC)**: Matriks perizinan (*permission matrix*) granular untuk membatasi hak akses modul (Read, Manage, Approve).
+- **Audit Trail Komprehensif (`activity`)**: Pencatatan jejak audit setiap aksi CRUD, mutasi karyawan, approval cuti, dan kalkulasi penggajian.
+
+---
+
+## Arsitektur Teknologi
+
+| Komponen | Teknologi | Keterangan |
+|---|---|---|
+| **Monorepo Manager** | moon + pnpm workspaces | Manajemen dependensi terpadu via catalog `pnpm-workspace.yaml` |
+| **Backend API** | Hono + oRPC + Effect-TS | Type-safe RPC, Clean Architecture, Domain Driven Design |
+| **Database & ORM** | PostgreSQL + Drizzle ORM | Schema type-safe, migration versioning otomatis |
+| **Autentikasi** | Better-Auth | Sesi terautentikasi first-party cookie |
+| **Antrian & Cache** | RabbitMQ + Redis | Pemrosesan tugas latar belakang dan rate limiting |
+| **Frontend Web** | React 19 + TanStack Suite | TanStack Router (SPA), Query, Form, Store |
+| **Styling & UI** | Tailwind CSS v4 + shadcn/ui | Desain premium, dark mode, aksesibilitas penuh |
+| **Pengujian & Kualitas** | Biome, Vitest, Playwright | Linting super cepat, unit test, dan validasi arsitektur ketat |
+
+---
+
+## Struktur Monorepo
 
 ```
-apps/
-  api/          Hono + oRPC + Drizzle + Effect, organised by module
-  api-e2e/      API integration tests
-  web/          TanStack Router SPA
-  web-e2e/      Playwright E2E
-packages/
-  schemas/      Zod schemas shared by api + web
-  components/   shadcn/ui primitives + guards + theme
-  permissions/  permission catalog + role maps
-  activity/     activity log
-  queue/        RabbitMQ helper
-  cache/        Redis cache port + rate limiting
-  mail/         nodemailer SMTP mailer
-  storage/      S3-compatible object storage
-  grpc/         gRPC server/client
-  logger/       pino factory
-  format/       date/money/string formatters
-  messages/     user-facing message constants
-  migrations/   shared migration runner
-  version/      APP_VERSION, re-exported from the root package.json
+hris-management-ts/
+├── apps/
+│   ├── api/            # Layanan Backend API (Hono + Effect-TS + Drizzle)
+│   ├── api-e2e/        # Pengujian Integrasi API E2E
+│   ├── web/            # Aplikasi Frontend SPA (TanStack Router + Tailwind v4)
+│   └── web-e2e/        # Pengujian E2E Browser (Playwright)
+├── packages/
+│   ├── schemas/        # Definisi skema Zod bersama (Shared DTOs & Validation)
+│   ├── components/     # UI primitive components (shadcn/ui), guards, & layout
+│   ├── permissions/    # Katalog izin (Permissions) & pemetaan role
+│   ├── activity/       # Konstanta dan pustaka audit trail log
+│   ├── queue/          # RabbitMQ message broker client
+│   ├── cache/          # Redis cache layer & rate limiter
+│   ├── mail/           # Modul pengiriman email (SMTP/Nodemailer)
+│   ├── storage/        # Adaptor penyimpanan objek S3-compatible
+│   ├── logger/         # Structured logger factory (Pino)
+│   ├── format/         # Formatter mata uang Rupiah, tanggal, & angka
+│   ├── messages/       # Kamus pesan & notifikasi multi-bahasa
+│   ├── migrations/     # Shared database migration runner
+│   └── version/        # Sumber kebenaran versi aplikasi (Root package.json)
+└── docker-compose.dev.yml # PostgreSQL, Redis, RabbitMQ, Mailpit
 ```
 
-## Getting Started
+---
 
-Requires [moon](https://moonrepo.dev/docs/install) + [proto](https://moonrepo.dev/proto), or Node 24 / pnpm 11 directly.
+## Panduan Memulai (*Getting Started*)
+
+### Prasyarat Sistem
+- **Node.js**: Versi 24+
+- **pnpm**: Versi 11+
+- **Docker & Docker Compose**: Untuk menjalankan PostgreSQL, Redis, RabbitMQ, dan Mailpit lokal.
+- *(Opsional)*: [moon](https://moonrepo.dev/docs/install) + [proto](https://moonrepo.dev/proto).
+
+### Instalasi & Menjalankan Aplikasi
+
+1. **Kloning Repositori & Instalasi Dependensi**:
+   ```sh
+   pnpm install
+   ```
+
+2. **Konfigurasi Environment**:
+   Salin berkas konfigurasi template untuk API dan Web:
+   ```sh
+   cp apps/api/.env.example apps/api/.env
+   cp apps/web/.env.example apps/web/.env
+   ```
+   *Sesuaikan variabel environment pada berkas `.env` masing-masing sesuai lingkungan yang Anda gunakan.*
+
+3. **Inisialisasi Layanan & Database**:
+   Jalankan container pendukung (Postgres, Redis, RabbitMQ, Mailpit), jalankan migrasi skema database, dan inisialisasi data awal:
+   ```sh
+   make setup
+   ```
+
+4. **Jalankan Aplikasi (Development)**:
+   ```sh
+   make up
+   ```
+   Aplikasi akan aktif pada:
+   - **Frontend Web**: `http://localhost:5173`
+   - **Backend API**: `http://localhost:3001`
+   - **Mailpit (In-dev Mail Catcher)**: `http://localhost:8025`
+
+Atau jalankan masing-masing proses secara terpisah:
+```sh
+make api     # Menjalankan API backend pada port 3001
+make web     # Menjalankan frontend web pada port 5173
+make worker  # Menjalankan background worker (RabbitMQ consumer)
+```
+
+---
+
+## Pemeriksaan Versi & Health Check
+
+| Endpoint / Surface | Keterangan | Respon |
+|---|---|---|
+| `GET /api/health` / `health.check` RPC | Pengecekan status operasional aplikasi | `{ status: "ok", version }` |
+| `GET /healthz` | Kubernetes liveness probe | `{ status, version }` |
+| `GET /ready` | Readiness probe (memeriksa kesiapan DB, Redis, RabbitMQ) | `{ status, version, dependencies }` (503 jika dependensi down) |
+| `GET /metrics` | Prometheus metrics text format | Jumlah request, latensi, memory usage |
+| Rute `/health` di Web | Antarmuka visual pemantauan status sistem | Status sinkronisasi versi Web dan API |
+
+---
+
+## Perintah Utama (*Commands*)
+
+Semua perintah standar monorepo dapat dieksekusi melalui `make` atau `moon`:
 
 ```sh
-pnpm install
-cp apps/api/.env.example apps/api/.env # and apps/web/.env.example to apps/web/.env
-make setup                            # docker services, migrate and seed
-make up                               # start api + web together
+make help                             # Menampilkan seluruh target make yang tersedia
+make setup                            # Menyiapkan container docker, migrasi DB, dan seed
+make services                         # Menjalankan container Docker (PostgreSQL, Redis, RabbitMQ, Mailpit)
+make services-stop                    # Menghentikan container Docker
+make db-migrate                       # Menjalankan migrasi Drizzle
+make db-studio                        # Membuka UI Drizzle Studio untuk inspeksi database
+make check                            # Menjalankan Biome check (linter dan formatter)
+make lint                             # Menjalankan linting kode
+make test                             # Menjalankan unit tests (Vitest)
+make build                            # Membangun produksi bundle & validasi tipe TypeScript
+make e2e                              # Menjalankan pengujian E2E (API + Web)
+make ci                               # Menjalankan seluruh pipeline validasi CI
 ```
 
-Dependency versions that more than one package shares (TypeScript, Vitest, React, zod, `ts-pattern`, `ts-belt` and the rest) are pinned once in the `catalog` of `pnpm-workspace.yaml`, and a manifest refers to them as `catalog:`; bump the version there and every package moves together. The example files already match what `docker-compose.dev.yml` brings up, so they work unedited for local development. In development the web app reaches the API through Vite's same-origin proxy rather than `VITE_API_URL`, so the session cookie stays first-party even when the API is on another localhost host or port. `apps/api/.env.example` is the full list of variables the API accepts, and `envSchema` rejects a missing or malformed one at boot rather than failing later in a request.
-
-Or run them separately:
-
+Menggunakan perintah `moon`:
 ```sh
-make api                              # api on :3001
-make web                              # web on :5173
+moon run :check                       # Menjalankan Biome check di seluruh workspace
+moon run :build                       # Type-check TypeScript di semua packages dan apps
+moon run :test                        # Menjalankan seluruh unit tests
+moon run api:db-generate              # Menghasilkan migrasi baru Drizzle saat ada perubahan tabel
 ```
 
-Seed logins: `admin@test.app` / `Password123`, `member@test.app` / `Password123`, `viewer@test.app` / `Password123`. That password is the default outside production only. With `NODE_ENV=production` the seed refuses to run unless `SEED_PASSWORD` is set, and then it creates the admin alone, with that password and no demo users or notes.
+---
 
-Mail sent in development is caught by mailpit, read it at `http://localhost:8025`.
+## Alur Rilis & Tata Kelola Kode (*Engineering Standards*)
 
-## Version and Health
+- **Trunk-Based Development**: Seluruh pengembangan berbasis branch pendek yang digabungkan (*squash-merge*) ke branch utama setelah seluruh pipeline CI lolos.
+- **Strict Quality Gates**:
+  1. *Biome Lint & Formatting*: Kode terformat rapi secara seragam tanpa peringatan lint yang tidak terselesaikan.
+  2. *Strict Architecture Rules*: Aturan isolasi dependensi antar-lapisan (*domain, application, infrastructure, presentation*) diverifikasi otomatis oleh skrip penguji arsitektur.
+  3. *Type Safety*: Validasi skema Zod ujung-ke-ujung menjamin integritas kontrak data antara API dan Frontend.
+- **Pembaruan Dependensi**: Dipelihara secara terpusat melalui `catalog` pnpm workspace untuk menghindari fragmentasi versi pustaka.
 
-The root `package.json` version is the single source of truth for the workspace. `@app/version` re-exports it as `APP_VERSION` (a plain JSON import, no build step and no generated file), and both sides serve it:
+---
 
-| Surface | Response |
+## Dokumentasi Pendukung
+
+| Dokumen | Deskripsi |
 |---|---|
-| `health.check` over RPC, `GET /api/health` | `{ status: "ok", version }` |
-| `GET /healthz` | `{ status, version }`, liveness only: the process answers, nothing is probed |
-| `GET /ready` | `{ status, version, dependencies }`, and **503** when any dependency is down |
-| `/health` on the web (no auth) | its own version next to the API's |
-| `GET /metrics` | Prometheus text: request counts and durations by method, matched route and status, plus process figures. Guarded by `METRICS_TOKEN`, and required to be in production. See [docs/operations/metrics.md](docs/operations/metrics.md) |
-
-The shape is `healthSchema` in `@app/schemas`, so the web page is typed against what the API returns; the two versions differing means web and API are deployed out of step.
-
-**Every change bumps the root version** in the same commit, so `/health` always names the build you are looking at: patch for a fix, chore or docs change, minor for a feature, major for a breaking change. Only the root version matters; the workspace packages are private and unpublished.
-
-## Commands
-
-Every command goes through `make` or `moon`; nothing shells into a package directory.
-
-```sh
-make help                             # every target, with a one-line description
-make setup                            # services + migrate + seed
-make services | services-stop         # docker: postgres, redis, rabbitmq, mailpit
-make api | web | worker               # run one process
-make db-migrate | db-seed | db-studio # database
-make check | lint | test | build      # quality gates
-make e2e                              # api + web end-to-end
-make ci                               # everything CI runs, on affected projects
-```
-
-```sh
-moon run :check                       # biome check (format + lint)
-moon run :build                       # tsc --noEmit, every project
-moon run :test                        # unit tests
-moon run api:db-generate              # generate drizzle migration
-moon ci                               # what CI runs
-```
-
-## Releasing
-
-Trunk-based development on `trunk`. Branches are short-lived, branch off `trunk`, and squash-merge once CI is green. Pre-push hooks run biome and the typecheck plus unit tests via lefthook. Dependabot keeps deps current.
-
-`trunk` is protected and the rules apply to admins too:
-
-| Rule | Effect |
-|---|---|
-| Pull request required | No direct pushes to `trunk`; 0 approvals required, so you can merge your own once CI is green |
-| 3 required checks, strict | `Check, test, build (affected)`, `E2E (api + web)` and `Drizzle schema drift check` must pass, and the branch must be up to date with `trunk` |
-| Linear history, squash-only | Merge commits and rebase merges are disabled at the repo level |
-| Branch auto-deleted on merge | Keeps the branch list honest about what is in flight |
-| No force pushes or deletions | Applies to everyone, including admins |
-
-`E2E (api + web)` is a gate rather than a suite: the API and the web suites run as two parallel jobs and the gate reports their combined result, so the required check keeps one name. Both suites are skipped when a change touches only Markdown, documentation and the root version, which is why a documentation pull request goes green in seconds.
-
-A branch that has fallen behind must be rebased on `trunk` and re-pushed; that is what keeps the history linear and every commit on `trunk` CI-green.
-
-PRs use `.github/PULL_REQUEST_TEMPLATE.md`. Fill every section in place, writing "None" rather than deleting one. Reviews use `.github/PULL_REQUEST_REVIEW_TEMPLATE.md` and always cover three sections: **Functional** (correctness, and whether every Changelog bullet is actually implemented), **Clean Code** (the conventions in `.claude/skills/ts-conventions/SKILL.md`, plus duplication and naming), and **Feature Suggestions** (non-blocking, each tagged `this-pr` or `follow-up`). Findings in the first two carry a P0–P3 severity from the template's legend.
-
-Releases are automatic and there is nothing to run by hand: every merge to `trunk` carries a version bump, and the workflow tags that commit once its checks are green. The notes are lifted from each PR's Changelog section rather than from commit subjects, which is why that section is written for whoever reads the release page. How it is assembled, and how to re-run a publish that failed, are in [docs/operations/deployment.md](docs/operations/deployment.md).
-
-## Documentation
-
-| Document | Answers |
-|---|---|
-| [AGENTS.md](AGENTS.md) | The rules an agent or a new contributor works under, and which file to read before what |
-| [.claude/skills/ts-conventions/SKILL.md](.claude/skills/ts-conventions/SKILL.md) | The TypeScript ruleset, in full |
-| [docs/adding-a-module.md](docs/adding-a-module.md) | Every touchpoint a new module, endpoint or permission has to reach |
-| [docs/effect-services.md](docs/effect-services.md) | Why a service is a const and an error is a class |
-| [docs/operations/](docs/operations/) | Deploying, backups, runbooks, alerting, credentials, retention, logging |
-| [docs/kpi/](docs/kpi/) | Where this repository stands against an external engineering standards rubric |
+| [AGENTS.md](AGENTS.md) | Panduan kontributor dan agen AI mengenai konvensi kode dan struktur proyek |
+| [docs/adding-a-module.md](docs/adding-a-module.md) | Langkah-langkah penambahan modul, endpoint RPC, dan permission baru |
+| [docs/effect-services.md](docs/effect-services.md) | Panduan arsitektur Effect-TS, service layer, dan error handling |
+| [docs/operations/](docs/operations/) | Dokumentasi operasional, deployment, backup, alerting, dan metrik |
