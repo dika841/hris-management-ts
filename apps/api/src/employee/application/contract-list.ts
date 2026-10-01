@@ -9,11 +9,7 @@ import type { EDatabase } from "#/shared/errors.ts";
 
 export const contractList = Effect.fn("contractList")(function* (
 	employeeId: string,
-): Effect.fn.Return<
-	TEmployeeContract[],
-	EDatabase,
-	TEmployeeRepoId
-> {
+): Effect.fn.Return<TEmployeeContract[], EDatabase, TEmployeeRepoId> {
 	const employeeRepo = yield* EmployeeRepo;
 	const rows = yield* employeeRepo.listContracts(employeeId);
 	return rows.map(toContractDto);

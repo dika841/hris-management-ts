@@ -107,7 +107,9 @@ export const employeeContract = pgTable(
 		status: text("status").notNull().default("active"), // "active" | "renewed" | "converted" | "expired" | "terminated"
 		compensationAmount: integer("compensation_amount").notNull().default(0), // Uang Kompensasi PKWT PP 35/2021
 		compensationPaid: boolean("compensation_paid").notNull().default(false),
-		compensationPaidAt: timestamp("compensation_paid_at", { withTimezone: true }),
+		compensationPaidAt: timestamp("compensation_paid_at", {
+			withTimezone: true,
+		}),
 		documentUrl: text("document_url"),
 		notes: text("notes"),
 		createdAt: timestamp("created_at", { withTimezone: true })

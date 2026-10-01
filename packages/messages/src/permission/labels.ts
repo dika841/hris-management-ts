@@ -8,6 +8,15 @@ export const PERMISSION_LABEL = {
 	"payroll:read": "View payroll and payslips",
 	"payroll:manage": "Manage payroll periods",
 	"payroll:calculate": "Run payroll and tax calculations",
+	// Fase 2
+	"attendance:read": "View attendance records",
+	"attendance:manage": "Manage attendance records",
+	"leave:read": "View leave requests",
+	"leave:manage": "Submit and cancel leave requests",
+	"leave:approve": "Approve or reject leave requests",
+	"overtime:read": "View overtime requests",
+	"overtime:manage": "Submit overtime requests",
+	"overtime:approve": "Approve or reject overtime requests",
 } as const satisfies Record<TPermission, string>;
 
 export const ROLE_LABEL = {

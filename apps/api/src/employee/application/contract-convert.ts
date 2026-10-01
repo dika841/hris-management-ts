@@ -32,7 +32,9 @@ export const contractConvert = Effect.fn("contractConvert")(function* (
 
 	const prev = yield* employeeRepo.findContractById(input.previousContractId);
 	if (prev === null) {
-		return yield* new ENotFound({ message: EMPLOYEE_MESSAGE.CONTRACT_NOT_FOUND });
+		return yield* new ENotFound({
+			message: EMPLOYEE_MESSAGE.CONTRACT_NOT_FOUND,
+		});
 	}
 
 	const prevCompensation = calculatePkwtCompensation(
@@ -72,7 +74,6 @@ export const contractConvert = Effect.fn("contractConvert")(function* (
 		basicSalary: input.basicSalary,
 		department: input.department,
 		position: input.position,
-
 	});
 
 	yield* activityRepo.insert({

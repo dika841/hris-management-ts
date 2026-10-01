@@ -25,3 +25,4 @@ export { TABLE_MESSAGE } from "./table/message.ts";
 export { UI_MESSAGE } from "./ui/message.ts";
 export { USER_MESSAGE } from "./user/message.ts";
 export { VALIDATION_MESSAGE } from "./validation/message.ts";
+export { ATTENDANCE_MESSAGE } from "./attendance/message.ts";

@@ -57,8 +57,9 @@ export type TPayrollPeriodCreateInput = z.infer<
 	typeof payrollPeriodCreateInputSchema
 >;
 
-export const payrollPeriodUpdateInputSchema =
-	payrollPeriodCreateInputSchema.partial().extend({
+export const payrollPeriodUpdateInputSchema = payrollPeriodCreateInputSchema
+	.partial()
+	.extend({
 		id: payrollPeriodIdSchema,
 		status: payrollPeriodStatusSchema.optional(),
 	});
@@ -144,7 +145,9 @@ export const payrollCalculateInputSchema = z.object({
 	periodId: payrollPeriodIdSchema,
 	employeeIds: z.array(employeeIdSchema).optional(),
 });
-export type TPayrollCalculateInput = z.infer<typeof payrollCalculateInputSchema>;
+export type TPayrollCalculateInput = z.infer<
+	typeof payrollCalculateInputSchema
+>;
 
 // Simulasi Cepat Kalkulator Pajak PPh 21 TER
 export const taxSimulationInputSchema = z.object({

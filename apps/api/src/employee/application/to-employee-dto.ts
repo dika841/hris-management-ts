@@ -28,7 +28,9 @@ export const toEmployeeDto = (row: TEmployeeRow): TEmployee =>
 		bpjsKetenagakerjaanNumber: row.bpjsKetenagakerjaanNumber,
 		jkkRiskGrade: row.jkkRiskGrade,
 		pdpConsentGiven: row.pdpConsentGiven,
-		pdpConsentDate: row.pdpConsentDate ? row.pdpConsentDate.toISOString() : null,
+		pdpConsentDate: row.pdpConsentDate
+			? row.pdpConsentDate.toISOString()
+			: null,
 		createdAt: row.createdAt.toISOString(),
 		updatedAt: row.updatedAt.toISOString(),
 	});

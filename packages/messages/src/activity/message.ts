@@ -39,6 +39,20 @@ export const ACTIVITY_ACTION_LABEL = {
 	[ACTIVITY_ACTION.PAYROLL_PERIOD_CREATE]: "Payroll period created",
 	[ACTIVITY_ACTION.PAYROLL_CALCULATE]: "Payroll calculated",
 	[ACTIVITY_ACTION.PAYROLL_APPROVE]: "Payroll approved",
+	// Fase 2
+	[ACTIVITY_ACTION.LEAVE_TYPE_CREATE]: "Leave type created",
+	[ACTIVITY_ACTION.LEAVE_TYPE_UPDATE]: "Leave type updated",
+	[ACTIVITY_ACTION.LEAVE_REQUEST_CREATE]: "Leave request submitted",
+	[ACTIVITY_ACTION.LEAVE_REQUEST_APPROVE]: "Leave request approved",
+	[ACTIVITY_ACTION.LEAVE_REQUEST_REJECT]: "Leave request rejected",
+	[ACTIVITY_ACTION.LEAVE_REQUEST_CANCEL]: "Leave request cancelled",
+	[ACTIVITY_ACTION.ATTENDANCE_LOG]: "Attendance logged",
+	[ACTIVITY_ACTION.ATTENDANCE_BULK_LOG]: "Attendance bulk logged",
+	[ACTIVITY_ACTION.OVERTIME_CREATE]: "Overtime request submitted",
+	[ACTIVITY_ACTION.OVERTIME_APPROVE]: "Overtime approved",
+	[ACTIVITY_ACTION.OVERTIME_REJECT]: "Overtime rejected",
+	[ACTIVITY_ACTION.PUBLIC_HOLIDAY_CREATE]: "Public holiday added",
+	[ACTIVITY_ACTION.PUBLIC_HOLIDAY_DELETE]: "Public holiday removed",
 } as const satisfies Record<TActivityAction, string>;
 
 export const ACTIVITY_ENTITY_LABEL = {
@@ -50,4 +64,9 @@ export const ACTIVITY_ENTITY_LABEL = {
 	[ACTIVITY_RESOURCE_TYPE.CONTRACT]: "Contract",
 	[ACTIVITY_RESOURCE_TYPE.DEPARTMENT]: "Department",
 	[ACTIVITY_RESOURCE_TYPE.POSITION]: "Position",
+	[ACTIVITY_RESOURCE_TYPE.LEAVE_TYPE]: "Leave Type",
+	[ACTIVITY_RESOURCE_TYPE.LEAVE_REQUEST]: "Leave Request",
+	[ACTIVITY_RESOURCE_TYPE.ATTENDANCE]: "Attendance",
+	[ACTIVITY_RESOURCE_TYPE.OVERTIME]: "Overtime",
+	[ACTIVITY_RESOURCE_TYPE.PUBLIC_HOLIDAY]: "Public Holiday",
 } as const satisfies Record<TActivityResourceType, string>;

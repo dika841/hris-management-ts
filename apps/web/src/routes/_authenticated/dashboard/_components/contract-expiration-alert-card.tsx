@@ -1,6 +1,11 @@
 import { Badge } from "@app/components/ui/badge";
 import { Button } from "@app/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@app/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from "@app/components/ui/card";
 import { formatDate } from "@app/format";
 import { Link } from "@tanstack/react-router";
 import { AlertTriangle, ArrowRight, CheckCircle2, Clock } from "lucide-react";
@@ -30,7 +35,10 @@ export const ContractExpirationAlertCard: FC = (): ReactElement => {
 				{expiringContracts.length === 0 ? (
 					<div className="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3 text-xs text-emerald-800 dark:text-emerald-300">
 						<CheckCircle2 className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-						<span>Seluruh kontrak PKWT aktif aman. Tidak ada yang kedaluwarsa dalam 30 hari ke depan.</span>
+						<span>
+							Seluruh kontrak PKWT aktif aman. Tidak ada yang kedaluwarsa dalam
+							30 hari ke depan.
+						</span>
 					</div>
 				) : (
 					<div className="space-y-2">
@@ -50,12 +58,20 @@ export const ContractExpirationAlertCard: FC = (): ReactElement => {
 									</div>
 									<div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
 										<Clock className="size-3 text-amber-500" />
-										<span>Berakhir {contract.endDate ? formatDate(contract.endDate) : "-"}</span>
+										<span>
+											Berakhir{" "}
+											{contract.endDate ? formatDate(contract.endDate) : "-"}
+										</span>
 										<span>•</span>
 										<span>{contract.department}</span>
 									</div>
 								</div>
-								<Button size="sm" variant="ghost" asChild className="size-8 p-0">
+								<Button
+									size="sm"
+									variant="ghost"
+									asChild
+									className="size-8 p-0"
+								>
 									<Link
 										to="/employees/$employeeId"
 										params={{ employeeId: contract.employeeId }}

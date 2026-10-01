@@ -63,12 +63,8 @@ export const payrollItem = pgTable(
 		taxAllowance: integer("tax_allowance").notNull().default(0),
 		grossTotal: integer("gross_total").notNull().default(0),
 		// Rincian JSON
-		bpjsBreakdown: jsonb("bpjs_breakdown")
-			.$type<TBpjsBreakdown>()
-			.notNull(),
-		taxBreakdown: jsonb("tax_breakdown")
-			.$type<TTaxBreakdown>()
-			.notNull(),
+		bpjsBreakdown: jsonb("bpjs_breakdown").$type<TBpjsBreakdown>().notNull(),
+		taxBreakdown: jsonb("tax_breakdown").$type<TTaxBreakdown>().notNull(),
 		deductionTotal: integer("deduction_total").notNull().default(0),
 		netPay: integer("net_pay").notNull().default(0),
 		calculationLog: text("calculation_log"),

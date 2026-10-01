@@ -1,5 +1,10 @@
 import { Button } from "@app/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@app/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from "@app/components/ui/card";
 import { Input } from "@app/components/ui/input";
 import { Label } from "@app/components/ui/label";
 import {
@@ -29,9 +34,15 @@ export const ContractCreateForm: FC<TProps> = ({ employee }): ReactElement => {
 	const navigate = useNavigate();
 	const createMutation = useContractCreate();
 
-	const [contractType, setContractType] = useState<TContractType>(CONTRACT_TYPE.PKWT);
-	const [contractNumber, setContractNumber] = useState(`CTR-${employee.employeeCode}-${Date.now().toString().slice(-4)}`);
-	const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
+	const [contractType, setContractType] = useState<TContractType>(
+		CONTRACT_TYPE.PKWT,
+	);
+	const [contractNumber, setContractNumber] = useState(
+		`CTR-${employee.employeeCode}-${Date.now().toString().slice(-4)}`,
+	);
+	const [startDate, setStartDate] = useState(
+		new Date().toISOString().slice(0, 10),
+	);
 	const [endDate, setEndDate] = useState("");
 	const [probationEndDate, setProbationEndDate] = useState("");
 	const [salary, setSalary] = useState(employee.basicSalary);
@@ -60,7 +71,10 @@ export const ContractCreateForm: FC<TProps> = ({ employee }): ReactElement => {
 			contractNumber,
 			startDate,
 			endDate: contractType === CONTRACT_TYPE.PKWT ? endDate : undefined,
-			probationEndDate: contractType === CONTRACT_TYPE.PKWTT && probationEndDate ? probationEndDate : undefined,
+			probationEndDate:
+				contractType === CONTRACT_TYPE.PKWTT && probationEndDate
+					? probationEndDate
+					: undefined,
 			basicSalary: salary,
 			fixedAllowance: allowance,
 			department,
@@ -77,7 +91,9 @@ export const ContractCreateForm: FC<TProps> = ({ employee }): ReactElement => {
 		<form onSubmit={handleSubmit} className="space-y-6">
 			<Card className="border-border/60">
 				<CardHeader className="pb-3">
-					<CardTitle className="text-sm font-semibold">Tipe & Nomor Perjanjian Kerja</CardTitle>
+					<CardTitle className="text-sm font-semibold">
+						Tipe & Nomor Perjanjian Kerja
+					</CardTitle>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid gap-4 md:grid-cols-2">
@@ -122,7 +138,10 @@ export const ContractCreateForm: FC<TProps> = ({ employee }): ReactElement => {
 						<div className="rounded-md border border-amber-500/20 bg-amber-500/5 p-3 text-xs text-amber-900 dark:text-amber-300 flex items-start gap-2">
 							<AlertCircle className="size-4 shrink-0 mt-0.5" />
 							<span>
-								<strong>Peringatan PP 35/2021:</strong> Masa percobaan (probation) dilarang dalam PKWT. Jika disyaratkan dalam klausul, demi hukum masa percobaan batal dan masa kerja dihitung sejak awal.
+								<strong>Peringatan PP 35/2021:</strong> Masa percobaan
+								(probation) dilarang dalam PKWT. Jika disyaratkan dalam klausul,
+								demi hukum masa percobaan batal dan masa kerja dihitung sejak
+								awal.
 							</span>
 						</div>
 					)}
@@ -131,7 +150,9 @@ export const ContractCreateForm: FC<TProps> = ({ employee }): ReactElement => {
 
 			<Card className="border-border/60">
 				<CardHeader className="pb-3">
-					<CardTitle className="text-sm font-semibold">Masa Berlaku & Remunerasi</CardTitle>
+					<CardTitle className="text-sm font-semibold">
+						Masa Berlaku & Remunerasi
+					</CardTitle>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid gap-4 md:grid-cols-2">
@@ -157,7 +178,9 @@ export const ContractCreateForm: FC<TProps> = ({ employee }): ReactElement => {
 							</div>
 						) : (
 							<div className="space-y-1.5">
-								<Label className="text-xs">Batas Masa Percobaan (Opsional, Maks. 3 Bulan)</Label>
+								<Label className="text-xs">
+									Batas Masa Percobaan (Opsional, Maks. 3 Bulan)
+								</Label>
 								<Input
 									type="date"
 									value={probationEndDate}
@@ -195,7 +218,8 @@ export const ContractCreateForm: FC<TProps> = ({ employee }): ReactElement => {
 										Estimasi Hak Uang Kompensasi PKWT (PP 35/2021)
 									</div>
 									<div className="text-[11px] text-muted-foreground">
-										Rumus: (Masa Kerja Bulan / 12) × Upah Pokok & Tunjangan Tetap
+										Rumus: (Masa Kerja Bulan / 12) × Upah Pokok & Tunjangan
+										Tetap
 									</div>
 								</div>
 							</div>
@@ -214,7 +238,9 @@ export const ContractCreateForm: FC<TProps> = ({ employee }): ReactElement => {
 
 			<Card className="border-border/60">
 				<CardHeader className="pb-3">
-					<CardTitle className="text-sm font-semibold">Penugasan & Catatan Tambahan</CardTitle>
+					<CardTitle className="text-sm font-semibold">
+						Penugasan & Catatan Tambahan
+					</CardTitle>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid gap-4 md:grid-cols-2">
@@ -261,13 +287,19 @@ export const ContractCreateForm: FC<TProps> = ({ employee }): ReactElement => {
 				>
 					Batal
 				</Button>
-				<Button type="submit" disabled={createMutation.isPending} className="gap-2">
+				<Button
+					type="submit"
+					disabled={createMutation.isPending}
+					className="gap-2"
+				>
 					{createMutation.isPending ? (
 						<Loader2 className="size-4 animate-spin" />
 					) : (
 						<FileCheck className="size-4" />
 					)}
-					{createMutation.isPending ? "Menyimpan..." : "Terbitkan Kontrak Kerja"}
+					{createMutation.isPending
+						? "Menyimpan..."
+						: "Terbitkan Kontrak Kerja"}
 				</Button>
 			</div>
 		</form>

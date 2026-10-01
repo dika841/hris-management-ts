@@ -52,7 +52,9 @@ export const employeeGetOptions = (
 ): UseSuspenseQueryOptions<TEmployeeOut["get"]> =>
 	suspenseQueryOptionsFor(orpc.employee.get, { id });
 
-export const useEmployeeGet = (id: string): UseSuspenseQueryResult<TEmployeeOut["get"]> =>
+export const useEmployeeGet = (
+	id: string,
+): UseSuspenseQueryResult<TEmployeeOut["get"]> =>
 	useSuspenseQuery(employeeGetOptions(id));
 
 export const useEmployeeCreate = (): UseMutationResult<
@@ -147,14 +149,18 @@ export const useExpiringContracts = (
 	useSuspenseQuery(expiringContractsOptions(days));
 
 // Departments & Positions
-export const departmentListOptions = (): UseSuspenseQueryOptions<TEmployeeOut["departmentList"]> =>
-	suspenseQueryOptionsFor(orpc.employee.departmentList, undefined);
+export const departmentListOptions = (): UseSuspenseQueryOptions<
+	TEmployeeOut["departmentList"]
+> => suspenseQueryOptionsFor(orpc.employee.departmentList, undefined);
 
-export const useDepartmentList = (): UseSuspenseQueryResult<TEmployeeOut["departmentList"]> =>
-	useSuspenseQuery(departmentListOptions());
+export const useDepartmentList = (): UseSuspenseQueryResult<
+	TEmployeeOut["departmentList"]
+> => useSuspenseQuery(departmentListOptions());
 
-export const positionListOptions = (): UseSuspenseQueryOptions<TEmployeeOut["positionList"]> =>
-	suspenseQueryOptionsFor(orpc.employee.positionList, undefined);
+export const positionListOptions = (): UseSuspenseQueryOptions<
+	TEmployeeOut["positionList"]
+> => suspenseQueryOptionsFor(orpc.employee.positionList, undefined);
 
-export const usePositionList = (): UseSuspenseQueryResult<TEmployeeOut["positionList"]> =>
-	useSuspenseQuery(positionListOptions());
+export const usePositionList = (): UseSuspenseQueryResult<
+	TEmployeeOut["positionList"]
+> => useSuspenseQuery(positionListOptions());

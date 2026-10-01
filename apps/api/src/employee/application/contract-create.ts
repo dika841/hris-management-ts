@@ -54,7 +54,9 @@ export const contractCreate = Effect.fn("contractCreate")(function* (
 			});
 		}
 
-		const existingContracts = yield* employeeRepo.listContracts(input.employeeId);
+		const existingContracts = yield* employeeRepo.listContracts(
+			input.employeeId,
+		);
 		let cumulativeMonths = 0;
 		for (const c of existingContracts) {
 			if (c.contractType === CONTRACT_TYPE.PKWT && c.endDate) {
@@ -62,7 +64,10 @@ export const contractCreate = Effect.fn("contractCreate")(function* (
 			}
 		}
 
-		const newDurationMonths = calculateTenureMonths(input.startDate, input.endDate);
+		const newDurationMonths = calculateTenureMonths(
+			input.startDate,
+			input.endDate,
+		);
 		if (isPkwtOverMaxDuration(cumulativeMonths + newDurationMonths)) {
 			return yield* new EConflict({
 				message: EMPLOYEE_MESSAGE.PKWT_MAX_DURATION_EXCEEDED,

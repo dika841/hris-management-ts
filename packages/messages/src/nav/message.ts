@@ -1,6 +1,7 @@
 export const NAV_MESSAGE = {
 	DASHBOARD: "Dashboard",
 	EMPLOYEES: "Employees",
+	ATTENDANCE: "Waktu & Kehadiran",
 	PAYROLL: "Payroll & Tax",
 	USERS: "Users",
 	ROLES: "Roles",

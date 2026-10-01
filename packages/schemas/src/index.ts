@@ -7,3 +7,4 @@ export * from "./permission/index.ts";
 export * from "./role/index.ts";
 export * from "./shared/index.ts";
 export * from "./user/index.ts";
+export * from "./attendance/index.ts";

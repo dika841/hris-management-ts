@@ -35,8 +35,12 @@ export const Route = createFileRoute(
 	}),
 	loader: ({ context, params }) =>
 		Promise.all([
-			context.queryClient.ensureQueryData(employeeGetOptions(params.employeeId)),
-			context.queryClient.ensureQueryData(contractListOptions(params.employeeId)),
+			context.queryClient.ensureQueryData(
+				employeeGetOptions(params.employeeId),
+			),
+			context.queryClient.ensureQueryData(
+				contractListOptions(params.employeeId),
+			),
 		]),
 	component: ContractConvertPage,
 });

@@ -17,7 +17,9 @@ export const toContractDto = (row: TEmployeeContractRow): TEmployeeContract =>
 		status: row.status,
 		compensationAmount: row.compensationAmount,
 		compensationPaid: row.compensationPaid,
-		compensationPaidAt: row.compensationPaidAt ? row.compensationPaidAt.toISOString() : null,
+		compensationPaidAt: row.compensationPaidAt
+			? row.compensationPaidAt.toISOString()
+			: null,
 		documentUrl: row.documentUrl,
 		notes: row.notes,
 		createdAt: row.createdAt.toISOString(),

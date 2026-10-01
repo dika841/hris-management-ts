@@ -7,14 +7,12 @@ import {
 } from "#/employee/domain/employee.ts";
 import type { EDatabase } from "#/shared/errors.ts";
 
-export const expiringContractsGet = Effect.fn("expiringContractsGet")(function* (
-	days = 30,
-): Effect.fn.Return<
-	TEmployeeContract[],
-	EDatabase,
-	TEmployeeRepoId
-> {
-	const employeeRepo = yield* EmployeeRepo;
-	const rows = yield* employeeRepo.listExpiringContracts(days);
-	return rows.map(toContractDto);
-});
+export const expiringContractsGet = Effect.fn("expiringContractsGet")(
+	function* (
+		days = 30,
+	): Effect.fn.Return<TEmployeeContract[], EDatabase, TEmployeeRepoId> {
+		const employeeRepo = yield* EmployeeRepo;
+		const rows = yield* employeeRepo.listExpiringContracts(days);
+		return rows.map(toContractDto);
+	},
+);

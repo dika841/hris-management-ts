@@ -1,14 +1,8 @@
-import type {
-	TPayrollPeriodList,
-	TPayrollPeriodListInput,
-} from "@app/schemas";
+import type { TPayrollPeriodList, TPayrollPeriodListInput } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import { Effect } from "effect";
 import { toPayrollPeriodDto } from "#/payroll/application/to-payroll-dto.ts";
-import {
-	PayrollRepo,
-	type TPayrollRepoId,
-} from "#/payroll/domain/payroll.ts";
+import { PayrollRepo, type TPayrollRepoId } from "#/payroll/domain/payroll.ts";
 import type { EDatabase } from "#/shared/errors.ts";
 
 export const payrollPeriodList = Effect.fn("payrollPeriodList")(function* (

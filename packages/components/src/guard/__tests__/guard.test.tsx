@@ -62,7 +62,10 @@ describe("Guard", () => {
 
 	it("grants nothing outside a provider", (): void => {
 		render(
-			<Guard permissions={[PERMISSION.ACTIVITY_READ]} fallback={<p>{DENIED}</p>}>
+			<Guard
+				permissions={[PERMISSION.ACTIVITY_READ]}
+				fallback={<p>{DENIED}</p>}
+			>
 				<p>{ALLOWED}</p>
 			</Guard>,
 		);

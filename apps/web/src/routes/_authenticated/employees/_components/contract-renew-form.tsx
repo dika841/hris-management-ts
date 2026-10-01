@@ -1,5 +1,10 @@
 import { Button } from "@app/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@app/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from "@app/components/ui/card";
 import { Input } from "@app/components/ui/input";
 import { Label } from "@app/components/ui/label";
 import { Textarea } from "@app/components/ui/textarea";
@@ -19,9 +24,13 @@ export const ContractRenewForm: FC<TProps> = ({ employee }): ReactElement => {
 	const { data: contracts } = useContractList(employee.id);
 	const renewMutation = useContractRenew();
 
-	const activeContract = contracts.find((c) => c.status === "active" && c.contractType === "pkwt");
+	const activeContract = contracts.find(
+		(c) => c.status === "active" && c.contractType === "pkwt",
+	);
 
-	const [contractNumber, setContractNumber] = useState(`RNW-${employee.employeeCode}-${Date.now().toString().slice(-4)}`);
+	const [contractNumber, setContractNumber] = useState(
+		`RNW-${employee.employeeCode}-${Date.now().toString().slice(-4)}`,
+	);
 	const [newStartDate, setNewStartDate] = useState(
 		activeContract?.endDate || new Date().toISOString().slice(0, 10),
 	);
@@ -56,7 +65,8 @@ export const ContractRenewForm: FC<TProps> = ({ employee }): ReactElement => {
 		return (
 			<Card className="border-border/60">
 				<CardContent className="py-8 text-center text-xs text-muted-foreground">
-					Karyawan ini tidak memiliki kontrak PKWT aktif yang dapat diperpanjang.
+					Karyawan ini tidak memiliki kontrak PKWT aktif yang dapat
+					diperpanjang.
 				</CardContent>
 			</Card>
 		);
@@ -72,23 +82,39 @@ export const ContractRenewForm: FC<TProps> = ({ employee }): ReactElement => {
 				</CardHeader>
 				<CardContent className="pt-4 space-y-3 text-xs">
 					<p className="text-muted-foreground leading-relaxed">
-						Saat perpanjangan PKWT dilakukan, pengusaha wajib membayarkan uang kompensasi untuk masa kerja PKWT yang telah diselesaikan sebelum perpanjangan dimulai.
+						Saat perpanjangan PKWT dilakukan, pengusaha wajib membayarkan uang
+						kompensasi untuk masa kerja PKWT yang telah diselesaikan sebelum
+						perpanjangan dimulai.
 					</p>
 					<div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-3 rounded-lg bg-card border border-border/50">
 						<div>
-							<div className="text-muted-foreground text-[11px]">Kontrak Berakhir</div>
-							<div className="font-mono font-semibold">{activeContract.contractNumber}</div>
+							<div className="text-muted-foreground text-[11px]">
+								Kontrak Berakhir
+							</div>
+							<div className="font-mono font-semibold">
+								{activeContract.contractNumber}
+							</div>
 						</div>
 						<div>
-							<div className="text-muted-foreground text-[11px]">Periode Kerja</div>
-							<div>{activeContract.startDate} s.d. {activeContract.endDate}</div>
+							<div className="text-muted-foreground text-[11px]">
+								Periode Kerja
+							</div>
+							<div>
+								{activeContract.startDate} s.d. {activeContract.endDate}
+							</div>
 						</div>
 						<div>
-							<div className="text-muted-foreground text-[11px]">Upah Terakhir</div>
-							<div className="font-mono font-semibold">{formatRupiah(activeContract.basicSalary)}</div>
+							<div className="text-muted-foreground text-[11px]">
+								Upah Terakhir
+							</div>
+							<div className="font-mono font-semibold">
+								{formatRupiah(activeContract.basicSalary)}
+							</div>
 						</div>
 						<div>
-							<div className="text-muted-foreground text-[11px]">Uang Kompensasi Wajib</div>
+							<div className="text-muted-foreground text-[11px]">
+								Uang Kompensasi Wajib
+							</div>
 							<div className="font-mono font-bold text-amber-700 dark:text-amber-400">
 								{formatRupiah(activeContract.compensationAmount)}
 							</div>
@@ -99,7 +125,9 @@ export const ContractRenewForm: FC<TProps> = ({ employee }): ReactElement => {
 
 			<Card className="border-border/60">
 				<CardHeader className="pb-3">
-					<CardTitle className="text-sm font-semibold">Ketentuan Kontrak Perpanjangan</CardTitle>
+					<CardTitle className="text-sm font-semibold">
+						Ketentuan Kontrak Perpanjangan
+					</CardTitle>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid gap-4 md:grid-cols-2">
@@ -172,7 +200,9 @@ export const ContractRenewForm: FC<TProps> = ({ employee }): ReactElement => {
 					</div>
 
 					<div className="space-y-1.5">
-						<Label className="text-xs">Catatan Evaluasi Kinerja & Perpanjangan</Label>
+						<Label className="text-xs">
+							Catatan Evaluasi Kinerja & Perpanjangan
+						</Label>
 						<Textarea
 							value={notes}
 							onChange={(e) => setNotes(e.target.value)}
@@ -195,13 +225,19 @@ export const ContractRenewForm: FC<TProps> = ({ employee }): ReactElement => {
 				>
 					Batal
 				</Button>
-				<Button type="submit" disabled={renewMutation.isPending} className="gap-2">
+				<Button
+					type="submit"
+					disabled={renewMutation.isPending}
+					className="gap-2"
+				>
 					{renewMutation.isPending ? (
 						<Loader2 className="size-4 animate-spin" />
 					) : (
 						<RefreshCw className="size-4" />
 					)}
-					{renewMutation.isPending ? "Memproses..." : "Terbitkan Perpanjangan Kontrak"}
+					{renewMutation.isPending
+						? "Memproses..."
+						: "Terbitkan Perpanjangan Kontrak"}
 				</Button>
 			</div>
 		</form>

@@ -8,6 +8,15 @@ export const PERMISSION = {
 	PAYROLL_READ: "payroll:read",
 	PAYROLL_MANAGE: "payroll:manage",
 	PAYROLL_CALCULATE: "payroll:calculate",
+	// Fase 2: Cuti & Kehadiran
+	ATTENDANCE_READ: "attendance:read",
+	ATTENDANCE_MANAGE: "attendance:manage",
+	LEAVE_READ: "leave:read",
+	LEAVE_MANAGE: "leave:manage",
+	LEAVE_APPROVE: "leave:approve",
+	OVERTIME_READ: "overtime:read",
+	OVERTIME_MANAGE: "overtime:manage",
+	OVERTIME_APPROVE: "overtime:approve",
 } as const;
 
 export type TPermission = (typeof PERMISSION)[keyof typeof PERMISSION];

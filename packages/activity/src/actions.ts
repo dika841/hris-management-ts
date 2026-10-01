@@ -7,6 +7,11 @@ export const ACTIVITY_RESOURCE_TYPE = {
 	CONTRACT: "contract",
 	DEPARTMENT: "department",
 	POSITION: "position",
+	LEAVE_TYPE: "leave_type",
+	LEAVE_REQUEST: "leave_request",
+	ATTENDANCE: "attendance",
+	OVERTIME: "overtime",
+	PUBLIC_HOLIDAY: "public_holiday",
 } as const;
 
 export type TActivityResourceType =
@@ -31,6 +36,20 @@ export const ACTIVITY_ACTION = {
 	PAYROLL_PERIOD_CREATE: "payroll.period_create",
 	PAYROLL_CALCULATE: "payroll.calculate",
 	PAYROLL_APPROVE: "payroll.approve",
+	// Fase 2: Cuti & Kehadiran
+	LEAVE_TYPE_CREATE: "leave_type.create",
+	LEAVE_TYPE_UPDATE: "leave_type.update",
+	LEAVE_REQUEST_CREATE: "leave_request.create",
+	LEAVE_REQUEST_APPROVE: "leave_request.approve",
+	LEAVE_REQUEST_REJECT: "leave_request.reject",
+	LEAVE_REQUEST_CANCEL: "leave_request.cancel",
+	ATTENDANCE_LOG: "attendance.log",
+	ATTENDANCE_BULK_LOG: "attendance.bulk_log",
+	OVERTIME_CREATE: "overtime.create",
+	OVERTIME_APPROVE: "overtime.approve",
+	OVERTIME_REJECT: "overtime.reject",
+	PUBLIC_HOLIDAY_CREATE: "public_holiday.create",
+	PUBLIC_HOLIDAY_DELETE: "public_holiday.delete",
 } as const;
 
 export type TActivityAction =

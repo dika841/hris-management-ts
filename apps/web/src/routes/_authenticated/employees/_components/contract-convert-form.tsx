@@ -1,5 +1,10 @@
 import { Button } from "@app/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@app/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from "@app/components/ui/card";
 import { Input } from "@app/components/ui/input";
 import { Label } from "@app/components/ui/label";
 import { Textarea } from "@app/components/ui/textarea";
@@ -7,7 +12,10 @@ import type { TEmployee } from "@app/schemas";
 import { useNavigate } from "@tanstack/react-router";
 import { CheckCircle2, Loader2, UserCheck } from "lucide-react";
 import { type FC, type FormEvent, type ReactElement, useState } from "react";
-import { useContractConvert, useContractList } from "../_hooks/use-employees.ts";
+import {
+	useContractConvert,
+	useContractList,
+} from "../_hooks/use-employees.ts";
 
 type TProps = {
 	employee: TEmployee;
@@ -18,10 +26,16 @@ export const ContractConvertForm: FC<TProps> = ({ employee }): ReactElement => {
 	const { data: contracts } = useContractList(employee.id);
 	const convertMutation = useContractConvert();
 
-	const activeContract = contracts.find((c) => c.status === "active" && c.contractType === "pkwt");
+	const activeContract = contracts.find(
+		(c) => c.status === "active" && c.contractType === "pkwt",
+	);
 
-	const [contractNumber, setContractNumber] = useState(`SK-TETAP-${employee.employeeCode}-${new Date().getFullYear()}`);
-	const [effectiveDate, setEffectiveDate] = useState(new Date().toISOString().slice(0, 10));
+	const [contractNumber, setContractNumber] = useState(
+		`SK-TETAP-${employee.employeeCode}-${new Date().getFullYear()}`,
+	);
+	const [effectiveDate, setEffectiveDate] = useState(
+		new Date().toISOString().slice(0, 10),
+	);
 	const [salary, setSalary] = useState(employee.basicSalary);
 	const [allowance, setAllowance] = useState(0);
 	const [position, setPosition] = useState(employee.position);
@@ -51,7 +65,8 @@ export const ContractConvertForm: FC<TProps> = ({ employee }): ReactElement => {
 		return (
 			<Card className="border-border/60">
 				<CardContent className="py-8 text-center text-xs text-muted-foreground">
-					Karyawan ini tidak memiliki kontrak PKWT aktif yang dapat dikonversi ke PKWTT.
+					Karyawan ini tidak memiliki kontrak PKWT aktif yang dapat dikonversi
+					ke PKWTT.
 				</CardContent>
 			</Card>
 		);
@@ -68,24 +83,41 @@ export const ContractConvertForm: FC<TProps> = ({ employee }): ReactElement => {
 				</CardHeader>
 				<CardContent className="pt-4 space-y-3 text-xs">
 					<p className="text-muted-foreground leading-relaxed">
-						Sesuai Pasal 15 s.d. 17 PP No. 35 Tahun 2021, karyawan kontrak PKWT yang diangkat menjadi karyawan tetap (PKWTT) berhak atas Uang Kompensasi PKWT untuk masa kerja yang telah dijalani hingga tanggal efektif pengangkatan.
+						Sesuai Pasal 15 s.d. 17 PP No. 35 Tahun 2021, karyawan kontrak PKWT
+						yang diangkat menjadi karyawan tetap (PKWTT) berhak atas Uang
+						Kompensasi PKWT untuk masa kerja yang telah dijalani hingga tanggal
+						efektif pengangkatan.
 					</p>
 					<div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-3 rounded-lg bg-card border border-border/50">
 						<div>
-							<div className="text-muted-foreground text-[11px]">Kontrak Asal</div>
-							<div className="font-mono font-semibold">{activeContract.contractNumber}</div>
+							<div className="text-muted-foreground text-[11px]">
+								Kontrak Asal
+							</div>
+							<div className="font-mono font-semibold">
+								{activeContract.contractNumber}
+							</div>
 						</div>
 						<div>
-							<div className="text-muted-foreground text-[11px]">Mulai PKWT</div>
+							<div className="text-muted-foreground text-[11px]">
+								Mulai PKWT
+							</div>
 							<div>{activeContract.startDate}</div>
 						</div>
 						<div>
-							<div className="text-muted-foreground text-[11px]">Tanggal Pengangkatan</div>
-							<div className="font-semibold text-foreground">{effectiveDate}</div>
+							<div className="text-muted-foreground text-[11px]">
+								Tanggal Pengangkatan
+							</div>
+							<div className="font-semibold text-foreground">
+								{effectiveDate}
+							</div>
 						</div>
 						<div>
-							<div className="text-muted-foreground text-[11px]">Status Karyawan Baru</div>
-							<div className="font-semibold text-emerald-600 dark:text-emerald-400">Karyawan Tetap (PKWTT)</div>
+							<div className="text-muted-foreground text-[11px]">
+								Status Karyawan Baru
+							</div>
+							<div className="font-semibold text-emerald-600 dark:text-emerald-400">
+								Karyawan Tetap (PKWTT)
+							</div>
 						</div>
 					</div>
 				</CardContent>
@@ -93,12 +125,16 @@ export const ContractConvertForm: FC<TProps> = ({ employee }): ReactElement => {
 
 			<Card className="border-border/60">
 				<CardHeader className="pb-3">
-					<CardTitle className="text-sm font-semibold">SK Pengangkatan & Ketentuan Gaji Tetap</CardTitle>
+					<CardTitle className="text-sm font-semibold">
+						SK Pengangkatan & Ketentuan Gaji Tetap
+					</CardTitle>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid gap-4 md:grid-cols-2">
 						<div className="space-y-1.5">
-							<Label className="text-xs">Nomor Surat Keputusan (SK) Pengangkatan</Label>
+							<Label className="text-xs">
+								Nomor Surat Keputusan (SK) Pengangkatan
+							</Label>
 							<Input
 								value={contractNumber}
 								onChange={(e) => setContractNumber(e.target.value)}
@@ -108,7 +144,9 @@ export const ContractConvertForm: FC<TProps> = ({ employee }): ReactElement => {
 						</div>
 
 						<div className="space-y-1.5">
-							<Label className="text-xs">Tanggal Efektif Pengangkatan Tetap</Label>
+							<Label className="text-xs">
+								Tanggal Efektif Pengangkatan Tetap
+							</Label>
 							<Input
 								type="date"
 								value={effectiveDate}
@@ -179,13 +217,19 @@ export const ContractConvertForm: FC<TProps> = ({ employee }): ReactElement => {
 				>
 					Batal
 				</Button>
-				<Button type="submit" disabled={convertMutation.isPending} className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white">
+				<Button
+					type="submit"
+					disabled={convertMutation.isPending}
+					className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+				>
 					{convertMutation.isPending ? (
 						<Loader2 className="size-4 animate-spin" />
 					) : (
 						<UserCheck className="size-4" />
 					)}
-					{convertMutation.isPending ? "Memproses..." : "Angkat Menjadi Karyawan Tetap"}
+					{convertMutation.isPending
+						? "Memproses..."
+						: "Angkat Menjadi Karyawan Tetap"}
 				</Button>
 			</div>
 		</form>

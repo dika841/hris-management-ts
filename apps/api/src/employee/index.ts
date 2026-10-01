@@ -8,3 +8,10 @@ export const employeeModule: {
 	layer: employeeRepoLayer,
 	routerBuild: employeeRouterBuild,
 };
+
+export {
+	EmployeeRepo,
+	type TEmployeeRepoId,
+	type TEmployeeRepo,
+	type TEmployeeRow,
+} from "#/employee/domain/employee.ts";

@@ -159,7 +159,8 @@ export const employeeRepoLayer = Layer.effect(
 							bankAccountNumber: input.bankAccountNumber ?? null,
 							bankAccountHolder: input.bankAccountHolder ?? null,
 							bpjsKesehatanNumber: input.bpjsKesehatanNumber ?? null,
-							bpjsKetenagakerjaanNumber: input.bpjsKetenagakerjaanNumber ?? null,
+							bpjsKetenagakerjaanNumber:
+								input.bpjsKetenagakerjaanNumber ?? null,
 							jkkRiskGrade: input.jkkRiskGrade,
 							pdpConsentGiven: input.pdpConsentGiven,
 							pdpConsentDate: input.pdpConsentGiven ? new Date() : undefined,
@@ -252,7 +253,9 @@ export const employeeRepoLayer = Layer.effect(
 				catch: (cause) => new EDatabase({ cause }),
 			});
 
-		const listExpiringContracts: TEmployeeRepo["listExpiringContracts"] = (days) =>
+		const listExpiringContracts: TEmployeeRepo["listExpiringContracts"] = (
+			days,
+		) =>
 			Effect.tryPromise({
 				try: async () => {
 					const today = new Date().toISOString().slice(0, 10);

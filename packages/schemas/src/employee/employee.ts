@@ -119,7 +119,10 @@ export const employeeCreateInputSchema = z.object({
 	position: z.string().min(1).max(100),
 	employmentStatus: employmentStatusSchema.default(EMPLOYMENT_STATUS.PERMANENT),
 	joinDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-	endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+	endDate: z
+		.string()
+		.regex(/^\d{4}-\d{2}-\d{2}$/)
+		.optional(),
 	managerId: employeeIdSchema.optional(),
 	basicSalary: z.number().int().nonnegative(),
 	taxMethod: taxMethodSchema.default(TAX_METHOD.GROSS),
@@ -135,9 +138,11 @@ export const employeeCreateInputSchema = z.object({
 });
 export type TEmployeeCreateInput = z.infer<typeof employeeCreateInputSchema>;
 
-export const employeeUpdateInputSchema = employeeCreateInputSchema.partial().extend({
-	id: employeeIdSchema,
-});
+export const employeeUpdateInputSchema = employeeCreateInputSchema
+	.partial()
+	.extend({
+		id: employeeIdSchema,
+	});
 export type TEmployeeUpdateInput = z.infer<typeof employeeUpdateInputSchema>;
 
 export const employeeIdInputSchema = z.object({ id: employeeIdSchema });

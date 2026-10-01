@@ -26,7 +26,8 @@ export const CONTRACT_STATUS = {
 	EXPIRED: "expired",
 	TERMINATED: "terminated",
 } as const;
-export type TContractStatus = (typeof CONTRACT_STATUS)[keyof typeof CONTRACT_STATUS];
+export type TContractStatus =
+	(typeof CONTRACT_STATUS)[keyof typeof CONTRACT_STATUS];
 
 export const contractStatusSchema = z.enum([
 	CONTRACT_STATUS.ACTIVE,
@@ -54,15 +55,23 @@ export const employeeContractSchema = baseSchema(contractIdSchema).extend({
 	documentUrl: z.string().nullable(),
 	notes: z.string().nullable(),
 });
-export type TEmployeeContract = TEntityOf<z.infer<typeof employeeContractSchema>>;
+export type TEmployeeContract = TEntityOf<
+	z.infer<typeof employeeContractSchema>
+>;
 
 export const contractCreateInputSchema = z.object({
 	employeeId: employeeIdSchema,
 	contractType: contractTypeSchema,
 	contractNumber: z.string().min(1).max(100),
 	startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-	endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-	probationEndDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+	endDate: z
+		.string()
+		.regex(/^\d{4}-\d{2}-\d{2}$/)
+		.optional(),
+	probationEndDate: z
+		.string()
+		.regex(/^\d{4}-\d{2}-\d{2}$/)
+		.optional(),
 	basicSalary: z.number().int().positive(),
 	fixedAllowance: z.number().int().nonnegative().default(0),
 	position: z.string().min(1).max(100),
@@ -101,4 +110,6 @@ export const contractPayCompensationInputSchema = z.object({
 	contractId: contractIdSchema,
 	notes: z.string().optional(),
 });
-export type TContractPayCompensationInput = z.infer<typeof contractPayCompensationInputSchema>;
+export type TContractPayCompensationInput = z.infer<
+	typeof contractPayCompensationInputSchema
+>;

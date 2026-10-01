@@ -129,9 +129,7 @@ describe("Payroll Calculator Unified Engine", () => {
 		expect(result.taxAllowance).toBeGreaterThan(0);
 		expect(result.tax.pph21Monthly).toBe(result.taxAllowance);
 		// With gross-up, employee take home pay is exactly basicSalary - employee BPJS deductions
-		expect(result.netPay).toBe(
-			10_000_000 - result.bpjs.totalEmployeeBpjs,
-		);
+		expect(result.netPay).toBe(10_000_000 - result.bpjs.totalEmployeeBpjs);
 	});
 
 	it("performs December annual reconciliation using Article 17 progressive tax", () => {

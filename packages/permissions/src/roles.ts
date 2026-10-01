@@ -1,8 +1,5 @@
 import { A, D } from "@mobily/ts-belt";
-import {
-	ALL_PERMISSIONS,
-	type TPermission,
-} from "./permissions.ts";
+import { ALL_PERMISSIONS, type TPermission } from "./permissions.ts";
 
 export const ROLE = {
 	SUPERADMIN: "superadmin",
