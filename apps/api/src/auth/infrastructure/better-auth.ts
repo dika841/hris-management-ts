@@ -12,6 +12,7 @@ import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import type { TDb } from "#/platform/db/client.ts";
 import { dbActiveProxy } from "#/platform/db/transaction.ts";
 import { env } from "#/platform/config/env.ts";
+import { NODE_ENV } from "#/platform/config/env-schema.ts";
 import { logger } from "#/platform/observability/logger.ts";
 
 type TCreateAuthOptions = {
@@ -24,9 +25,19 @@ export const authCreate = (deps: TCreateAuthOptions) =>
 	betterAuth({
 		baseURL: env.BETTER_AUTH_URL,
 		secret: env.BETTER_AUTH_SECRET,
-		trustedOrigins: [env.WEB_ORIGIN],
+		trustedOrigins: [
+			env.WEB_ORIGIN,
+			"https://hris-management-web.pages.dev",
+			"https://*.pages.dev",
+		],
 		database: drizzleAdapter(dbActiveProxy(deps.db), { provider: "pg" }),
-		advanced: { database: { generateId: (): string => crypto.randomUUID() } },
+		advanced: {
+			database: { generateId: (): string => crypto.randomUUID() },
+			defaultCookieAttributes: {
+				sameSite: env.NODE_ENV === NODE_ENV.PRODUCTION ? "none" : "lax",
+				secure: env.NODE_ENV === NODE_ENV.PRODUCTION,
+			},
+		},
 		emailAndPassword: {
 			enabled: true,
 			sendResetPassword: async ({ user, url }): Promise<void> => {
