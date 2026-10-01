@@ -36,11 +36,15 @@ jobs:
         run: pnpm build
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy apps/web/dist --project-name=hris-management-web ${{ (github.ref == 'refs/heads/main' || github.event.inputs.environment == 'production') && '--branch=main' || '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          BRANCH_FLAG=""
+          if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.event.inputs.environment }}" == "production" ]]; then
+            BRANCH_FLAG="--branch=main"
+          fi
+          npx -y wrangler pages deploy apps/web/dist --project-name=hris-management-web $BRANCH_FLAG --commit-dirty=true
 
   notify:
     name: Deployment summary
