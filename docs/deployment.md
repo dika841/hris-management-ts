@@ -109,10 +109,22 @@ pnpm --filter @app/api migrate
 1. Push code to GitHub
 2. Go to [render.com](https://render.com) → **New → Web Service**
 3. Connect your GitHub repository
-4. Configure:
-   - **Build Command**: `pnpm install --frozen-lockfile && pnpm --filter @app/api build`
-   - **Start Command**: `pnpm --filter @app/api start`
-   - **Health Check Path**: `/healthz`
+4. Configure the service:
+
+| Setting | Value |
+|---|---|
+| **Language** | `Node` |
+| **Root Directory** | *(leave blank — must be the monorepo root)* |
+| **Build Command** | `pnpm install --frozen-lockfile && pnpm --filter @app/api build` |
+| **Start Command** | `pnpm --filter @app/api start` |
+| **Health Check Path** | `/healthz` |
+
+> **⚠️ Root Directory must be empty!**
+> This is a pnpm monorepo. `pnpm install` must run from the repository root so that
+> all workspace packages (`@app/storage`, `@app/cache`, etc.) are resolved correctly.
+> If you set root directory to `apps/api`, the build will fail because `pnpm-workspace.yaml`
+> won't be found.
+
 5. Set environment variables (copy from `apps/api/.env.cloudflare.example`):
 
 | Variable | Source |

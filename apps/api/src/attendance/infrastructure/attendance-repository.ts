@@ -8,7 +8,7 @@ import {
 	overtimeRequest,
 	publicHoliday,
 } from "#/platform/db/tables/attendance.ts";
-import { DbService } from "#/platform/db/db-service.ts";
+import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
 import { dbActive } from "#/platform/db/transaction.ts";
 import { EDatabase } from "#/shared/errors.ts";
 
@@ -663,4 +663,4 @@ export const attendanceRepoLayer = Layer.effect(
 			deletePublicHoliday,
 		});
 	}),
-);
+).pipe(Layer.provide(dbServiceLayer));
