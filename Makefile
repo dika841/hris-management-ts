@@ -98,3 +98,18 @@ e2e: e2e-api e2e-web ## All end-to-end tests
 
 clean: ## Clear the moon cache
 	moon clean
+
+# ─── Cloudflare Deployment ───────────────────────────────────────────────────
+.PHONY: deploy-preview deploy-production setup-r2 wrangler-login
+
+wrangler-login: ## Authenticate with Cloudflare (opens browser)
+	npx wrangler login
+
+setup-r2: ## Create R2 bucket for media uploads
+	./scripts/setup-r2.sh
+
+deploy-preview: ## Deploy frontend to Cloudflare Pages (preview)
+	./scripts/deploy-frontend.sh
+
+deploy-production: ## Deploy frontend to Cloudflare Pages (production)
+	./scripts/deploy-frontend.sh --production

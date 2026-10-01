@@ -5,4 +5,5 @@ export const SERVICE_TAG = {
 	MAIL: "app/MailService",
 	AUTH: "app/AuthService",
 	HEALTH_PROBE: "app/HealthProbe",
+	STORAGE: "app/StorageService",
 } as const;

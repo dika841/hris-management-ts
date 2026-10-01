@@ -8,6 +8,7 @@ import { match } from "ts-pattern";
 import { runtime } from "#/bootstrap/compose.ts";
 import { CacheService } from "#/platform/cache/redis.ts";
 import { env } from "#/platform/config/env.ts";
+import { queueEnabledOf } from "#/platform/config/env-schema.ts";
 import { logger } from "#/platform/observability/logger.ts";
 import { jobDedupeCreate } from "#/platform/queue/job-dedupe.ts";
 import { QUEUE_NAME } from "#/platform/queue/queue-names.ts";
@@ -31,6 +32,14 @@ const EXIT_OK = 0;
 const EXIT_FAILURE = 1;
 const PRUNE_INTERVAL_MS = 86_400_000;
 
+if (!queueEnabledOf(env)) {
+	logger.error(
+		"RABBITMQ_URL is not set — worker cannot start without a message broker. " +
+			"Set RABBITMQ_URL or omit running the worker in demo mode.",
+	);
+	process.exit(EXIT_FAILURE);
+}
+
 const queue = await runtime.runPromise(
 	QueueService.use((service) => Effect.succeed(service)),
 );
@@ -39,8 +48,10 @@ const { client } = await runtime.runPromise(
 	CacheService.use((service) => Effect.succeed(service)),
 );
 
+const brokerUrl = env.RABBITMQ_URL ?? "unknown";
+
 logger.info(
-	{ broker: connectionUrlRedact(env.RABBITMQ_URL) },
+	{ broker: connectionUrlRedact(brokerUrl) },
 	"worker waiting for the broker",
 );
 

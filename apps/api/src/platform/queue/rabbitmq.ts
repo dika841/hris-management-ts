@@ -3,9 +3,11 @@ import { Context, Effect, Layer } from "effect";
 import { match } from "ts-pattern";
 import { EQueue } from "#/shared/errors.ts";
 import { env } from "#/platform/config/env.ts";
+import { queueEnabledOf } from "#/platform/config/env-schema.ts";
 import { closeQuietly } from "#/platform/resource-close.ts";
 import type { TServiceId } from "#/shared/service-id.ts";
 import { SERVICE_TAG } from "#/platform/service-tags.ts";
+import { logger } from "#/platform/observability/logger.ts";
 
 export const QUEUE_CONNECT_ATTEMPTS = 30;
 export const QUEUE_CONNECT_DELAY_MS = 2_000;
@@ -30,6 +32,7 @@ export type TQueueService = {
 	readonly connection: () => Effect.Effect<TQueueConnection, EQueue>;
 	readonly channel: () => Effect.Effect<ConfirmChannel, EQueue>;
 	readonly close: () => Promise<void>;
+	readonly enabled: boolean;
 };
 
 export const QUEUE_LOST_REASON = {
@@ -111,8 +114,19 @@ export const queueServiceCreate = (
 			.otherwise((found): Promise<void> => found.model.close());
 	};
 
-	return { connection, channel, close };
+	return { connection, channel, close, enabled: true };
 };
+
+/**
+ * No-op queue service for demo/development environments without RabbitMQ.
+ * All operations fail with EQueue so callers handle the absence gracefully.
+ */
+export const queueServiceNoop = (): TQueueService => ({
+	enabled: false,
+	connection: () => Effect.fail(new EQueue({ cause: new Error("Queue is disabled (RABBITMQ_URL not set)") })),
+	channel: () => Effect.fail(new EQueue({ cause: new Error("Queue is disabled (RABBITMQ_URL not set)") })),
+	close: () => Promise.resolve(),
+});
 
 export const queueConnectionWatch = (
 	model: ChannelModel,
@@ -141,8 +155,21 @@ export const queueConnectionWatch = (
 export const queueServiceLayer = Layer.effect(
 	QueueService,
 	Effect.gen(function* () {
+		const isEnabled = queueEnabledOf(env);
+
+		if (!isEnabled) {
+			logger.warn(
+				"RABBITMQ_URL not set — queue features are disabled (demo mode)",
+			);
+			return QueueService.of(queueServiceNoop());
+		}
+
+		// RABBITMQ_URL is guaranteed non-null here since queueEnabledOf returned true
+		// biome-ignore lint/style/noNonNullAssertion: guarded by queueEnabledOf
+		const url = env.RABBITMQ_URL!;
+
 		const service = yield* Effect.acquireRelease(
-			Effect.sync(() => queueServiceCreate(env.RABBITMQ_URL)),
+			Effect.sync(() => queueServiceCreate(url)),
 			(found): Effect.Effect<void> => closeQuietly(() => found.close()),
 		);
 

@@ -1,0 +1,45 @@
+# Render.com deployment configuration for HRIS API
+# Free tier: 750 hours/month, spins down after 15 min idle
+# Deploy: connect GitHub repo to Render and select this file
+
+services:
+  - type: web
+    name: hris-api
+    runtime: node
+    plan: free
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @app/api build
+    startCommand: pnpm --filter @app/api start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      # Set these in Render Dashboard → Environment:
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: BETTER_AUTH_URL
+        sync: false
+      - key: BETTER_AUTH_SECRET
+        sync: false
+      - key: WEB_ORIGIN
+        sync: false
+      - key: SMTP_URL
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: STORAGE_ACCESS_KEY_ID
+        sync: false
+      - key: STORAGE_SECRET_ACCESS_KEY
+        sync: false
+      - key: STORAGE_BUCKET
+        sync: false
+      - key: STORAGE_ENDPOINT
+        sync: false
+      - key: STORAGE_PUBLIC_URL
+        sync: false
+      # RabbitMQ optional — omit to run in demo mode without background jobs
+      # - key: RABBITMQ_URL
+      #   sync: false

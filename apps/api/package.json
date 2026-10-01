@@ -50,7 +50,8 @@
 		"ioredis": "^6.0.0",
 		"pg": "catalog:",
 		"ts-pattern": "catalog:",
-		"zod": "catalog:"
+		"zod": "catalog:",
+		"@app/storage": "workspace:*"
 	},
 	"devDependencies": {
 		"@electric-sql/pglite": "^0.5.8",

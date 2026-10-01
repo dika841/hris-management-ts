@@ -27,6 +27,7 @@ import { metricsMount } from "#/platform/http/mount-metrics.ts";
 import { observabilityMount } from "#/platform/http/mount-observability.ts";
 import { rateLimitMount } from "#/platform/http/mount-rate-limit.ts";
 import { webDistMount } from "#/platform/http/mount-web-dist.ts";
+import { uploadMount } from "#/platform/http/mount-upload.ts";
 import type { TORPCContext } from "#/platform/orpc/context.ts";
 import {
 	SESSION_STATE,
@@ -123,6 +124,7 @@ metricsMount(app, {
 });
 rateLimitMount(app, cacheClient);
 authMount(app, auth);
+uploadMount(app, buildContext);
 orpcMount({
 	app,
 	router,

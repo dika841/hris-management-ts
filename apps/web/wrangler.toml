@@ -1,0 +1,10 @@
+name = "hris-management-web"
+compatibility_date = "2024-10-22"
+pages_build_output_dir = "dist"
+
+[vars]
+# Set VITE_API_URL via Cloudflare Pages dashboard or CLI secrets
+# VITE_API_URL = "https://your-api.onrender.com"
+
+[env.production]
+name = "hris-management-web"

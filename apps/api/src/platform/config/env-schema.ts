@@ -85,6 +85,8 @@ const stringListParse = (value: string): readonly string[] =>
 		return trimmed === "" ? undefined : trimmed;
 	});
 
+const STORAGE_MAX_BYTES_DEFAULT = 10 * 1024 * 1024; // 10 MB
+
 export const envSchema = z
 	.object({
 		NODE_ENV: z
@@ -99,7 +101,11 @@ export const envSchema = z
 		),
 		DATABASE_URL: z.string().min(1),
 		REDIS_URL: z.string().min(1),
-		RABBITMQ_URL: z.string().min(1),
+		// RabbitMQ is optional — set to "disabled" to skip queue initialisation (demo mode)
+		RABBITMQ_URL: z.preprocess(
+			blankAsUndefined,
+			z.string().min(1).optional(),
+		),
 		SMTP_URL: z.string().min(1).default("smtp://localhost:1025"),
 		MAIL_FROM: z.string().min(1).default("Standard <no-reply@standard.test>"),
 		BETTER_AUTH_URL: z.url(),
@@ -139,6 +145,34 @@ export const envSchema = z
 			blankAsUndefined,
 			z.string().min(32).optional(),
 		),
+		// --- Cloudflare R2 / S3-compatible object storage ---
+		// Leave blank to disable file upload features
+		STORAGE_ACCESS_KEY_ID: z.preprocess(
+			blankAsUndefined,
+			z.string().min(1).optional(),
+		),
+		STORAGE_SECRET_ACCESS_KEY: z.preprocess(
+			blankAsUndefined,
+			z.string().min(1).optional(),
+		),
+		STORAGE_BUCKET: z.preprocess(
+			blankAsUndefined,
+			z.string().min(1).optional(),
+		),
+		// R2 endpoint: https://<ACCOUNT_ID>.r2.cloudflarestorage.com
+		STORAGE_ENDPOINT: z.preprocess(
+			blankAsUndefined,
+			z.url().optional(),
+		),
+		// Public base URL for stored objects (e.g. https://pub-XXXX.r2.dev)
+		STORAGE_PUBLIC_URL: z.preprocess(
+			blankAsUndefined,
+			z.url().optional(),
+		),
+		STORAGE_MAX_BYTES: z.coerce
+			.number()
+			.int()
+			.default(STORAGE_MAX_BYTES_DEFAULT),
 	})
 	.superRefine((env, context): void => {
 		match(env.NODE_ENV)
@@ -178,3 +212,13 @@ export type TEnv = z.infer<typeof envSchema>;
 
 export const apiReferenceEnabledOf = (env: TEnv): boolean =>
 	env.API_REFERENCE_ENABLED ?? env.NODE_ENV !== NODE_ENV.PRODUCTION;
+
+export const storageEnabledOf = (env: TEnv): boolean =>
+	!!(
+		env.STORAGE_ACCESS_KEY_ID &&
+		env.STORAGE_SECRET_ACCESS_KEY &&
+		env.STORAGE_BUCKET &&
+		env.STORAGE_ENDPOINT
+	);
+
+export const queueEnabledOf = (env: TEnv): boolean => !!env.RABBITMQ_URL;

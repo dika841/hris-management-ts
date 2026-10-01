@@ -128,6 +128,9 @@ importers:
       '@app/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@app/storage':
+        specifier: workspace:*
+        version: link:../../packages/storage
       '@app/tracing':
         specifier: workspace:*
         version: link:../../packages/tracing
