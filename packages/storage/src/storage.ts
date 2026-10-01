@@ -80,7 +80,7 @@ export const storageCreate = (options: TStorageOptions): TStorage => {
 
 		const response = await client.fetch(objectUrl(options, key), {
 			method: HTTP_METHOD.PUT,
-			body,
+			body: body as any,
 			headers: { [CONTENT_TYPE_HEADER]: contentType },
 			signal: signal(),
 		});
