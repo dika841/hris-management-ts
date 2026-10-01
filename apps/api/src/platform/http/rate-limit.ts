@@ -9,6 +9,7 @@ import { match } from "ts-pattern";
 import { HTTP_STATUS } from "#/platform/http/http-status.ts";
 import { rateLimitIdentifierOf } from "#/platform/http/rate-limit-identifier.ts";
 import type { TRateLimitScope } from "#/platform/http/rate-limit-scopes.ts";
+import { logger } from "#/platform/observability/logger.ts";
 
 export type TRateLimitOptions = {
 	client: TCacheClient;
@@ -27,11 +28,14 @@ export const rateLimit =
 			windowSeconds: options.windowSeconds,
 			max: options.max,
 		}).catch(
-			(): TRateLimitResult => ({
-				allowed: false,
-				count: options.max,
-				remaining: 0,
-			}),
+			(err: unknown): TRateLimitResult => {
+				logger.warn({ err }, "rate-limit check failed, failing open");
+				return {
+					allowed: true,
+					count: 0,
+					remaining: options.max,
+				};
+			},
 		);
 
 		return match(result.allowed)
