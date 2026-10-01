@@ -36,7 +36,9 @@ export const contractRenew = Effect.fn("contractRenew")(function* (
 
 	const prev = yield* employeeRepo.findContractById(input.previousContractId);
 	if (prev === null) {
-		return yield* new ENotFound({ message: EMPLOYEE_MESSAGE.CONTRACT_NOT_FOUND });
+		return yield* new ENotFound({
+			message: EMPLOYEE_MESSAGE.CONTRACT_NOT_FOUND,
+		});
 	}
 
 	const prevCompensation = prev.endDate
@@ -60,7 +62,10 @@ export const contractRenew = Effect.fn("contractRenew")(function* (
 		}
 	}
 
-	const newDurationMonths = calculateTenureMonths(input.startDate, input.endDate);
+	const newDurationMonths = calculateTenureMonths(
+		input.startDate,
+		input.endDate,
+	);
 	if (isPkwtOverMaxDuration(cumulativeMonths + newDurationMonths)) {
 		return yield* new EConflict({
 			message: EMPLOYEE_MESSAGE.PKWT_MAX_DURATION_EXCEEDED,

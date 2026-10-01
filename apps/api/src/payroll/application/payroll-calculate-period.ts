@@ -1,14 +1,8 @@
 import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
-import type {
-	TPayrollCalculateInput,
-	TPayrollPeriod,
-} from "@app/schemas";
+import type { TPayrollCalculateInput, TPayrollPeriod } from "@app/schemas";
 import { Effect } from "effect";
 import { toPayrollPeriodDto } from "#/payroll/application/to-payroll-dto.ts";
-import {
-	PayrollRepo,
-	type TPayrollRepoId,
-} from "#/payroll/domain/payroll.ts";
+import { PayrollRepo, type TPayrollRepoId } from "#/payroll/domain/payroll.ts";
 import {
 	ActivityRecorder,
 	type TActivityRecorderId,

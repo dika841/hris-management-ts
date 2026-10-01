@@ -18,7 +18,8 @@ export const EMPLOYEE_MESSAGE = {
 	CONTRACTS_TITLE: "Employment Contracts",
 	CONTRACT_NOT_FOUND: "Employment contract not found.",
 	CONTRACT_CREATED: "Employment contract created successfully.",
-	CONTRACT_RENEWED: "Employment contract renewed with compensation calculation.",
+	CONTRACT_RENEWED:
+		"Employment contract renewed with compensation calculation.",
 	CONTRACT_CONVERTED: "Employee converted to permanent employee (PKWTT).",
 	COMPENSATION_PAID: "PKWT compensation payment recorded successfully.",
 	PKWT_PROBATION_FORBIDDEN:

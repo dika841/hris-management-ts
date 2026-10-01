@@ -16,7 +16,9 @@ export const departmentCreateInputSchema = z.object({
 	name: z.string().min(1).max(100),
 	description: z.string().max(255).optional(),
 });
-export type TDepartmentCreateInput = z.infer<typeof departmentCreateInputSchema>;
+export type TDepartmentCreateInput = z.infer<
+	typeof departmentCreateInputSchema
+>;
 
 export const positionSchema = baseSchema(positionIdSchema).extend({
 	departmentId: departmentIdSchema.nullable(),

@@ -2,10 +2,7 @@ import { PAYROLL_MESSAGE } from "@app/messages";
 import type { TPayrollPeriod } from "@app/schemas";
 import { Effect } from "effect";
 import { toPayrollPeriodDto } from "#/payroll/application/to-payroll-dto.ts";
-import {
-	PayrollRepo,
-	type TPayrollRepoId,
-} from "#/payroll/domain/payroll.ts";
+import { PayrollRepo, type TPayrollRepoId } from "#/payroll/domain/payroll.ts";
 import { type EDatabase, ENotFound } from "#/shared/errors.ts";
 
 export const payrollPeriodGet = Effect.fn("payrollPeriodGet")(function* (

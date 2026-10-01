@@ -278,9 +278,7 @@ export const payrollRepoLayer = Layer.effect(
 			const where = and(
 				eq(payrollItem.payrollPeriodId, periodId),
 				dept ? eq(payrollItem.department, dept) : undefined,
-				search
-					? containsWhere(payrollItem.employeeName, search)
-					: undefined,
+				search ? containsWhere(payrollItem.employeeName, search) : undefined,
 			);
 
 			return Effect.tryPromise({

@@ -6,6 +6,7 @@ import { calculatePayroll } from "#/payroll/domain/payroll-calculator.ts";
 export const payrollTaxSimulate = Effect.fn("payrollTaxSimulate")(function* (
 	input: TTaxSimulationInput,
 ): Effect.fn.Return<TTaxSimulationResult, never, never> {
+	yield* Effect.void;
 	// Hitung lembur bila ada jam lembur
 	const overtimeResult = calculateOvertime({
 		basicSalary: input.basicSalary,

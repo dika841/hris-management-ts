@@ -15,7 +15,9 @@ import {
 const EmployeeDetailPage: FC = (): ReactElement => {
 	const { employeeId } = Route.useParams();
 	const { data: employee } = useEmployeeGet(employeeId);
-	const [activeTab, setActiveTab] = useState<"profile" | "contracts">("profile");
+	const [activeTab, setActiveTab] = useState<"profile" | "contracts">(
+		"profile",
+	);
 
 	return (
 		<div className="space-y-6">
@@ -50,7 +52,9 @@ const EmployeeDetailPage: FC = (): ReactElement => {
 			</div>
 
 			{activeTab === "profile" && <EmployeeProfileTab employee={employee} />}
-			{activeTab === "contracts" && <EmployeeContractsTab employeeId={employee.id} />}
+			{activeTab === "contracts" && (
+				<EmployeeContractsTab employeeId={employee.id} />
+			)}
 		</div>
 	);
 };
@@ -61,8 +65,12 @@ export const Route = createFileRoute("/_authenticated/employees/$employeeId/")({
 	}),
 	loader: ({ context, params }) =>
 		Promise.all([
-			context.queryClient.ensureQueryData(employeeGetOptions(params.employeeId)),
-			context.queryClient.ensureQueryData(contractListOptions(params.employeeId)),
+			context.queryClient.ensureQueryData(
+				employeeGetOptions(params.employeeId),
+			),
+			context.queryClient.ensureQueryData(
+				contractListOptions(params.employeeId),
+			),
 		]),
 	component: EmployeeDetailPage,
 });

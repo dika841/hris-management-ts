@@ -75,11 +75,16 @@ export type TPayrollRepo = {
 	) => Effect.Effect<TPayrollPeriodRow | null, EDatabase>;
 	calculatePeriod: (
 		input: TPayrollCalculateInput,
-	) => Effect.Effect<{ period: TPayrollPeriodRow; processed: number }, EDatabase>;
+	) => Effect.Effect<
+		{ period: TPayrollPeriodRow; processed: number },
+		EDatabase
+	>;
 	listItems: (
 		input: TPayrollItemListInput,
 	) => Effect.Effect<TRowPage<TPayrollItemRow>, EDatabase>;
-	findItemById: (id: string) => Effect.Effect<TPayrollItemRow | null, EDatabase>;
+	findItemById: (
+		id: string,
+	) => Effect.Effect<TPayrollItemRow | null, EDatabase>;
 	findTaxYtd: (
 		employeeId: string,
 		taxYear: number,

@@ -4,7 +4,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { FormPage } from "#/routes/_authenticated/_components/form-page.tsx";
 import { ContractCreateForm } from "../../_components/contract-create-form.tsx";
-import { employeeGetOptions, useEmployeeGet } from "../../_hooks/use-employees.ts";
+import {
+	employeeGetOptions,
+	useEmployeeGet,
+} from "../../_hooks/use-employees.ts";
 
 const ContractCreatePage: FC = (): ReactElement => {
 	const { employeeId } = Route.useParams();

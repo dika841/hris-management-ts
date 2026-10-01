@@ -31,7 +31,10 @@ describe("activity REST endpoint", () => {
 			path: `/activity?page=1&pageSize=20&action=${USER_CREATE_ACTION}`,
 			cookie: adminCookie,
 		});
-		const entry = A.find(list.items, (item) => item.resourceId === createdUser.id);
+		const entry = A.find(
+			list.items,
+			(item) => item.resourceId === createdUser.id,
+		);
 
 		expect(entry?.action).toBe(USER_CREATE_ACTION);
 		expect(entry?.actorEmail).toBe(SEED_CREDENTIALS.admin.email);

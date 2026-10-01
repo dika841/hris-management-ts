@@ -10,7 +10,10 @@ const MAX_PKWT_YEARS = 5;
 /**
  * Menghitung selisih masa kerja dalam hitungan bulan (dengan presisi desimal untuk sisa hari).
  */
-export const calculateTenureMonths = (startDate: string, endDate: string): number => {
+export const calculateTenureMonths = (
+	startDate: string,
+	endDate: string,
+): number => {
 	const start = new Date(startDate);
 	const end = new Date(endDate);
 	const diffMs = end.getTime() - start.getTime();

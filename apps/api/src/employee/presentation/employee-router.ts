@@ -111,7 +111,10 @@ const employeeRouter = {
 		),
 
 	contractRenew: permissionRequire(PERMISSION.EMPLOYEE_MANAGE)
-		.route({ method: HTTP_METHOD.POST, path: ROUTE_PATH.EMPLOYEE_CONTRACT_RENEW })
+		.route({
+			method: HTTP_METHOD.POST,
+			path: ROUTE_PATH.EMPLOYEE_CONTRACT_RENEW,
+		})
 		.input(contractRenewInputSchema)
 		.output(employeeContractSchema)
 		.handler(({ input, context }) =>
@@ -122,7 +125,10 @@ const employeeRouter = {
 		),
 
 	contractConvert: permissionRequire(PERMISSION.EMPLOYEE_MANAGE)
-		.route({ method: HTTP_METHOD.POST, path: ROUTE_PATH.EMPLOYEE_CONTRACT_CONVERT })
+		.route({
+			method: HTTP_METHOD.POST,
+			path: ROUTE_PATH.EMPLOYEE_CONTRACT_CONVERT,
+		})
 		.input(contractConvertInputSchema)
 		.output(employeeContractSchema)
 		.handler(({ input, context }) =>
@@ -133,7 +139,10 @@ const employeeRouter = {
 		),
 
 	contractCompensationPay: permissionRequire(PERMISSION.EMPLOYEE_MANAGE)
-		.route({ method: HTTP_METHOD.POST, path: ROUTE_PATH.EMPLOYEE_CONTRACT_COMPENSATION })
+		.route({
+			method: HTTP_METHOD.POST,
+			path: ROUTE_PATH.EMPLOYEE_CONTRACT_COMPENSATION,
+		})
 		.input(contractPayCompensationInputSchema)
 		.output(employeeContractSchema)
 		.handler(({ input, context }) =>
@@ -144,8 +153,13 @@ const employeeRouter = {
 		),
 
 	expiringContracts: permissionRequire(PERMISSION.EMPLOYEE_READ)
-		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.EMPLOYEE_EXPIRING_CONTRACTS })
-		.input(z.object({ days: z.number().int().positive().optional() }).optional())
+		.route({
+			method: HTTP_METHOD.GET,
+			path: ROUTE_PATH.EMPLOYEE_EXPIRING_CONTRACTS,
+		})
+		.input(
+			z.object({ days: z.number().int().positive().optional() }).optional(),
+		)
 		.output(z.array(employeeContractSchema))
 		.handler(({ input, context }) =>
 			effectRun(context.runtime, expiringContractsGet(input?.days ?? 30)),
@@ -156,9 +170,7 @@ const employeeRouter = {
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.DEPARTMENTS })
 		.input(z.void())
 		.output(z.array(departmentSchema))
-		.handler(({ context }) =>
-			effectRun(context.runtime, departmentList()),
-		),
+		.handler(({ context }) => effectRun(context.runtime, departmentList())),
 
 	departmentCreate: permissionRequire(PERMISSION.EMPLOYEE_MANAGE)
 		.route({ method: HTTP_METHOD.POST, path: ROUTE_PATH.DEPARTMENTS })
@@ -175,9 +187,7 @@ const employeeRouter = {
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.POSITIONS })
 		.input(z.void())
 		.output(z.array(positionSchema))
-		.handler(({ context }) =>
-			effectRun(context.runtime, positionList()),
-		),
+		.handler(({ context }) => effectRun(context.runtime, positionList())),
 
 	positionCreate: permissionRequire(PERMISSION.EMPLOYEE_MANAGE)
 		.route({ method: HTTP_METHOD.POST, path: ROUTE_PATH.POSITIONS })

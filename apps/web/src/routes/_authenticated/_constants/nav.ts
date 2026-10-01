@@ -4,6 +4,7 @@ import type { LinkProps } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import {
 	Activity,
+	CalendarCheck,
 	CircleUser,
 	Coins,
 	ContactRound,
@@ -32,6 +33,12 @@ export const NAV_ITEMS: readonly TNavItem[] = [
 		label: NAV_MESSAGE.EMPLOYEES,
 		permissions: [PERMISSION.EMPLOYEE_READ],
 		icon: ContactRound,
+	},
+	{
+		to: "/attendance",
+		label: NAV_MESSAGE.ATTENDANCE,
+		permissions: [PERMISSION.ATTENDANCE_READ],
+		icon: CalendarCheck,
 	},
 	{
 		to: "/payroll",

@@ -83,7 +83,9 @@ export type TEmployeeRepo = {
 	findById: (id: string) => Effect.Effect<TEmployeeRow | null, EDatabase>;
 	findByCode: (code: string) => Effect.Effect<TEmployeeRow | null, EDatabase>;
 	findByEmail: (email: string) => Effect.Effect<TEmployeeRow | null, EDatabase>;
-	create: (input: TEmployeeCreateInput) => Effect.Effect<TEmployeeRow, EDatabase>;
+	create: (
+		input: TEmployeeCreateInput,
+	) => Effect.Effect<TEmployeeRow, EDatabase>;
 	update: (
 		input: TEmployeeUpdateInput,
 	) => Effect.Effect<TEmployeeRow | null, EDatabase>;

@@ -1,4 +1,5 @@
 import { activityModule } from "#/activity/index.ts";
+import { attendanceModule } from "#/attendance/index.ts";
 import { authModule } from "#/auth/index.ts";
 import { employeeModule } from "#/employee/index.ts";
 import { healthModule } from "#/health/index.ts";
@@ -16,6 +17,7 @@ const appRouter = {
 	activity: activityModule.routerBuild(),
 	employee: employeeModule.routerBuild(),
 	payroll: payrollModule.routerBuild(),
+	attendance: attendanceModule.routerBuild(),
 };
 
 export type TAppRouter = typeof appRouter;

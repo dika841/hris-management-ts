@@ -1,5 +1,9 @@
 import { ACTIVITY_ACTION } from "@app/activity";
-import { ACTIVITY_ACTION_LABEL, ERROR_MESSAGE, ROLE_LABEL } from "@app/messages";
+import {
+	ACTIVITY_ACTION_LABEL,
+	ERROR_MESSAGE,
+	ROLE_LABEL,
+} from "@app/messages";
 import { ROLE } from "@app/permissions";
 import { expect, type Page, test } from "@playwright/test";
 import { SEED_CREDENTIALS } from "../support/credentials.ts";

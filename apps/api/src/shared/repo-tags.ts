@@ -6,4 +6,5 @@ export const REPO_TAG = {
 	ACTIVITY_PRUNER: "app/ActivityPruner",
 	EMPLOYEE: "app/EmployeeRepo",
 	PAYROLL: "app/PayrollRepo",
+	ATTENDANCE: "app/AttendanceRepo",
 } as const;

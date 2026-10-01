@@ -7,12 +7,10 @@ import {
 } from "#/employee/domain/employee.ts";
 import type { EDatabase } from "#/shared/errors.ts";
 
-export const departmentList = Effect.fn("departmentList")(function* (): Effect.fn.Return<
-	TDepartment[],
-	EDatabase,
-	TEmployeeRepoId
-> {
-	const employeeRepo = yield* EmployeeRepo;
-	const rows = yield* employeeRepo.listDepartments();
-	return rows.map(toDepartmentDto);
-});
+export const departmentList = Effect.fn("departmentList")(
+	function* (): Effect.fn.Return<TDepartment[], EDatabase, TEmployeeRepoId> {
+		const employeeRepo = yield* EmployeeRepo;
+		const rows = yield* employeeRepo.listDepartments();
+		return rows.map(toDepartmentDto);
+	},
+);

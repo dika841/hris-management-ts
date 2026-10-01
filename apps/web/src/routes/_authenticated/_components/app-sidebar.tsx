@@ -19,7 +19,13 @@ import {
 } from "@app/components/ui/sidebar";
 import { A } from "@mobily/ts-belt";
 import { Link, useMatchRoute } from "@tanstack/react-router";
-import { ChevronsUpDown, Command, LogOut, Moon, ShieldCheck } from "lucide-react";
+import {
+	ChevronsUpDown,
+	Command,
+	LogOut,
+	Moon,
+	ShieldCheck,
+} from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useSession } from "#/libs/auth/use-session.ts";
 import { useSessionSignOut } from "#/routes/_authenticated/_hooks/use-session-sign-out.ts";

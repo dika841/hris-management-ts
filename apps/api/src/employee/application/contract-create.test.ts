@@ -1,9 +1,18 @@
-import { CONTRACT_STATUS, CONTRACT_TYPE, type TContractCreateInput } from "@app/schemas";
+import {
+	CONTRACT_STATUS,
+	CONTRACT_TYPE,
+	type TContractCreateInput,
+} from "@app/schemas";
 import { Effect, Layer } from "effect";
 import { describe, expect, it, vi } from "vitest";
 import { contractCreate } from "#/employee/application/contract-create.ts";
-import { EmployeeRepo, type TEmployeeContractRow, type TEmployeeRepoId, type TEmployeeRow } from "#/employee/domain/employee.ts";
-import { ActivityRecorder, type TActivityRecorderId } from "#/shared/activity-recorder.ts";
+import {
+	EmployeeRepo,
+	type TEmployeeContractRow,
+	type TEmployeeRepo,
+	type TEmployeeRow,
+} from "#/employee/domain/employee.ts";
+import { ActivityRecorder } from "#/shared/activity-recorder.ts";
 import { EConflict } from "#/shared/errors.ts";
 
 const ACTOR_ID = "22222222-2222-4222-8222-222222222222";
@@ -72,8 +81,16 @@ describe("contractCreate", () => {
 			update: vi.fn(),
 		};
 		const layer = Layer.mergeAll(
-			Layer.succeed(EmployeeRepo, EmployeeRepo.of(repo as any)),
-			Layer.succeed(ActivityRecorder, ActivityRecorder.of({ insert: vi.fn().mockReturnValue(Effect.succeed(undefined)) })),
+			Layer.succeed(
+				EmployeeRepo,
+				EmployeeRepo.of(repo as unknown as TEmployeeRepo),
+			),
+			Layer.succeed(
+				ActivityRecorder,
+				ActivityRecorder.of({
+					insert: vi.fn().mockReturnValue(Effect.succeed(undefined)),
+				}),
+			),
 		);
 
 		const input: TContractCreateInput = {
@@ -90,14 +107,11 @@ describe("contractCreate", () => {
 		};
 
 		const error = await Effect.runPromise(
-			contractCreate(input, ACTOR_ID).pipe(
-				Effect.provide(layer),
-				Effect.flip,
-			),
+			contractCreate(input, ACTOR_ID).pipe(Effect.provide(layer), Effect.flip),
 		);
 
 		expect(error).toBeInstanceOf(EConflict);
-		expect((error as any).message).toContain("PP 35/2021");
+		expect((error as Error).message).toContain("PP 35/2021");
 		expect(repo.createContract).not.toHaveBeenCalled();
 	});
 
@@ -109,8 +123,16 @@ describe("contractCreate", () => {
 			update: vi.fn().mockReturnValue(Effect.succeed(mockEmployee)),
 		};
 		const layer = Layer.mergeAll(
-			Layer.succeed(EmployeeRepo, EmployeeRepo.of(repo as any)),
-			Layer.succeed(ActivityRecorder, ActivityRecorder.of({ insert: vi.fn().mockReturnValue(Effect.succeed(undefined)) })),
+			Layer.succeed(
+				EmployeeRepo,
+				EmployeeRepo.of(repo as unknown as TEmployeeRepo),
+			),
+			Layer.succeed(
+				ActivityRecorder,
+				ActivityRecorder.of({
+					insert: vi.fn().mockReturnValue(Effect.succeed(undefined)),
+				}),
+			),
 		);
 
 		const input: TContractCreateInput = {
