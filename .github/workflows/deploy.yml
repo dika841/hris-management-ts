@@ -40,7 +40,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy apps/web/dist --project-name=hris-management-web ${{ github.event.inputs.environment == 'production' && '--branch=main' || '' }}
+          command: pages deploy apps/web/dist --project-name=hris-management-web ${{ (github.ref == 'refs/heads/main' || github.event.inputs.environment == 'production') && '--branch=main' || '' }}
 
   notify:
     name: Deployment summary
