@@ -17,10 +17,10 @@ import {
 	Coins,
 	FileText,
 	Info,
-	Sparkles,
 } from "lucide-react";
 import { useEffect, useState, type FC, type ReactElement } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { useI18n } from "#/libs/i18n/index.ts";
 import { orpc } from "#/libs/orpc/client.ts";
 
 export const TaxSimulatorWidget: FC = (): ReactElement => {
@@ -28,10 +28,10 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 	const [allowances, setAllowances] = useState<number>(1_500_000);
 	const [ptkpCode, setPtkpCode] = useState<TPtkpCode>(PTKP_CODE.TK_0);
 	const [taxMethod, setTaxMethod] = useState<TTaxMethod>("gross");
+	const { t, isIndonesian } = useI18n();
 
 	const simulateMutation = useMutation(orpc.payroll.simulate.mutationOptions());
 
-	// Inisialisasi simulasi pertama kali atau saat form disubmit
 	const runSimulation = () => {
 		simulateMutation.mutate({
 			basicSalary,
@@ -54,6 +54,24 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 
 	const result = simulateMutation.data;
 
+	const taxMethods = [
+		{
+			id: "gross" as const,
+			label: "Gross",
+			desc: isIndonesian ? "Karyawan bayar" : "Employee pays",
+		},
+		{
+			id: "gross_up" as const,
+			label: "Gross-Up",
+			desc: isIndonesian ? "Tunjangan pajak" : "Tax allowance",
+		},
+		{
+			id: "nett" as const,
+			label: "Nett",
+			desc: isIndonesian ? "Ditanggung PT" : "Company bears",
+		},
+	];
+
 	return (
 		<Card className="border border-border/60 bg-card overflow-hidden">
 			<CardHeader className="bg-muted/30 pb-4 border-b border-border/40">
@@ -64,10 +82,10 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 						</div>
 						<div>
 							<CardTitle className="text-base font-semibold">
-								Live PPh 21 TER Simulator
+								{t("dashboard.simulatorTitle")}
 							</CardTitle>
 							<CardDescription className="text-xs">
-								Regulasi Resmi PMK 168/2023 & BPJS Ketenagakerjaan / Kesehatan
+								{t("dashboard.simulatorDesc")}
 							</CardDescription>
 						</div>
 					</div>
@@ -75,19 +93,17 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 						variant="outline"
 						className="self-start sm:self-auto gap-1 text-xs border border-border/60 bg-background"
 					>
-						<Sparkles className="size-3 text-amber-500" />
-						Instant XAI Calculation
+						{t("dashboard.instantXai")}
 					</Badge>
 				</div>
 			</CardHeader>
 
 			<CardContent className="p-5">
 				<div className="grid gap-6 lg:grid-cols-12">
-					{/* Sisi Kiri: Input Parameter */}
 					<div className="flex flex-col gap-4 lg:col-span-5">
 						<div className="space-y-1.5">
 							<Label htmlFor="basic-salary" className="text-xs font-medium">
-								Gaji Pokok Bulanan (IDR)
+								{t("dashboard.basicSalaryLabel")}
 							</Label>
 							<Input
 								id="basic-salary"
@@ -102,7 +118,7 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 
 						<div className="space-y-1.5">
 							<Label htmlFor="allowances" className="text-xs font-medium">
-								Tunjangan Tetap / Lainnya (IDR)
+								{t("dashboard.allowancesLabel")}
 							</Label>
 							<Input
 								id="allowances"
@@ -117,7 +133,7 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 
 						<div className="space-y-1.5">
 							<Label htmlFor="ptkp-status" className="text-xs font-medium">
-								Status PTKP Karyawan
+								{t("dashboard.ptkpStatusLabel")}
 							</Label>
 							<div className="grid grid-cols-4 gap-1.5">
 								{(
@@ -136,11 +152,10 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 										key={code}
 										type="button"
 										onClick={() => setPtkpCode(code)}
-										className={`py-1.5 px-2 rounded-md text-xs font-medium border transition-colors ${
-											ptkpCode === code
-												? "bg-primary text-primary-foreground border-primary"
-												: "bg-muted/40 text-muted-foreground border-border/60 hover:bg-muted"
-										}`}
+										className={`py-1.5 px-2 rounded-md text-xs font-medium border transition-colors ${ptkpCode === code
+											? "bg-primary text-primary-foreground border-primary"
+											: "bg-muted/40 text-muted-foreground border-border/60 hover:bg-muted"
+											}`}
 									>
 										{code}
 									</button>
@@ -150,29 +165,18 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 
 						<div className="space-y-1.5">
 							<Label className="text-xs font-medium">
-								Metode Pemotongan Pajak
+								{t("dashboard.taxMethodLabel")}
 							</Label>
 							<div className="grid grid-cols-3 gap-2">
-								{(
-									[
-										{ id: "gross", label: "Gross", desc: "Karyawan bayar" },
-										{
-											id: "gross_up",
-											label: "Gross-Up",
-											desc: "Tunjangan pajak",
-										},
-										{ id: "nett", label: "Nett", desc: "Ditanggung PT" },
-									] as const
-								).map((method) => (
+								{taxMethods.map((method) => (
 									<button
 										key={method.id}
 										type="button"
 										onClick={() => setTaxMethod(method.id)}
-										className={`p-2 rounded-lg text-left border transition-all ${
-											taxMethod === method.id
-												? "bg-primary/5 border-primary text-primary dark:bg-primary/10"
-												: "bg-muted/20 border-border/60 text-muted-foreground hover:bg-muted/40"
-										}`}
+										className={`p-2 rounded-lg text-left border transition-all ${taxMethod === method.id
+											? "bg-primary/5 border-primary text-primary dark:bg-primary/10"
+											: "bg-muted/20 border-border/60 text-muted-foreground hover:bg-muted/40"
+											}`}
 									>
 										<div className="text-xs font-semibold">{method.label}</div>
 										<div className="text-[10px] text-muted-foreground">
@@ -191,8 +195,8 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 						>
 							<Coins className="size-4" />
 							{simulateMutation.isPending
-								? "Menghitung…"
-								: "Kalkulasi Ulang Simulasi"}
+								? t("dashboard.calculating")
+								: t("dashboard.recalculateSimulation")}
 						</Button>
 					</div>
 
@@ -201,14 +205,14 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 						<div>
 							<div className="flex items-center justify-between pb-3 border-b border-border/40">
 								<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-									Hasil Komputasi Penggajian
+									{t("dashboard.computationResult")}
 								</span>
 								{result && (
 									<Badge
 										variant="outline"
 										className="text-xs font-medium bg-background border-primary/40 text-primary"
 									>
-										{result.tax.terCategory} (Tarif{" "}
+										{result.tax.terCategory} ({t("dashboard.rate")}{" "}
 										{(result.tax.terRate * 100).toFixed(2)}%)
 									</Badge>
 								)}
@@ -220,7 +224,7 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 									<div className="p-3.5 rounded-lg bg-card border border-border/60 shadow-xs">
 										<div className="flex items-center justify-between">
 											<span className="text-xs text-muted-foreground font-medium">
-												Gaji Bersih Diterima (Take Home Pay)
+												{t("dashboard.takeHomePayLabel")}
 											</span>
 											<span className="text-xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
 												{formatRupiah(result.takeHomePay)}
@@ -228,34 +232,35 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 										</div>
 										<div className="mt-1 text-[11px] text-muted-foreground flex justify-between">
 											<span>
-												Total Bruto Kas: {formatRupiah(result.grossTotal)}
+												{t("dashboard.totalGrossCash")}:{" "}
+												{formatRupiah(result.grossTotal)}
 											</span>
 											<span>
-												Potongan Karyawan:{" "}
+												{t("dashboard.employeeDeductions")}:{" "}
 												{formatRupiah(result.employeeDeductions)}
 											</span>
 										</div>
 									</div>
 
-									{/* Rincian Komponen Pajak & BPJS */}
 									<div className="grid grid-cols-2 gap-2.5 text-xs">
 										<div className="p-2.5 rounded-lg bg-card/60 border border-border/40">
 											<div className="text-muted-foreground text-[11px]">
-												PPh 21 Terutang
+												{t("dashboard.payableTax")}
 											</div>
 											<div className="font-semibold text-foreground mt-0.5">
 												{formatRupiah(result.tax.pph21Monthly)}
 											</div>
 											{result.taxAllowance > 0 && (
 												<div className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-0.5">
-													+ Tunj. Pajak: {formatRupiah(result.taxAllowance)}
+													+ {t("dashboard.taxAllowance")}:{" "}
+													{formatRupiah(result.taxAllowance)}
 												</div>
 											)}
 										</div>
 
 										<div className="p-2.5 rounded-lg bg-card/60 border border-border/40">
 											<div className="text-muted-foreground text-[11px]">
-												BPJS Karyawan (1%+2%+1%)
+												{t("dashboard.employeeBpjs")}
 											</div>
 											<div className="font-semibold text-foreground mt-0.5">
 												{formatRupiah(result.bpjs.totalEmployeeBpjs)}
@@ -268,7 +273,7 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 
 										<div className="p-2.5 rounded-lg bg-card/60 border border-border/40">
 											<div className="text-muted-foreground text-[11px]">
-												BPJS Perusahaan (Beban PT)
+												{t("dashboard.companyBpjs")}
 											</div>
 											<div className="font-semibold text-foreground mt-0.5">
 												{formatRupiah(result.bpjs.totalCompanyBpjs)}
@@ -281,18 +286,17 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 
 										<div className="p-2.5 rounded-lg bg-card/60 border border-border/40">
 											<div className="text-muted-foreground text-[11px]">
-												Kategori & Aturan
+												{t("dashboard.categoryRule")}
 											</div>
 											<div className="font-semibold text-foreground mt-0.5">
 												{result.tax.ptkpCode} &rarr; {result.tax.terCategory}
 											</div>
 											<div className="text-[10px] text-muted-foreground mt-0.5">
-												Metode: {result.tax.taxMethod.toUpperCase()}
+												{t("dashboard.method")}:{" "}
+												{result.tax.taxMethod.toUpperCase()}
 											</div>
 										</div>
 									</div>
-
-									{/* Catatan Explainable AI (XAI) */}
 									<div className="p-3 rounded-lg bg-card border border-border/60 text-xs flex gap-2.5 items-start">
 										<Info className="size-4 text-blue-500 shrink-0 mt-0.5" />
 										<p className="text-muted-foreground leading-relaxed text-[11px]">
@@ -309,8 +313,7 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 										<FileText className="size-5" />
 									</div>
 									<p className="text-xs text-muted-foreground max-w-xs mb-3">
-										Klik tombol "Kalkulasi Ulang Simulasi" di sebelah kiri untuk
-										melihat rincian kalkulasi instan.
+										{t("dashboard.simulatorEmptyPrompt")}
 									</p>
 									<Button
 										type="button"
@@ -319,8 +322,7 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 										onClick={runSimulation}
 										className="text-xs gap-1.5"
 									>
-										<Sparkles className="size-3.5 text-amber-500" />
-										Jalankan Simulasi Sekarang
+										{t("dashboard.runSimulationNow")}
 									</Button>
 								</div>
 							)}
@@ -328,7 +330,8 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 
 						<div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between text-[11px] text-muted-foreground">
 							<span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-								<Check className="size-3" /> Formula 100% Sesuai PMK 168/2023
+								<Check className="size-3" />{" "}
+								{t("dashboard.pmkFormulaCompliant")}
 							</span>
 							<span>PP 58/2023 & PP 35/2021</span>
 						</div>

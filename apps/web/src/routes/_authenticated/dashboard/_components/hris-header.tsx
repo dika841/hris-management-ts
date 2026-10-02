@@ -1,26 +1,28 @@
 import { Badge } from "@app/components/ui/badge";
 import { CheckCircle2, Cpu, ShieldCheck } from "lucide-react";
 import type { FC, ReactElement } from "react";
+import { useI18n } from "#/libs/i18n/index.ts";
 
 export const HrisHeader: FC = (): ReactElement => {
+	const { t } = useI18n();
+
 	return (
-		<div className="flex flex-col gap-3 pb-2 md:flex-row md:items-center md:justify-between border-b border-border/40 pb-5">
+		<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between border-b border-border/40 pb-5">
 			<div>
 				<div className="flex items-center gap-2 mb-1">
 					<h1 className="text-2xl font-bold tracking-tight text-foreground">
-						Human Capital & Intelligence Dashboard
+						{t("dashboard.title")}
 					</h1>
 					<Badge
 						variant="outline"
 						className="gap-1.5 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium text-xs px-2 py-0.5"
 					>
 						<span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-						AI Active
+						{t("dashboard.aiActive")}
 					</Badge>
 				</div>
 				<p className="text-sm text-muted-foreground">
-					Autonomous agentic workflows, PPh 21 TER (PMK 168/2023) compliance,
-					and predictive workforce retention intelligence.
+					{t("dashboard.subtitle")}
 				</p>
 			</div>
 

@@ -1,12 +1,12 @@
 import { Guard } from "@app/components/guard/guard";
 import { Button } from "@app/components/ui/button";
-import { PAYROLL_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import { payrollPeriodListInputSchema } from "@app/schemas";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Coins, Plus } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { checkRoutePermissions } from "#/libs/auth/route-guard.ts";
+import { useI18n } from "#/libs/i18n/index.ts";
 import { searchLenient } from "#/libs/table/search-lenient.ts";
 import { PayrollPeriodTable } from "#/routes/_authenticated/payroll/_components/payroll-period-table.tsx";
 import {
@@ -18,6 +18,7 @@ const payrollSearchValidate = searchLenient(payrollPeriodListInputSchema);
 
 const PayrollPage: FC = (): ReactElement => {
 	const { data } = usePayrollPeriodList();
+	const { t } = useI18n();
 
 	return (
 		<div className="flex flex-col gap-6">
@@ -29,12 +30,11 @@ const PayrollPage: FC = (): ReactElement => {
 							<Coins className="size-4.5" />
 						</div>
 						<h1 className="text-xl font-bold tracking-tight text-foreground">
-							{PAYROLL_MESSAGE.TITLE}
+							{t("payroll.title")}
 						</h1>
 					</div>
 					<p className="mt-1 text-xs text-muted-foreground">
-						Kalkulasi otomatis PPh 21 TER (PMK 168/2023), BPJS Ketenagakerjaan
-						&amp; Kesehatan, dan rekonsiliasi akhir tahun
+						{t("payroll.subtitle")}
 					</p>
 				</div>
 
@@ -42,7 +42,7 @@ const PayrollPage: FC = (): ReactElement => {
 					<Button size="sm" asChild className="gap-1.5 text-xs font-semibold">
 						<Link to="/payroll/create">
 							<Plus className="size-3.5" />
-							{PAYROLL_MESSAGE.NEW_PERIOD}
+							{t("payroll.newPeriod")}
 						</Link>
 					</Button>
 				</Guard>

@@ -1,9 +1,9 @@
 import { checkRoutePermissions } from "#/libs/auth/route-guard.ts";
-import { ACTIVITY_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import { activityListInputSchema } from "@app/schemas";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
+import { useI18n } from "#/libs/i18n/index.ts";
 import { searchLenient } from "#/libs/table/search-lenient.ts";
 import { ActivityTable } from "#/routes/_authenticated/activity/_components/activity-table.tsx";
 import {
@@ -18,10 +18,11 @@ const ActivityPage: FC = (): ReactElement => {
 	const { data } = useActivityList();
 	const search = Route.useSearch();
 	const onChange = useActivityListChange();
+	const { t } = useI18n();
 
 	return (
 		<div className="flex flex-col gap-6">
-			<h1 className="text-xl font-semibold">{ACTIVITY_MESSAGE.TITLE}</h1>
+			<h1 className="text-xl font-semibold">{t("activity.title")}</h1>
 			<ActivityTable
 				list={data}
 				sortBy={search.sortBy}

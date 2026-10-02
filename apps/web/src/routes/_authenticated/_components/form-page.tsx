@@ -22,7 +22,7 @@ type TFormPageProps = {
 };
 
 export const FormPage: FC<TFormPageProps> = (props): ReactElement => (
-	<div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
+	<div className="flex w-full flex-col gap-6">
 		<Breadcrumb>
 			<BreadcrumbList>
 				<BreadcrumbItem>

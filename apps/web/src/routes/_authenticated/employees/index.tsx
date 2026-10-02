@@ -1,12 +1,12 @@
 import { Guard } from "@app/components/guard/guard";
 import { Button } from "@app/components/ui/button";
-import { EMPLOYEE_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import { employeeListInputSchema } from "@app/schemas";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus, Users } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { checkRoutePermissions } from "#/libs/auth/route-guard.ts";
+import { useI18n } from "#/libs/i18n/index.ts";
 import { searchLenient } from "#/libs/table/search-lenient.ts";
 import { EmployeeTable } from "#/routes/_authenticated/employees/_components/employee-table.tsx";
 import {
@@ -18,6 +18,7 @@ const employeeSearchValidate = searchLenient(employeeListInputSchema);
 
 const EmployeesPage: FC = (): ReactElement => {
 	const { data } = useEmployeeList();
+	const { t } = useI18n();
 
 	return (
 		<div className="flex flex-col gap-6">
@@ -29,12 +30,11 @@ const EmployeesPage: FC = (): ReactElement => {
 							<Users className="size-4.5" />
 						</div>
 						<h1 className="text-xl font-bold tracking-tight text-foreground">
-							{EMPLOYEE_MESSAGE.TITLE}
+							{t("employee.title")}
 						</h1>
 					</div>
 					<p className="mt-1 text-xs text-muted-foreground">
-						Manajemen data kepegawaian, kepatuhan perpajakan PMK 168/2023, dan
-						proteksi data pribadi UU PDP
+						{t("employee.subtitle")}
 					</p>
 				</div>
 
@@ -42,7 +42,7 @@ const EmployeesPage: FC = (): ReactElement => {
 					<Button size="sm" asChild className="gap-1.5 text-xs font-semibold">
 						<Link to="/employees/create">
 							<Plus className="size-3.5" />
-							{EMPLOYEE_MESSAGE.NEW_EMPLOYEE}
+							{t("employee.newEmployee")}
 						</Link>
 					</Button>
 				</Guard>
