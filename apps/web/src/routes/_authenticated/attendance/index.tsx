@@ -1,6 +1,5 @@
 import { Guard } from "@app/components/guard/guard";
 import { Button } from "@app/components/ui/button";
-import { ATTENDANCE_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
@@ -13,6 +12,7 @@ import {
 } from "lucide-react";
 import { useState, type FC, type ReactElement } from "react";
 import { checkRoutePermissions } from "#/libs/auth/route-guard.ts";
+import { useI18n } from "#/libs/i18n/index.ts";
 import { AttendanceTable } from "./_components/attendance-table.tsx";
 import { HolidayTable } from "./_components/holiday-table.tsx";
 import { LeaveRequestTable } from "./_components/leave-request-table.tsx";
@@ -32,6 +32,7 @@ const AttendancePage: FC = (): ReactElement => {
 	const [activeTab, setActiveTab] = useState<
 		"attendance" | "leave" | "overtime" | "holidays"
 	>("attendance");
+	const { t } = useI18n();
 
 	const attendanceQuery = useAttendanceList({ page: 1, pageSize: 50 });
 	const leaveQuery = useLeaveRequestList({ page: 1, pageSize: 50 });
@@ -48,12 +49,11 @@ const AttendancePage: FC = (): ReactElement => {
 							<CalendarCheck className="size-4.5" />
 						</div>
 						<h1 className="text-xl font-bold tracking-tight text-foreground">
-							{ATTENDANCE_MESSAGE.TITLE}
+							{t("attendance.title")}
 						</h1>
 					</div>
 					<p className="mt-1 text-xs text-muted-foreground">
-						Manajemen terpadu presensi harian, cuti melahirkan (UU KIA 2024),
-						SPL lembur bertingkat (PP 35/2021), dan kalender hari libur
+						{t("attendance.subtitle")}
 					</p>
 				</div>
 
@@ -68,7 +68,7 @@ const AttendancePage: FC = (): ReactElement => {
 							>
 								<Link to="/attendance/log/create">
 									<Plus className="size-3.5" />
-									Catat Presensi Baru
+									{t("attendance.actions.recordAttendance")}
 								</Link>
 							</Button>
 						</Guard>
@@ -83,7 +83,7 @@ const AttendancePage: FC = (): ReactElement => {
 							>
 								<Link to="/attendance/leave/create">
 									<Plus className="size-3.5" />
-									Ajukan Cuti Baru
+									{t("attendance.actions.requestLeave")}
 								</Link>
 							</Button>
 						</Guard>
@@ -98,7 +98,7 @@ const AttendancePage: FC = (): ReactElement => {
 							>
 								<Link to="/attendance/overtime/create">
 									<Plus className="size-3.5" />
-									Buat SPL Lembur Baru
+									{t("attendance.actions.createOvertime")}
 								</Link>
 							</Button>
 						</Guard>
@@ -113,7 +113,7 @@ const AttendancePage: FC = (): ReactElement => {
 							>
 								<Link to="/attendance/holiday/create">
 									<Plus className="size-3.5" />
-									Tambah Hari Libur
+									{t("attendance.actions.addHoliday")}
 								</Link>
 							</Button>
 						</Guard>
@@ -130,7 +130,8 @@ const AttendancePage: FC = (): ReactElement => {
 					className="text-xs font-medium gap-1.5"
 				>
 					<Clock className="size-3.5" />
-					Presensi Harian ({attendanceQuery.data.items.length})
+					{t("attendance.tabs.attendance")} ({attendanceQuery.data.items.length}
+					)
 				</Button>
 				<Button
 					variant={activeTab === "leave" ? "secondary" : "ghost"}
@@ -139,7 +140,7 @@ const AttendancePage: FC = (): ReactElement => {
 					className="text-xs font-medium gap-1.5"
 				>
 					<FileText className="size-3.5" />
-					Pengajuan Cuti ({leaveQuery.data.items.length})
+					{t("attendance.tabs.leave")} ({leaveQuery.data.items.length})
 				</Button>
 				<Button
 					variant={activeTab === "overtime" ? "secondary" : "ghost"}
@@ -148,7 +149,7 @@ const AttendancePage: FC = (): ReactElement => {
 					className="text-xs font-medium gap-1.5"
 				>
 					<Sparkles className="size-3.5" />
-					Lembur / SPL ({overtimeQuery.data.items.length})
+					{t("attendance.tabs.overtime")} ({overtimeQuery.data.items.length})
 				</Button>
 				<Button
 					variant={activeTab === "holidays" ? "secondary" : "ghost"}
@@ -157,7 +158,7 @@ const AttendancePage: FC = (): ReactElement => {
 					className="text-xs font-medium gap-1.5"
 				>
 					<Calendar className="size-3.5" />
-					Hari Libur ({holidayQuery.data.length})
+					{t("attendance.tabs.holidays")} ({holidayQuery.data.length})
 				</Button>
 			</div>
 

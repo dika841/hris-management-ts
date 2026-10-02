@@ -8,11 +8,13 @@ import {
 } from "@app/components/ui/card";
 import { CheckCircle2, Database, Layers, ShieldCheck } from "lucide-react";
 import type { FC, ReactElement } from "react";
+import { useI18n } from "#/libs/i18n/index.ts";
 import { useDashboardEmployees } from "#/routes/_authenticated/dashboard/_hooks/use-dashboard.ts";
 
 export const ComplianceOverviewCard: FC = (): ReactElement => {
 	const employeeQuery = useDashboardEmployees();
 	const employees = employeeQuery.data?.items ?? [];
+	const { t } = useI18n();
 
 	const total = employees.length;
 	const consentedCount = employees.filter((e) => e.pdpConsentGiven).length;
@@ -31,17 +33,17 @@ export const ComplianceOverviewCard: FC = (): ReactElement => {
 				<div className="flex items-center justify-between">
 					<CardTitle className="text-sm font-semibold flex items-center gap-2">
 						<ShieldCheck className="size-4 text-emerald-500" />
-						Governance & Ecosystem Health
+						{t("dashboard.governanceTitle")}
 					</CardTitle>
 					<Badge
 						variant="outline"
 						className="text-[10px] font-medium border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5"
 					>
-						Audit Clean
+						{t("dashboard.auditClean")}
 					</Badge>
 				</div>
 				<CardDescription className="text-xs">
-					Compliance tracking under UU PDP No. 27/2022 & SAP S/4HANA OData
+					{t("dashboard.governanceDesc")}
 				</CardDescription>
 			</CardHeader>
 
@@ -51,7 +53,7 @@ export const ComplianceOverviewCard: FC = (): ReactElement => {
 					<div className="flex items-center justify-between text-xs mb-1.5">
 						<span className="text-muted-foreground font-medium flex items-center gap-1.5">
 							<CheckCircle2 className="size-3.5 text-blue-500" />
-							UU PDP Consent Rate
+							{t("dashboard.pdpConsentRate")}
 						</span>
 						<span className="font-semibold text-foreground">
 							{consentRate}% ({consentedCount}/{total || 1})
@@ -64,7 +66,7 @@ export const ComplianceOverviewCard: FC = (): ReactElement => {
 						/>
 					</div>
 					<p className="mt-1 text-[10px] text-muted-foreground">
-						Right to Erasure & Data Minimization enforced by NeMo Guardrails
+						{t("dashboard.pdpGuardrailDesc")}
 					</p>
 				</div>
 
@@ -72,7 +74,7 @@ export const ComplianceOverviewCard: FC = (): ReactElement => {
 				<div className="pt-2 border-t border-border/40">
 					<div className="text-xs text-muted-foreground font-medium mb-2 flex items-center gap-1.5">
 						<Layers className="size-3.5 text-indigo-500" />
-						Skema Penggajian Karyawan
+						{t("dashboard.payrollScheme")}
 					</div>
 					<div className="grid grid-cols-3 gap-2 text-center text-xs">
 						<div className="p-2 rounded-md bg-muted/40 border border-border/40">
@@ -111,7 +113,7 @@ export const ComplianceOverviewCard: FC = (): ReactElement => {
 						variant="outline"
 						className="text-[10px] font-normal border border-border/60 bg-muted/40 text-emerald-600 dark:text-emerald-400"
 					>
-						Live Sync
+						{t("dashboard.liveSync")}
 					</Badge>
 				</div>
 			</CardContent>

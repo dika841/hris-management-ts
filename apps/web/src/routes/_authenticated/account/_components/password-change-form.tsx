@@ -5,29 +5,30 @@ import { Label } from "@app/components/ui/label";
 import type { FC, ReactElement } from "react";
 import { usePasswordChangeForm } from "#/routes/_authenticated/account/_hooks/use-password-change-form.ts";
 import { Card, CardContent } from "@app/components/ui/card";
-import { AUTH_MESSAGE } from "@app/messages";
+import { useI18n } from "#/libs/i18n/index.ts";
 import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 
 export const PasswordChangeForm: FC = (): ReactElement => {
 	const { form, serverError, onSubmit, confirm, isPending } =
 		usePasswordChangeForm();
+	const { t } = useI18n();
 
 	return (
 		<Card>
 			<CardContent>
 				<form onSubmit={onSubmit} className="flex flex-col gap-4">
-					<h2 className="font-medium">{AUTH_MESSAGE.PASSWORD_CHANGE_TITLE}</h2>
+					<h2 className="font-medium">{t("auth.passwordChangeTitle")}</h2>
 					<form.Field name="currentPassword">
 						{(field) => (
 							<div className="flex flex-col gap-1">
 								<Label htmlFor={field.name}>
-									{AUTH_MESSAGE.FIELD_CURRENT_PASSWORD}
+									{t("auth.fieldCurrentPassword")}
 								</Label>
 								<Input
 									id={field.name}
 									type="password"
 									autoComplete="current-password"
-									placeholder={AUTH_MESSAGE.CURRENT_PASSWORD_PLACEHOLDER}
+									placeholder={t("auth.currentPasswordPlaceholder")}
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(event) => field.handleChange(event.target.value)}
@@ -39,14 +40,12 @@ export const PasswordChangeForm: FC = (): ReactElement => {
 					<form.Field name="newPassword">
 						{(field) => (
 							<div className="flex flex-col gap-1">
-								<Label htmlFor={field.name}>
-									{AUTH_MESSAGE.FIELD_NEW_PASSWORD}
-								</Label>
+								<Label htmlFor={field.name}>{t("auth.fieldNewPassword")}</Label>
 								<Input
 									id={field.name}
 									type="password"
 									autoComplete="new-password"
-									placeholder={AUTH_MESSAGE.NEW_PASSWORD_PLACEHOLDER}
+									placeholder={t("auth.newPasswordPlaceholder")}
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(event) => field.handleChange(event.target.value)}
@@ -59,13 +58,13 @@ export const PasswordChangeForm: FC = (): ReactElement => {
 						{(field) => (
 							<div className="flex flex-col gap-1">
 								<Label htmlFor={field.name}>
-									{AUTH_MESSAGE.FIELD_CONFIRM_PASSWORD}
+									{t("auth.fieldConfirmPassword")}
 								</Label>
 								<Input
 									id={field.name}
 									type="password"
 									autoComplete="new-password"
-									placeholder={AUTH_MESSAGE.CONFIRM_PASSWORD_PLACEHOLDER}
+									placeholder={t("auth.confirmPasswordPlaceholder")}
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(event) => field.handleChange(event.target.value)}
@@ -76,15 +75,13 @@ export const PasswordChangeForm: FC = (): ReactElement => {
 					</form.Field>
 					<FieldError errors={serverError ? [{ message: serverError }] : []} />
 					<Button type="submit" disabled={isPending} className="self-start">
-						{isPending
-							? AUTH_MESSAGE.PASSWORD_UPDATING
-							: AUTH_MESSAGE.PASSWORD_UPDATE}
+						{isPending ? t("auth.passwordUpdating") : t("auth.passwordUpdate")}
 					</Button>
 				</form>
 				<ConfirmDialog
 					open={confirm.open}
-					title={AUTH_MESSAGE.PASSWORD_CHANGE_CONFIRM_TITLE}
-					description={AUTH_MESSAGE.PASSWORD_CHANGE_CONFIRM_DESCRIPTION}
+					title={t("auth.passwordChangeConfirmTitle")}
+					description={t("auth.passwordChangeConfirmDescription")}
 					onOpenChange={confirm.onOpenChange}
 					onConfirm={confirm.onConfirm}
 				/>

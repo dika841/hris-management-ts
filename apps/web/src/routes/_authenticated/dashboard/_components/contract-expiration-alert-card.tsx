@@ -10,10 +10,12 @@ import { formatDate } from "@app/format";
 import { Link } from "@tanstack/react-router";
 import { AlertTriangle, ArrowRight, CheckCircle2, Clock } from "lucide-react";
 import type { FC, ReactElement } from "react";
+import { useI18n } from "#/libs/i18n/index.ts";
 import { useExpiringContracts } from "#/routes/_authenticated/employees/_hooks/use-employees.ts";
 
 export const ContractExpirationAlertCard: FC = (): ReactElement => {
 	const { data: expiringContracts } = useExpiringContracts(30);
+	const { t } = useI18n();
 
 	return (
 		<Card className="border-border/60">
@@ -21,24 +23,21 @@ export const ContractExpirationAlertCard: FC = (): ReactElement => {
 				<div className="flex items-center gap-2">
 					<AlertTriangle className="size-4 text-amber-500" />
 					<CardTitle className="text-sm font-semibold">
-						Peringatan Kontrak PKWT (30 Hari)
+						{t("dashboard.contractExpirationTitle")}
 					</CardTitle>
 				</div>
 				<Badge
 					variant={expiringContracts.length > 0 ? "destructive" : "outline"}
 					className="text-[11px]"
 				>
-					{expiringContracts.length} Menjelang Berakhir
+					{expiringContracts.length} {t("dashboard.contractExpiringSoon")}
 				</Badge>
 			</CardHeader>
 			<CardContent className="space-y-3">
 				{expiringContracts.length === 0 ? (
 					<div className="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3 text-xs text-emerald-800 dark:text-emerald-300">
 						<CheckCircle2 className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-						<span>
-							Seluruh kontrak PKWT aktif aman. Tidak ada yang kedaluwarsa dalam
-							30 hari ke depan.
-						</span>
+						<span>{t("dashboard.contractAllSafe")}</span>
 					</div>
 				) : (
 					<div className="space-y-2">
@@ -59,7 +58,7 @@ export const ContractExpirationAlertCard: FC = (): ReactElement => {
 									<div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
 										<Clock className="size-3 text-amber-500" />
 										<span>
-											Berakhir{" "}
+											{t("dashboard.contractExpires")}{" "}
 											{contract.endDate ? formatDate(contract.endDate) : "-"}
 										</span>
 										<span>•</span>

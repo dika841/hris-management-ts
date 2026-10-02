@@ -28,10 +28,10 @@ import {
 } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useSession } from "#/libs/auth/use-session.ts";
+import { useI18n, LanguageSwitcher } from "#/libs/i18n/index.ts";
 import { useSessionSignOut } from "#/routes/_authenticated/_hooks/use-session-sign-out.ts";
 import { useTheme } from "#/routes/_authenticated/_hooks/use-theme.ts";
 import { Switch } from "@app/components/ui/switch";
-import { APP_MESSAGE } from "@app/messages";
 import { useVisibleNav } from "#/routes/_authenticated/_hooks/use-visible-nav.ts";
 
 export const AppSidebar: FC = (): ReactElement => {
@@ -40,6 +40,7 @@ export const AppSidebar: FC = (): ReactElement => {
 	const navItems = useVisibleNav();
 	const matchRoute = useMatchRoute();
 	const theme = useTheme();
+	const { t } = useI18n();
 
 	return (
 		<Sidebar collapsible="icon">
@@ -52,9 +53,7 @@ export const AppSidebar: FC = (): ReactElement => {
 									<ShieldCheck className="size-4.5" />
 								</div>
 								<div className="grid flex-1 text-left text-sm leading-tight">
-									<span className="truncate font-medium">
-										{APP_MESSAGE.NAME}
-									</span>
+									<span className="truncate font-medium">{t("app.name")}</span>
 								</div>
 							</Link>
 						</SidebarMenuButton>
@@ -63,7 +62,7 @@ export const AppSidebar: FC = (): ReactElement => {
 			</SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup>
-					<SidebarGroupLabel>{APP_MESSAGE.NAVIGATION}</SidebarGroupLabel>
+					<SidebarGroupLabel>{t("app.navigation")}</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
 							{A.map(navItems, (item) => (
@@ -112,16 +111,17 @@ export const AppSidebar: FC = (): ReactElement => {
 									}}
 								>
 									<Moon />
-									{APP_MESSAGE.DARK_MODE}
+									{t("app.darkMode")}
 									<Switch
 										checked={theme.isDark}
 										tabIndex={-1}
 										className="pointer-events-none ml-auto"
 									/>
 								</DropdownMenuItem>
+								<LanguageSwitcher variant="menu-item" />
 								<DropdownMenuItem onClick={() => void signOut()}>
 									<LogOut />
-									Sign out
+									{t("app.signOut")}
 								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>

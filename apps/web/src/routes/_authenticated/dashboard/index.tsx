@@ -16,24 +16,14 @@ const DashboardPage: FC = (): ReactElement => {
 
 	return (
 		<div className="flex flex-col gap-6">
-			{/* Executive & Regulatory Header */}
 			<HrisHeader />
-
-			{/* High-Impact Stat Cards */}
 			<HrisStatCards />
-
-			{/* Interactive Live PPh 21 TER (PMK 168/2023) Simulator */}
 			<TaxSimulatorWidget />
-
-			{/* Operational Grid */}
 			<div className="grid gap-6 lg:grid-cols-12">
-				{/* Kolom Kiri: Payroll Runs & Activity Audit Log */}
 				<div className="flex flex-col gap-6 lg:col-span-7">
 					<RecentPayrollPeriodsCard />
 					<ActivitySection />
 				</div>
-
-				{/* Kolom Kanan: Governance, Quick Actions, System Health */}
 				<div className="flex flex-col gap-6 lg:col-span-5">
 					<ContractExpirationAlertCard />
 					<ComplianceOverviewCard />

@@ -12,6 +12,7 @@ import type { TEmployee, TEmployeeList } from "@app/schemas";
 import { Link } from "@tanstack/react-router";
 import { Eye, Trash2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
+import { useI18n } from "#/libs/i18n/index.ts";
 import {
 	EmploymentStatusBadge,
 	PdpConsentBadge,
@@ -27,9 +28,10 @@ export const EmployeeTable: FC<TEmployeeTableProps> = ({
 	list,
 }): ReactElement => {
 	const deleteMutation = useEmployeeDelete();
+	const { t, isIndonesian } = useI18n();
 
 	const handleDelete = (id: string, name: string) => {
-		if (window.confirm(`Hapus data karyawan ${name}?`)) {
+		if (window.confirm(t("employee.deleteConfirm", { name }))) {
 			deleteMutation.mutate({ id });
 		}
 	};
@@ -40,26 +42,28 @@ export const EmployeeTable: FC<TEmployeeTableProps> = ({
 				<TableHeader>
 					<TableRow className="border-b border-border/40 bg-muted/30">
 						<TableHead className="text-xs font-semibold">
-							Kode Karyawan
+							{t("employee.code")}
 						</TableHead>
 						<TableHead className="text-xs font-semibold">
-							Nama & Email
+							{isIndonesian ? "Nama & Email" : "Name & Email"}
 						</TableHead>
 						<TableHead className="text-xs font-semibold">
-							Departemen & Role
+							{isIndonesian ? "Departemen & Jabatan" : "Department & Position"}
 						</TableHead>
-						<TableHead className="text-xs font-semibold">Status</TableHead>
 						<TableHead className="text-xs font-semibold">
-							Pajak (PTKP & Metode)
+							{t("app.status")}
+						</TableHead>
+						<TableHead className="text-xs font-semibold">
+							{isIndonesian ? "Pajak (PTKP & Metode)" : "Tax (PTKP & Method)"}
 						</TableHead>
 						<TableHead className="text-xs font-semibold text-right">
-							Gaji Pokok
+							{isIndonesian ? "Gaji Pokok" : "Basic Salary"}
 						</TableHead>
 						<TableHead className="text-xs font-semibold text-center">
 							UU PDP
 						</TableHead>
 						<TableHead className="text-xs font-semibold text-right w-24">
-							Aksi
+							{t("app.actions")}
 						</TableHead>
 					</TableRow>
 				</TableHeader>
@@ -70,8 +74,7 @@ export const EmployeeTable: FC<TEmployeeTableProps> = ({
 								colSpan={8}
 								className="py-8 text-center text-xs text-muted-foreground"
 							>
-								Belum ada data karyawan terdaftar. Klik "Tambah Karyawan" untuk
-								menambahkan.
+								{t("employee.empty")}
 							</TableCell>
 						</TableRow>
 					) : (
@@ -135,7 +138,7 @@ export const EmployeeTable: FC<TEmployeeTableProps> = ({
 											size="sm"
 											asChild
 											className="size-8 p-0 text-muted-foreground hover:text-foreground"
-											title="Lihat Detail & Kontrak"
+											title={t("app.details")}
 										>
 											<Link
 												to="/employees/$employeeId"
@@ -149,7 +152,7 @@ export const EmployeeTable: FC<TEmployeeTableProps> = ({
 											size="sm"
 											onClick={() => handleDelete(emp.id, emp.fullName)}
 											className="size-8 p-0 text-muted-foreground hover:text-destructive"
-											title="Hapus Karyawan"
+											title={t("app.delete")}
 										>
 											<Trash2 className="size-3.5" />
 										</Button>

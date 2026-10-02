@@ -9,15 +9,21 @@ import type { FC, ReactElement } from "react";
 import { match, P } from "ts-pattern";
 import { EServerUnreachable } from "#/libs/auth/server-unreachable.ts";
 import { SESSION_REACH } from "#/libs/auth/session-reach.ts";
+import { LanguageSwitcher } from "#/libs/i18n/index.ts";
 import { AppSidebar } from "#/routes/_authenticated/_components/app-sidebar.tsx";
 
 const AuthenticatedLayout: FC = (): ReactElement => (
 	<SidebarProvider>
 		<AppSidebar />
 		<SidebarInset>
-			<header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-				<SidebarTrigger className="-ml-1" />
-				<Separator orientation="vertical" className="mr-2 !h-4" />
+			<header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b px-4">
+				<div className="flex items-center gap-2">
+					<SidebarTrigger className="-ml-1" />
+					<Separator orientation="vertical" className="mr-2 h-4!" />
+				</div>
+				<div className="flex items-center gap-2">
+					<LanguageSwitcher variant="header" />
+				</div>
 			</header>
 			<div className="min-w-0 flex-1 overflow-y-auto p-6">
 				<div className="mx-auto w-full max-w-7xl">

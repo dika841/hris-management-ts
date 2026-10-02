@@ -1,12 +1,12 @@
 import { Guard } from "@app/components/guard/guard";
 import { checkRoutePermissions } from "#/libs/auth/route-guard.ts";
 import { Button } from "@app/components/ui/button";
-import { USER_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import { userListInputSchema } from "@app/schemas";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import type { FC, ReactElement } from "react";
+import { useI18n } from "#/libs/i18n/index.ts";
 import { searchLenient } from "#/libs/table/search-lenient.ts";
 import { roleListOptions } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 import { UserTable } from "#/routes/_authenticated/users/_components/user-table.tsx";
@@ -24,16 +24,17 @@ const UsersPage: FC = (): ReactElement => {
 	const search = Route.useSearch();
 	const onChange = useUserListChange();
 	const roleOptions = useRoleOptions();
+	const { t } = useI18n();
 
 	return (
 		<div className="flex flex-col gap-6">
 			<div className="flex items-center justify-between">
-				<h1 className="text-xl font-semibold">{USER_MESSAGE.TITLE}</h1>
+				<h1 className="text-xl font-semibold">{t("user.title")}</h1>
 				<Guard permissions={[PERMISSION.USER_MANAGE]}>
 					<Button asChild size="sm">
 						<Link to="/users/create">
 							<Plus className="mr-1 size-4" />
-							{USER_MESSAGE.NEW_USER}
+							{t("user.newUser")}
 						</Link>
 					</Button>
 				</Guard>
