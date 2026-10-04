@@ -7,7 +7,9 @@
 		"dev": "vite dev --port 5173",
 		"build": "vite build && tsc --noEmit",
 		"preview": "vite preview",
-		"test": "vitest run --coverage"
+		"test": "vitest run --coverage",
+		"deploy": "pnpm run build && wrangler deploy",
+		"deploy:dry-run": "pnpm run build && wrangler deploy --dry-run"
 	},
 	"dependencies": {
 		"@app/activity": "workspace:*",
@@ -51,6 +53,7 @@
 		"typescript": "catalog:",
 		"vite": "^8.3.0",
 		"vite-tsconfig-paths": "catalog:",
-		"vitest": "catalog:"
+		"vitest": "catalog:",
+		"wrangler": "^4.147.0"
 	}
 }

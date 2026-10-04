@@ -23,7 +23,7 @@ export const cacheClientCreate = (redisUrl: string): Redis =>
 		maxRetriesPerRequest: MAX_RETRIES_PER_REQUEST,
 		commandTimeout: COMMAND_TIMEOUT_MS,
 		enableOfflineQueue: false,
-		lazyConnect: false,
+		lazyConnect: true,
 	});
 
 export const cacheClientOf = (redis: Redis): TCacheClient => ({

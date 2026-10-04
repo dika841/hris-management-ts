@@ -1,0 +1,23 @@
+# =============================================================================
+# Cloudflare Worker Local Development Variables (.dev.vars)
+# Copy this file to apps/api/.dev.vars for local `wrangler dev`
+# =============================================================================
+
+NODE_ENV=development
+DATABASE_URL="postgresql://neondb_owner:CHANGE_ME@ep-xxxx.us-east-2.aws.neon.tech/neondb?sslmode=require"
+REDIS_URL="rediss://default:CHANGE_ME@xxxx.upstash.io:6379"
+BETTER_AUTH_SECRET="replace-with-a-random-64-character-hex-string"
+BETTER_AUTH_URL="https://api-hris.randika.dev"
+WEB_ORIGIN="https://hris.randika.dev"
+
+# Optional Cloudflare R2 object storage
+STORAGE_ACCESS_KEY_ID="CHANGE_ME"
+STORAGE_SECRET_ACCESS_KEY="CHANGE_ME"
+STORAGE_BUCKET="hris-media"
+STORAGE_ENDPOINT="https://f441166e3929e4be7fbbd3174ec4a002.r2.cloudflarestorage.com"
+STORAGE_PUBLIC_URL="https://pub-xxxx.r2.dev"
+
+# Optional Mail & Metrics
+SMTP_URL="smtp://localhost:1025"
+MAIL_FROM="HRIS <no-reply@hris.local>"
+METRICS_ENABLED="false"
