@@ -27,16 +27,14 @@ export const rateLimit =
 			scope: options.scope,
 			windowSeconds: options.windowSeconds,
 			max: options.max,
-		}).catch(
-			(err: unknown): TRateLimitResult => {
-				logger.warn({ err }, "rate-limit check failed, failing open");
-				return {
-					allowed: true,
-					count: 0,
-					remaining: options.max,
-				};
-			},
-		);
+		}).catch((err: unknown): TRateLimitResult => {
+			logger.warn({ err }, "rate-limit check failed, failing open");
+			return {
+				allowed: true,
+				count: 0,
+				remaining: options.max,
+			};
+		});
 
 		return match(result.allowed)
 			.with(

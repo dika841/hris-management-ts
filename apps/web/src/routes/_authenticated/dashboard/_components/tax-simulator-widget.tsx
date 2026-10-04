@@ -11,13 +11,7 @@ import { Input } from "@app/components/ui/input";
 import { Label } from "@app/components/ui/label";
 import { formatRupiah } from "@app/format";
 import { PTKP_CODE, type TPtkpCode, type TTaxMethod } from "@app/schemas";
-import {
-	Calculator,
-	Check,
-	Coins,
-	FileText,
-	Info,
-} from "lucide-react";
+import { Calculator, Check, Coins, FileText, Info } from "lucide-react";
 import { useEffect, useState, type FC, type ReactElement } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useI18n } from "#/libs/i18n/index.ts";
@@ -33,9 +27,15 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 	const simulateMutation = useMutation(orpc.payroll.simulate.mutationOptions());
 
 	const runSimulation = () => {
+		const salary = Number.isFinite(basicSalary)
+			? Math.max(0, Math.floor(basicSalary))
+			: 0;
+		const allowance = Number.isFinite(allowances)
+			? Math.max(0, Math.floor(allowances))
+			: 0;
 		simulateMutation.mutate({
-			basicSalary,
-			allowances,
+			basicSalary: salary,
+			allowances: allowance,
 			ptkpCode,
 			taxMethod,
 			month: 1,
@@ -111,7 +111,10 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 								min={0}
 								step={500_000}
 								value={basicSalary}
-								onChange={(e) => setBasicSalary(Number(e.target.value))}
+								onChange={(e) => {
+									const v = Number(e.target.value);
+									setBasicSalary(Number.isFinite(v) ? Math.max(0, v) : 0);
+								}}
 								className="font-mono text-sm"
 							/>
 						</div>
@@ -126,7 +129,10 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 								min={0}
 								step={250_000}
 								value={allowances}
-								onChange={(e) => setAllowances(Number(e.target.value))}
+								onChange={(e) => {
+									const v = Number(e.target.value);
+									setAllowances(Number.isFinite(v) ? Math.max(0, v) : 0);
+								}}
 								className="font-mono text-sm"
 							/>
 						</div>
@@ -152,10 +158,11 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 										key={code}
 										type="button"
 										onClick={() => setPtkpCode(code)}
-										className={`py-1.5 px-2 rounded-md text-xs font-medium border transition-colors ${ptkpCode === code
-											? "bg-primary text-primary-foreground border-primary"
-											: "bg-muted/40 text-muted-foreground border-border/60 hover:bg-muted"
-											}`}
+										className={`py-1.5 px-2 rounded-md text-xs font-medium border transition-colors ${
+											ptkpCode === code
+												? "bg-primary text-primary-foreground border-primary"
+												: "bg-muted/40 text-muted-foreground border-border/60 hover:bg-muted"
+										}`}
 									>
 										{code}
 									</button>
@@ -173,10 +180,11 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 										key={method.id}
 										type="button"
 										onClick={() => setTaxMethod(method.id)}
-										className={`p-2 rounded-lg text-left border transition-all ${taxMethod === method.id
-											? "bg-primary/5 border-primary text-primary dark:bg-primary/10"
-											: "bg-muted/20 border-border/60 text-muted-foreground hover:bg-muted/40"
-											}`}
+										className={`p-2 rounded-lg text-left border transition-all ${
+											taxMethod === method.id
+												? "bg-primary/5 border-primary text-primary dark:bg-primary/10"
+												: "bg-muted/20 border-border/60 text-muted-foreground hover:bg-muted/40"
+										}`}
 									>
 										<div className="text-xs font-semibold">{method.label}</div>
 										<div className="text-[10px] text-muted-foreground">

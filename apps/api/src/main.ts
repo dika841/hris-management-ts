@@ -55,7 +55,10 @@ type TSessionResolution = {
 const sessionUnavailableOf = (cause?: unknown): TSessionResolution => ({
 	session: null,
 	sessionState: SESSION_STATE.UNAVAILABLE,
-	sessionError: cause instanceof Error ? `${cause.name}: ${cause.message}` : String(cause ?? ""),
+	sessionError:
+		cause instanceof Error
+			? `${cause.name}: ${cause.message}`
+			: String(cause ?? ""),
 });
 
 const sessionResolutionOf = (session: TSession | null): TSessionResolution =>
@@ -106,7 +109,11 @@ const app = new Hono();
 app.use("*", requestId());
 
 app.onError((err, c) => {
-	logger.error({ err, path: c.req.path }, "unhandled request error");
+	try {
+		logger.error({ err, path: c.req.path }, "unhandled request error");
+	} catch {
+		console.error("unhandled request error", err);
+	}
 	return c.json(
 		{
 			error: err.name || "Error",

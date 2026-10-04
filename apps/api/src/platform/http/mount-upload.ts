@@ -30,10 +30,7 @@ export const uploadMount = (
 ): void => {
 	if (!storageEnabledOf(env)) {
 		app.post(UPLOAD_PATH, (ctx) =>
-			ctx.json(
-				{ error: "File upload is not configured on this server." },
-				503,
-			),
+			ctx.json({ error: "File upload is not configured on this server." }, 503),
 		);
 		return;
 	}
@@ -78,7 +75,9 @@ export const uploadMount = (
 					if (!storage) {
 						return Effect.die(new Error("Storage not configured"));
 					}
-					return Effect.promise(() => storage.getUrl(safeKey, PRESIGN_EXPIRY_SECONDS));
+					return Effect.promise(() =>
+						storage.getUrl(safeKey, PRESIGN_EXPIRY_SECONDS),
+					);
 				}),
 			);
 		} catch (cause) {

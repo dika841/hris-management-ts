@@ -102,10 +102,7 @@ export const envSchema = z
 		DATABASE_URL: z.string().min(1),
 		REDIS_URL: z.string().min(1),
 		// RabbitMQ is optional — set to "disabled" to skip queue initialisation (demo mode)
-		RABBITMQ_URL: z.preprocess(
-			blankAsUndefined,
-			z.string().min(1).optional(),
-		),
+		RABBITMQ_URL: z.preprocess(blankAsUndefined, z.string().min(1).optional()),
 		SMTP_URL: z.string().min(1).default("smtp://localhost:1025"),
 		MAIL_FROM: z.string().min(1).default("Standard <no-reply@standard.test>"),
 		BETTER_AUTH_URL: z.url(),
@@ -160,15 +157,9 @@ export const envSchema = z
 			z.string().min(1).optional(),
 		),
 		// R2 endpoint: https://<ACCOUNT_ID>.r2.cloudflarestorage.com
-		STORAGE_ENDPOINT: z.preprocess(
-			blankAsUndefined,
-			z.url().optional(),
-		),
+		STORAGE_ENDPOINT: z.preprocess(blankAsUndefined, z.url().optional()),
 		// Public base URL for stored objects (e.g. https://pub-XXXX.r2.dev)
-		STORAGE_PUBLIC_URL: z.preprocess(
-			blankAsUndefined,
-			z.url().optional(),
-		),
+		STORAGE_PUBLIC_URL: z.preprocess(blankAsUndefined, z.url().optional()),
 		STORAGE_MAX_BYTES: z.coerce
 			.number()
 			.int()

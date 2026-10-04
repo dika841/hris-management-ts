@@ -123,8 +123,18 @@ export const queueServiceCreate = (
  */
 export const queueServiceNoop = (): TQueueService => ({
 	enabled: false,
-	connection: () => Effect.fail(new EQueue({ cause: new Error("Queue is disabled (RABBITMQ_URL not set)") })),
-	channel: () => Effect.fail(new EQueue({ cause: new Error("Queue is disabled (RABBITMQ_URL not set)") })),
+	connection: () =>
+		Effect.fail(
+			new EQueue({
+				cause: new Error("Queue is disabled (RABBITMQ_URL not set)"),
+			}),
+		),
+	channel: () =>
+		Effect.fail(
+			new EQueue({
+				cause: new Error("Queue is disabled (RABBITMQ_URL not set)"),
+			}),
+		),
 	close: () => Promise.resolve(),
 });
 

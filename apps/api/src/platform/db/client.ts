@@ -1,9 +1,12 @@
-import { Pool } from "@neondatabase/serverless";
+import { Pool, neonConfig } from "@neondatabase/serverless";
 import { drizzle, type NeonDatabase } from "drizzle-orm/neon-serverless";
 import * as schema from "#/platform/db/schema.ts";
 
 export const DB_CONNECTION_TIMEOUT_MS = 5_000;
 export const DB_STATEMENT_TIMEOUT_MS = 30_000;
+
+// Execute queries via stateless HTTP fetch in Cloudflare Workers to avoid hanging sockets across isolate suspends
+neonConfig.poolQueryViaFetch = true;
 
 export type TDb = NeonDatabase<typeof schema>;
 

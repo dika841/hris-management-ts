@@ -168,7 +168,6 @@ const employeeRouter = {
 	// Organization
 	departmentList: permissionRequire(PERMISSION.EMPLOYEE_READ)
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.DEPARTMENTS })
-		.input(z.void())
 		.output(z.array(departmentSchema))
 		.handler(({ context }) => effectRun(context.runtime, departmentList())),
 
@@ -185,7 +184,6 @@ const employeeRouter = {
 
 	positionList: permissionRequire(PERMISSION.EMPLOYEE_READ)
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.POSITIONS })
-		.input(z.void())
 		.output(z.array(positionSchema))
 		.handler(({ context }) => effectRun(context.runtime, positionList())),
 
