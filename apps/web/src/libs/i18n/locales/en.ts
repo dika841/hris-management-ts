@@ -55,6 +55,8 @@ export const en = {
 		passwordChangeConfirmDescription: "Your other sessions will be signed out.",
 		emailPlaceholder: "m@example.com",
 		passwordPlaceholder: "Your password",
+		showPassword: "Show password",
+		hidePassword: "Hide password",
 		currentPasswordPlaceholder: "Your current password",
 		newPasswordPlaceholder: "At least 8 characters",
 		confirmPasswordPlaceholder: "Repeat the new password",

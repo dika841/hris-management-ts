@@ -19,14 +19,9 @@ import {
 } from "@app/components/ui/sidebar";
 import { A } from "@mobily/ts-belt";
 import { Link, useMatchRoute } from "@tanstack/react-router";
-import {
-	ChevronsUpDown,
-	Command,
-	LogOut,
-	Moon,
-	ShieldCheck,
-} from "lucide-react";
+import { ChevronsUpDown, Command, LogOut, Moon } from "lucide-react";
 import type { FC, ReactElement } from "react";
+import { AppLogo } from "#/routes/_components/app-logo.tsx";
 import { useSession } from "#/libs/auth/use-session.ts";
 import { useI18n, LanguageSwitcher } from "#/libs/i18n/index.ts";
 import { useSessionSignOut } from "#/routes/_authenticated/_hooks/use-session-sign-out.ts";
@@ -49,9 +44,7 @@ export const AppSidebar: FC = (): ReactElement => {
 					<SidebarMenuItem>
 						<SidebarMenuButton size="lg" asChild>
 							<Link to="/dashboard">
-								<div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-									<ShieldCheck className="size-4.5" />
-								</div>
+								<AppLogo className="size-8 aspect-square shrink-0 rounded-lg shadow-xs" />
 								<div className="grid flex-1 text-left text-sm leading-tight">
 									<span className="truncate font-medium">{t("app.name")}</span>
 								</div>

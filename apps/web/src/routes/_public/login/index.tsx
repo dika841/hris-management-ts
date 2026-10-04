@@ -1,7 +1,7 @@
 import { loginSearchSchema } from "@app/schemas";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { GalleryVerticalEnd } from "lucide-react";
 import type { FC, ReactElement } from "react";
+import { AppLogo } from "#/routes/_components/app-logo.tsx";
 import { LanguageSwitcher } from "#/libs/i18n/index.ts";
 import { LoginForm } from "#/routes/_public/login/_components/login-form.tsx";
 
@@ -10,11 +10,11 @@ const LoginPage: FC = (): ReactElement => {
 		<div className="grid min-h-svh lg:grid-cols-2">
 			<div className="flex flex-col gap-4 p-6 md:p-10">
 				<div className="flex items-center justify-between">
-					<Link to="/" className="flex items-center gap-2 font-medium">
-						<div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-							<GalleryVerticalEnd className="size-4" />
-						</div>
-						HRIS Management
+					<Link to="/" className="flex items-center gap-2.5 font-medium">
+						<AppLogo className="size-7 rounded-lg shadow-xs" />
+						<span className="font-semibold tracking-tight">
+							HRIS Management
+						</span>
 					</Link>
 					<LanguageSwitcher variant="header" />
 				</div>

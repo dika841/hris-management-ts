@@ -58,6 +58,8 @@ export const id: TTranslationSchema = {
 			"Sesi Anda di perangkat lain akan dikeluarkan.",
 		emailPlaceholder: "nama@contoh.com",
 		passwordPlaceholder: "Kata sandi Anda",
+		showPassword: "Tampilkan kata sandi",
+		hidePassword: "Sembunyikan kata sandi",
 		currentPasswordPlaceholder: "Kata sandi saat ini",
 		newPasswordPlaceholder: "Minimal 8 karakter",
 		confirmPasswordPlaceholder: "Ulangi kata sandi baru",

@@ -17,7 +17,10 @@ import { SESSION_REACH } from "#/libs/auth/session-reach.ts";
 import { sessionRefresh } from "#/libs/auth/session.ts";
 import { loginError } from "#/routes/_public/login/_stores/login-error-store.ts";
 
-const DEFAULT_VALUES: TLoginInput = { email: "", password: "" };
+const DEFAULT_VALUES: TLoginInput = {
+	email: "admin@test.app",
+	password: "Password123",
+};
 
 const loginRouteApi = getRouteApi("/_public/login/");
 
