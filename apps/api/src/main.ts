@@ -114,6 +114,7 @@ app.use(
 			const cleanOrigin = origin.endsWith("/") ? origin.slice(0, -1) : origin;
 			if (
 				cleanOrigin === configuredOrigin ||
+				cleanOrigin.endsWith(".randika.dev") ||
 				cleanOrigin.endsWith(".pages.dev") ||
 				cleanOrigin.endsWith(".onrender.com") ||
 				cleanOrigin.startsWith("http://localhost:")
@@ -154,35 +155,44 @@ orpcMount({
 });
 webDistMount(app, env.WEB_DIST_PATH);
 
-const server = serve({ fetch: app.fetch, port: env.PORT }, (info): void => {
-	logger.info({ port: info.port }, "api listening");
-});
+export default app;
 
-const serverClose = (): Promise<void> =>
-	new Promise((resolve): void => {
-		server.close((): void => resolve());
+const isWorker =
+	"WebSocketPair" in globalThis ||
+	process.env.CLOUDFLARE === "true" ||
+	Boolean(process.env.WORKER);
+
+if (!isWorker && process.env.NODE_ENV !== "test") {
+	const server = serve({ fetch: app.fetch, port: env.PORT }, (info): void => {
+		logger.info({ port: info.port }, "api listening");
 	});
 
-shutdownOn(
-	[SHUTDOWN_SIGNAL.TERM, SHUTDOWN_SIGNAL.INT],
-	async (signal): Promise<void> => {
-		logger.info({ signal }, "api stopping");
-
-		const drained = await shutdownRun({
-			logger,
-			steps: [
-				{ name: SHUTDOWN_STEP.HTTP, close: serverClose },
-				{
-					name: SHUTDOWN_STEP.RUNTIME,
-					close: (): Promise<void> => runtime.dispose(),
-				},
-				{
-					name: SHUTDOWN_STEP.TRACING,
-					close: (): Promise<void> => tracing.shutdown(),
-				},
-			],
+	const serverClose = (): Promise<void> =>
+		new Promise((resolve): void => {
+			server.close((): void => resolve());
 		});
 
-		process.exit(drained ? EXIT_OK : EXIT_FAILURE);
-	},
-);
+	shutdownOn(
+		[SHUTDOWN_SIGNAL.TERM, SHUTDOWN_SIGNAL.INT],
+		async (signal): Promise<void> => {
+			logger.info({ signal }, "api stopping");
+
+			const drained = await shutdownRun({
+				logger,
+				steps: [
+					{ name: SHUTDOWN_STEP.HTTP, close: serverClose },
+					{
+						name: SHUTDOWN_STEP.RUNTIME,
+						close: (): Promise<void> => runtime.dispose(),
+					},
+					{
+						name: SHUTDOWN_STEP.TRACING,
+						close: (): Promise<void> => tracing.shutdown(),
+					},
+				],
+			});
+
+			process.exit(drained ? EXIT_OK : EXIT_FAILURE);
+		},
+	);
+}

@@ -35,3 +35,4 @@ allowBuilds:
   lightningcss: true
   msgpackr-extract: true
   protobufjs: true
+  workerd: true

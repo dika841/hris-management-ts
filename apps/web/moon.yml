@@ -40,3 +40,9 @@ tasks:
       - 'tsconfig.json'
       - 'package.json'
       - '/package.json'
+  deploy:
+    command: "pnpm run deploy"
+    deps:
+      - "~:build"
+    options:
+      runInCI: false

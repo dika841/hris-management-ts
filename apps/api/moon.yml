@@ -80,3 +80,7 @@ tasks:
     command: 'pnpm db:seed'
     options:
       runInCI: false
+  deploy:
+    command: "pnpm run deploy"
+    options:
+      runInCI: false
