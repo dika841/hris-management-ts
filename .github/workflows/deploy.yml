@@ -43,7 +43,7 @@ jobs:
       - uses: ./.github/actions/setup-workspace
 
       - name: Build
-        if: matrix.build != ""
+        if: matrix.build != ''
         working-directory: ${{ matrix.dir }}
         run: ${{ matrix.build }}
 
