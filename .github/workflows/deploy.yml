@@ -96,4 +96,4 @@ jobs:
 
       - name: Deploy
         working-directory: ${{ matrix.dir }}
-        run: pnpm exec wrangler deploy
+        run: pnpm exec wrangler deploy --keep-vars
