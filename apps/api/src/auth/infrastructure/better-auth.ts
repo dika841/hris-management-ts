@@ -33,6 +33,8 @@ export const authCreate = (deps: TCreateAuthOptions) =>
 			"https://*.randika.dev",
 			"https://hris-management-web.pages.dev",
 			"https://*.pages.dev",
+			"http://localhost:5173",
+			"http://localhost:*",
 		],
 		database: drizzleAdapter(dbActiveProxy(deps.db), { provider: "pg" }),
 		advanced: {

@@ -1,10 +1,10 @@
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import viteReact from "@vitejs/plugin-react";
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import { THEME, THEME_STORAGE_KEY } from "./src/libs/theme/theme.ts";
 
-const API_URL = process.env.VITE_API_URL ?? "http://localhost:3001";
+
 
 const THEME_PLACEHOLDER = {
 	STORAGE_KEY: "__THEME_STORAGE_KEY__",
@@ -19,7 +19,12 @@ const themeScriptPlugin = (): Plugin => ({
 			.replaceAll(THEME_PLACEHOLDER.LIGHT, THEME.LIGHT),
 });
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+	const loadedEnv = loadEnv(mode, process.cwd(), "");
+	const rawApiUrl = loadedEnv.VITE_API_URL || process.env.VITE_API_URL || "http://localhost:3001";
+	const API_URL = rawApiUrl.endsWith("/") ? rawApiUrl.slice(0, -1) : rawApiUrl;
+
+	return {
 	resolve: {
 		tsconfigPaths: true,
 	},
@@ -47,4 +52,5 @@ export default defineConfig({
 			"/rpc": { target: API_URL, changeOrigin: true },
 		},
 	},
+};
 });

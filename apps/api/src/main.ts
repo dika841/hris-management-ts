@@ -102,6 +102,17 @@ const app = new Hono();
 
 app.use("*", requestId());
 
+app.onError((err, c) => {
+	logger.error({ err, path: c.req.path }, "unhandled request error");
+	return c.json(
+		{
+			error: err.name || "Error",
+			message: err.message,
+		},
+		500,
+	);
+});
+
 observabilityMount(app, { logger, metrics, tracing });
 
 const configuredOrigin = new URL(env.WEB_ORIGIN).origin;
