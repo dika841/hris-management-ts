@@ -11,6 +11,7 @@
   },
   "vars": {
     "BETTER_AUTH_URL": "https://api-hris.randikaa.my.id",
-    "WEB_ORIGIN": "https://hris.randikaa.my.id"
+    "WEB_ORIGIN": "https://hris.randikaa.my.id",
+    "METRICS_ENABLED": "false"
   }
 }

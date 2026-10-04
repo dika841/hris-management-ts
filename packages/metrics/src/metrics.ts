@@ -50,7 +50,16 @@ export const metricsCreate = (options: TMetricsOptions): TMetrics => {
 	const registry = new Registry();
 
 	registry.setDefaultLabels({ service: options.service });
-	collectDefaultMetrics({ register: registry });
+
+	try {
+		// Only collect default process metrics if supported (not in Cloudflare Workers)
+		if (typeof process?.cpuUsage === "function") {
+			process.cpuUsage();
+			collectDefaultMetrics({ register: registry });
+		}
+	} catch {
+		// Ignored: Cloudflare Workers does not implement process.cpuUsage
+	}
 
 	const requests = new Counter({
 		name: METRIC_NAME.HTTP_REQUESTS_TOTAL,
