@@ -23,12 +23,26 @@ export const rateLimitIdentifierFrom = (
 		: remoteAddress;
 };
 
+const remoteAddressOf = (context: Context): string | undefined => {
+	const cfConnectingIp = context.req.header("cf-connecting-ip");
+	if (cfConnectingIp) return cfConnectingIp;
+
+	const realIp = context.req.header("x-real-ip");
+	if (realIp) return realIp;
+
+	try {
+		return getConnInfo(context)?.remote?.address;
+	} catch {
+		return undefined;
+	}
+};
+
 export const rateLimitIdentifierOf = (
 	context: Context,
 	trustedProxyIps: readonly string[],
 ): string =>
 	rateLimitIdentifierFrom({
-		remoteAddress: getConnInfo(context).remote.address,
+		remoteAddress: remoteAddressOf(context),
 		forwardedFor: context.req.header("x-forwarded-for"),
 		trustedProxyIps,
 	});
