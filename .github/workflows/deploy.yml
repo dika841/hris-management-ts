@@ -33,9 +33,9 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      VITE_API_URL: ${{ secrets.VITE_API_URL || 'https://api-hris.randika.dev' }}
-      PUBLIC_API_URL: https://api-hris.randika.dev
-      PUBLIC_SITE_URL: https://hris.randika.dev
+      VITE_API_URL: ${{ secrets.VITE_API_URL || 'https://api-hris.randikaa.my.id' }}
+      PUBLIC_API_URL: https://api-hris.randikaa.my.id
+      PUBLIC_SITE_URL: https://hris.randikaa.my.id
 
     steps:
       - uses: actions/checkout@v4

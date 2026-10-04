@@ -7,8 +7,8 @@ NODE_ENV=development
 DATABASE_URL="postgresql://neondb_owner:CHANGE_ME@ep-xxxx.us-east-2.aws.neon.tech/neondb?sslmode=require"
 REDIS_URL="rediss://default:CHANGE_ME@xxxx.upstash.io:6379"
 BETTER_AUTH_SECRET="replace-with-a-random-64-character-hex-string"
-BETTER_AUTH_URL="https://api-hris.randika.dev"
-WEB_ORIGIN="https://hris.randika.dev"
+BETTER_AUTH_URL="https://api-hris.randikaa.my.id"
+WEB_ORIGIN="https://hris.randikaa.my.id"
 
 # Optional Cloudflare R2 object storage
 STORAGE_ACCESS_KEY_ID="CHANGE_ME"

@@ -5,12 +5,12 @@
   "main": "src/main.ts",
   "compatibility_date": "2026-07-27",
   "compatibility_flags": ["nodejs_compat"],
-  "routes": [{ "pattern": "api-hris.randika.dev", "custom_domain": true }],
+  "routes": [{ "pattern": "api-hris.randikaa.my.id", "custom_domain": true }],
   "observability": {
     "enabled": true
   },
   "vars": {
-    "BETTER_AUTH_URL": "https://api-hris.randika.dev",
-    "WEB_ORIGIN": "https://hris.randika.dev"
+    "BETTER_AUTH_URL": "https://api-hris.randikaa.my.id",
+    "WEB_ORIGIN": "https://hris.randikaa.my.id"
   }
 }

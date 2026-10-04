@@ -114,6 +114,7 @@ app.use(
 			const cleanOrigin = origin.endsWith("/") ? origin.slice(0, -1) : origin;
 			if (
 				cleanOrigin === configuredOrigin ||
+				cleanOrigin.endsWith(".randikaa.my.id") ||
 				cleanOrigin.endsWith(".randika.dev") ||
 				cleanOrigin.endsWith(".pages.dev") ||
 				cleanOrigin.endsWith(".onrender.com") ||
