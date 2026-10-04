@@ -49,12 +49,14 @@ const router = routerBuild();
 type TSessionResolution = {
 	session: TSession | null;
 	sessionState: TSessionState;
+	sessionError?: string;
 };
 
-const SESSION_UNAVAILABLE: TSessionResolution = {
+const sessionUnavailableOf = (cause?: unknown): TSessionResolution => ({
 	session: null,
 	sessionState: SESSION_STATE.UNAVAILABLE,
-};
+	sessionError: cause instanceof Error ? `${cause.name}: ${cause.message}` : String(cause ?? ""),
+});
 
 const sessionResolutionOf = (session: TSession | null): TSessionResolution =>
 	match(session)
@@ -78,7 +80,7 @@ const sessionResolve = (headers: Headers): Promise<TSessionResolution> =>
 			Effect.map(sessionResolutionOf),
 			Effect.catch((cause): Effect.Effect<TSessionResolution> => {
 				logger.error({ err: cause }, "session.resolve.failed");
-				return Effect.succeed(SESSION_UNAVAILABLE);
+				return Effect.succeed(sessionUnavailableOf(cause));
 			}),
 		),
 	);
@@ -90,6 +92,7 @@ const buildContext = async (headers: Headers): Promise<TORPCContext> => {
 		headers,
 		session: resolution.session,
 		sessionState: resolution.sessionState,
+		sessionError: resolution.sessionError,
 		permissions: resolution.session?.permissions ?? [],
 		runtime,
 	};

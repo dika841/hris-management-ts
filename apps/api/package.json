@@ -36,10 +36,12 @@
 		"@app/permissions": "workspace:*",
 		"@app/queue": "workspace:*",
 		"@app/schemas": "workspace:*",
+		"@app/storage": "workspace:*",
 		"@app/tracing": "workspace:*",
 		"@app/version": "workspace:*",
 		"@hono/node-server": "^2.1.1",
 		"@mobily/ts-belt": "catalog:",
+		"@neondatabase/serverless": "^1.2.0",
 		"@orpc/json-schema": "^1.15.3",
 		"@orpc/openapi": "^1.15.3",
 		"@orpc/server": "^1.15.3",
@@ -52,10 +54,10 @@
 		"ioredis": "^6.0.0",
 		"pg": "catalog:",
 		"ts-pattern": "catalog:",
-		"zod": "catalog:",
-		"@app/storage": "workspace:*"
+		"zod": "catalog:"
 	},
 	"devDependencies": {
+		"@cloudflare/workers-types": "^5.20260722.1",
 		"@electric-sql/pglite": "^0.5.8",
 		"@types/pg": "catalog:",
 		"dotenv": "^17.3.1",
@@ -64,7 +66,6 @@
 		"typescript": "catalog:",
 		"vite-tsconfig-paths": "catalog:",
 		"vitest": "catalog:",
-		"@cloudflare/workers-types": "^5.20260722.1",
 		"wrangler": "^4.147.0"
 	}
 }

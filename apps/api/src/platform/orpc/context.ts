@@ -6,6 +6,7 @@ export type TORPCContext = {
 	headers: Headers;
 	session: TSession | null;
 	sessionState: TSessionState;
+	sessionError?: string;
 	permissions: readonly TPermission[];
 	runtime: TAppRuntime;
 };

@@ -21,8 +21,9 @@ export const protectedProcedure = publicProcedure.use(
 	async ({ context, next }) =>
 		match({ state: context.sessionState, session: context.session })
 			.with({ state: SESSION_STATE.UNAVAILABLE }, () => {
+				const detail = context.sessionError ? ` (${context.sessionError})` : "";
 				throw new ORPCError("SERVICE_UNAVAILABLE", {
-					message: AUTH_MESSAGE.SESSION_UNAVAILABLE,
+					message: `${AUTH_MESSAGE.SESSION_UNAVAILABLE}${detail}`,
 				});
 			})
 			.with({ session: P.nullish }, () => {
