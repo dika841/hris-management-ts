@@ -34,9 +34,9 @@ jobs:
           BETTER_AUTH_SECRET: "placeholder-secret-at-least-32-chars-long!!"
         run: pnpm test
 
-      - name: Web Typecheck
+      - name: Web Typecheck & Build
         working-directory: apps/web
-        run: pnpm exec tsc --noEmit
+        run: pnpm run build
 
   migrate:
     name: Database Migration (Neon)
@@ -74,7 +74,7 @@ jobs:
 
           - name: web
             dir: apps/web
-            build: pnpm exec vite build
+            build: pnpm run build
 
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
