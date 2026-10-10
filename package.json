@@ -15,10 +15,10 @@
     "deploy": "moon run :deploy"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.14",
+    "@biomejs/biome": "2.5.15",
     "@types/node": "catalog:",
-    "lefthook": "^2.1.14",
+    "lefthook": "^2.1.17",
     "typescript": "catalog:",
-    "wrangler": "^4.147.0"
+    "wrangler": "^4.148.0"
   }
 }
