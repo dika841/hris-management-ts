@@ -16,6 +16,7 @@ import {
 	SelectValue,
 } from "@app/components/ui/select";
 import { Textarea } from "@app/components/ui/textarea";
+import { LEAVE_CODE } from "@app/schemas";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
@@ -57,10 +58,10 @@ export const LeaveRequestCreateForm: FC = (): ReactElement => {
 
 	const selectedType = leaveTypes.find((lt) => lt.id === leaveTypeId);
 	const isMaternity =
-		selectedType?.code === "MATERNITY" ||
+		selectedType?.code === LEAVE_CODE.MATERNITY ||
 		selectedType?.name.toLowerCase().includes("melahirkan");
 	const isSick =
-		selectedType?.code === "SICK" ||
+		selectedType?.code === LEAVE_CODE.SICK ||
 		selectedType?.requiresDoctorNote ||
 		selectedType?.name.toLowerCase().includes("sakit");
 

@@ -26,7 +26,9 @@ export const HolidayCreateForm: FC = (): ReactElement => {
 	const createMutation = usePublicHolidayCreate();
 
 	const [name, setName] = useState("Hari Raya Idul Fitri 1447 H");
-	const [date, setDate] = useState("2026-03-20");
+	const [date, setDate] = useState(
+		new Date().toISOString().split("T")[0] ?? "",
+	);
 	const [type, setType] = useState<TPublicHolidayType>(
 		PUBLIC_HOLIDAY_TYPE.NATIONAL,
 	);

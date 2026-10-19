@@ -1,4 +1,15 @@
-import { and, count, desc, eq, gte, lte, ne, or, type SQL } from "drizzle-orm";
+import {
+	and,
+	count,
+	desc,
+	eq,
+	getTableColumns,
+	gte,
+	lte,
+	ne,
+	or,
+	type SQL,
+} from "drizzle-orm";
 import { Effect, Layer } from "effect";
 import {
 	attendanceLog,
@@ -10,6 +21,7 @@ import {
 } from "#/platform/db/tables/attendance.ts";
 import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
 import { dbActive } from "#/platform/db/transaction.ts";
+import { employee } from "#/platform/db/tables/employee.ts";
 import { EDatabase } from "#/shared/errors.ts";
 
 import {
@@ -216,8 +228,12 @@ export const attendanceRepoLayer = Layer.effect(
 					const offset = (page - 1) * pageSize;
 					const [items, [{ value: total }]] = await Promise.all([
 						dbActive(db)
-							.select()
+							.select({
+								...getTableColumns(leaveRequest),
+								employeeName: employee.fullName,
+							})
 							.from(leaveRequest)
+							.innerJoin(employee, eq(leaveRequest.employeeId, employee.id))
 							.where(where)
 							.limit(pageSize)
 							.offset(offset)
@@ -495,8 +511,12 @@ export const attendanceRepoLayer = Layer.effect(
 					const offset = (page - 1) * pageSize;
 					const [items, [{ value: total }]] = await Promise.all([
 						dbActive(db)
-							.select()
+							.select({
+								...getTableColumns(overtimeRequest),
+								employeeName: employee.fullName,
+							})
 							.from(overtimeRequest)
+							.innerJoin(employee, eq(overtimeRequest.employeeId, employee.id))
 							.where(where)
 							.limit(pageSize)
 							.offset(offset)

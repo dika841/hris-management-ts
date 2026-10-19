@@ -49,6 +49,7 @@ export const overtimeStatusSchema = z.enum([
 export const overtimeRequestSchema = baseSchema(overtimeRequestIdSchema).extend(
 	{
 		employeeId: z.string(),
+		employeeName: z.string().optional(),
 		overtimeDate: z.string(),
 		startTime: z.string(),
 		endTime: z.string(),

@@ -37,6 +37,7 @@ export const toOvertimeRequestDto = (
 	overtimeRequestSchema.parse({
 		id: row.id,
 		employeeId: row.employeeId,
+		employeeName: row.employeeName,
 		overtimeDate: row.overtimeDate,
 		startTime: row.startTime,
 		endTime: row.endTime,

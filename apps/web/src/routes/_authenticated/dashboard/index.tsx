@@ -2,6 +2,7 @@ import { ContractExpirationAlertCard } from "#/routes/_authenticated/dashboard/_
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { ActivitySection } from "#/routes/_authenticated/dashboard/_components/activity-section.tsx";
+import { DashboardPendingScreen } from "#/routes/_authenticated/dashboard/_components/dashboard-pending-screen.tsx";
 import { ComplianceOverviewCard } from "#/routes/_authenticated/dashboard/_components/compliance-overview-card.tsx";
 import { HealthCard } from "#/routes/_authenticated/dashboard/_components/health-card.tsx";
 import { HrisHeader } from "#/routes/_authenticated/dashboard/_components/hris-header.tsx";
@@ -37,4 +38,5 @@ const DashboardPage: FC = (): ReactElement => {
 
 export const Route = createFileRoute("/_authenticated/dashboard/")({
 	component: DashboardPage,
+	pendingComponent: DashboardPendingScreen,
 });

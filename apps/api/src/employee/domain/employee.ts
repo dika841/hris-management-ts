@@ -3,6 +3,7 @@ import type {
 	TContractType,
 	TEmployeeCreateInput,
 	TEmployeeListInput,
+	TEmployeeStats,
 	TEmployeeUpdateInput,
 	TEmploymentStatus,
 	TGender,
@@ -90,6 +91,7 @@ export type TEmployeeRepo = {
 		input: TEmployeeUpdateInput,
 	) => Effect.Effect<TEmployeeRow | null, EDatabase>;
 	remove: (id: string) => Effect.Effect<boolean, EDatabase>;
+	stats: () => Effect.Effect<TEmployeeStats, EDatabase>;
 
 	// Contracts
 	listContracts: (

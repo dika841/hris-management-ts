@@ -10,12 +10,13 @@ import type { EDatabase } from "#/shared/errors.ts";
 
 export const employeeList = Effect.fn("employeeList")(function* (
 	input: TEmployeeListInput,
+	maskSensitive = false,
 ): Effect.fn.Return<TEmployeeList, EDatabase, TEmployeeRepoId> {
 	const employeeRepo = yield* EmployeeRepo;
 	const { items, total } = yield* employeeRepo.list(input);
 
 	return {
-		items: A.map(items, toEmployeeDto),
+		items: A.map(items, (row) => toEmployeeDto(row, maskSensitive)),
 		total,
 		page: input.page,
 		pageSize: input.pageSize,

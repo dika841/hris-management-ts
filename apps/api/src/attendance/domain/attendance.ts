@@ -49,6 +49,7 @@ export type TLeaveBalanceRow = TBaseRow & {
 
 export type TLeaveRequestRow = TBaseRow & {
 	employeeId: string;
+	employeeName?: string;
 	leaveTypeId: string;
 	startDate: string;
 	endDate: string;
@@ -81,6 +82,7 @@ export type TAttendanceLogRow = TBaseRow & {
 
 export type TOvertimeRequestRow = TBaseRow & {
 	employeeId: string;
+	employeeName?: string;
 	overtimeDate: string;
 	startTime: string;
 	endTime: string;

@@ -1,4 +1,16 @@
-import { and, count, eq, type SQL } from "drizzle-orm";
+import {
+	and,
+	count,
+	desc,
+	eq,
+	gte,
+	inArray,
+	isNull,
+	lt,
+	lte,
+	or,
+	type SQL,
+} from "drizzle-orm";
 import { Effect, Layer } from "effect";
 import { match, P } from "ts-pattern";
 import { PAYROLL_SORT, type TPayrollSort } from "@app/schemas";
@@ -13,7 +25,12 @@ import {
 } from "#/payroll/domain/payroll.ts";
 import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
 import { containsWhere } from "#/platform/db/search.ts";
-import { employee } from "#/platform/db/tables/employee.ts";
+import {
+	attendanceLog,
+	leaveRequest,
+	overtimeRequest,
+} from "#/platform/db/tables/attendance.ts";
+import { employee, employeeContract } from "#/platform/db/tables/employee.ts";
 import {
 	employeeTaxYtd,
 	payrollItem,
@@ -22,6 +39,36 @@ import {
 import { dbActive } from "#/platform/db/transaction.ts";
 import { EDatabase } from "#/shared/errors.ts";
 import { offsetFor, orderFor } from "#/shared/pagination.ts";
+
+const WORKING_DAYS_PER_MONTH = 22;
+
+const workdayCount = (start: string, end: string): number => {
+	const from = new Date(`${start}T00:00:00Z`);
+	const to = new Date(`${end}T00:00:00Z`);
+	if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) return 0;
+
+	let days = 0;
+	for (
+		const cursor = new Date(from);
+		cursor <= to;
+		cursor.setUTCDate(cursor.getUTCDate() + 1)
+	) {
+		const day = cursor.getUTCDay();
+		if (day !== 0 && day !== 6) days += 1;
+	}
+	return days;
+};
+
+const overlapWorkdays = (
+	startA: string,
+	endA: string,
+	startB: string,
+	endB: string,
+): number => {
+	const start = startA > startB ? startA : startB;
+	const end = endA < endB ? endA : endB;
+	return start > end ? 0 : workdayCount(start, end);
+};
 
 const SORT_COLUMN: Record<TPayrollSort, AnyPgColumn> = {
 	[PAYROLL_SORT.NAME]: payrollPeriod.name,
@@ -147,7 +194,8 @@ export const payrollRepoLayer = Layer.effect(
 		}) =>
 			Effect.tryPromise({
 				try: async () => {
-					const [periodRow] = await dbActive(db)
+					const activeDb = dbActive(db);
+					const [periodRow] = await activeDb
 						.select()
 						.from(payrollPeriod)
 						.where(eq(payrollPeriod.id, periodId))
@@ -157,18 +205,165 @@ export const payrollRepoLayer = Layer.effect(
 						throw new Error("Period not found");
 					}
 
-					// Ambil daftar karyawan yang relevan
-					const employees = await dbActive(db)
+					const employees = await activeDb
 						.select()
 						.from(employee)
 						.where(
-							employeeIds && employeeIds.length > 0
-								? and(eq(employee.employmentStatus, "permanent")) // disederhanakan
-								: undefined,
+							and(
+								lte(employee.joinDate, periodRow.endDate),
+								or(
+									isNull(employee.endDate),
+									gte(employee.endDate, periodRow.startDate),
+								),
+								employeeIds && employeeIds.length > 0
+									? inArray(employee.id, employeeIds)
+									: undefined,
+							),
 						);
 
+					const contracts = await activeDb
+						.select({
+							employeeId: employeeContract.employeeId,
+							fixedAllowance: employeeContract.fixedAllowance,
+						})
+						.from(employeeContract)
+						.where(
+							and(
+								eq(employeeContract.status, "active"),
+								lte(employeeContract.startDate, periodRow.endDate),
+								or(
+									isNull(employeeContract.endDate),
+									gte(employeeContract.endDate, periodRow.startDate),
+								),
+							),
+						)
+						.orderBy(desc(employeeContract.startDate));
+
+					const allowanceByEmployee = new Map<string, number>();
+					for (const contract of contracts) {
+						if (!allowanceByEmployee.has(contract.employeeId)) {
+							allowanceByEmployee.set(
+								contract.employeeId,
+								contract.fixedAllowance,
+							);
+						}
+					}
+
+					const overtimeByEmployee = new Map<
+						string,
+						{ minutes: number; amount: number }
+					>();
+					const overtimeRows = await activeDb
+						.select({
+							employeeId: overtimeRequest.employeeId,
+							durationMinutes: overtimeRequest.durationMinutes,
+							calculatedAmount: overtimeRequest.calculatedAmount,
+						})
+						.from(overtimeRequest)
+						.where(
+							and(
+								eq(overtimeRequest.status, "approved"),
+								gte(overtimeRequest.overtimeDate, periodRow.startDate),
+								lte(overtimeRequest.overtimeDate, periodRow.endDate),
+							),
+						);
+					for (const row of overtimeRows) {
+						const current = overtimeByEmployee.get(row.employeeId) ?? {
+							minutes: 0,
+							amount: 0,
+						};
+						overtimeByEmployee.set(row.employeeId, {
+							minutes: current.minutes + row.durationMinutes,
+							amount: current.amount + row.calculatedAmount,
+						});
+					}
+
+					const leaveRows = await activeDb
+						.select({
+							employeeId: leaveRequest.employeeId,
+							startDate: leaveRequest.startDate,
+							endDate: leaveRequest.endDate,
+							salaryPercentageAtTime: leaveRequest.salaryPercentageAtTime,
+						})
+						.from(leaveRequest)
+						.where(
+							and(
+								eq(leaveRequest.status, "approved"),
+								lte(leaveRequest.startDate, periodRow.endDate),
+								gte(leaveRequest.endDate, periodRow.startDate),
+							),
+						);
+
+					const absenceRows = await activeDb
+						.select({
+							employeeId: attendanceLog.employeeId,
+							attendanceDate: attendanceLog.attendanceDate,
+						})
+						.from(attendanceLog)
+						.where(
+							and(
+								eq(attendanceLog.status, "absent"),
+								gte(attendanceLog.attendanceDate, periodRow.startDate),
+								lte(attendanceLog.attendanceDate, periodRow.endDate),
+							),
+						);
+
+					const absenceCountByEmployee = new Map<string, number>();
+					for (const row of absenceRows) {
+						absenceCountByEmployee.set(
+							row.employeeId,
+							(absenceCountByEmployee.get(row.employeeId) ?? 0) + 1,
+						);
+					}
+
+					const priorItems =
+						periodRow.month === 12
+							? await activeDb
+									.select({
+										employeeId: payrollItem.employeeId,
+										grossTotal: payrollItem.grossTotal,
+										taxBreakdown: payrollItem.taxBreakdown,
+										bpjsBreakdown: payrollItem.bpjsBreakdown,
+									})
+									.from(payrollItem)
+									.innerJoin(
+										payrollPeriod,
+										eq(payrollItem.payrollPeriodId, payrollPeriod.id),
+									)
+									.where(
+										and(
+											eq(payrollPeriod.year, periodRow.year),
+											lt(payrollPeriod.month, periodRow.month),
+										),
+									)
+							: [];
+
+					const ytdByEmployee = new Map<
+						string,
+						{
+							gross: number;
+							pph21: number;
+							jhtEmployee: number;
+							jpEmployee: number;
+						}
+					>();
+					for (const item of priorItems) {
+						const current = ytdByEmployee.get(item.employeeId) ?? {
+							gross: 0,
+							pph21: 0,
+							jhtEmployee: 0,
+							jpEmployee: 0,
+						};
+						ytdByEmployee.set(item.employeeId, {
+							gross: current.gross + item.grossTotal,
+							pph21: current.pph21 + item.taxBreakdown.pph21Monthly,
+							jhtEmployee: current.jhtEmployee + item.bpjsBreakdown.jhtEmployee,
+							jpEmployee: current.jpEmployee + item.bpjsBreakdown.jpEmployee,
+						});
+					}
+
 					// Hapus item kalkulasi periode lama bila sudah ada
-					await dbActive(db)
+					await activeDb
 						.delete(payrollItem)
 						.where(eq(payrollItem.payrollPeriodId, periodId));
 
@@ -176,49 +371,71 @@ export const payrollRepoLayer = Layer.effect(
 					let totalPph21 = 0;
 					let totalNetPay = 0;
 					let processed = 0;
+					const currentYtd = new Map<
+						string,
+						{
+							gross: number;
+							pph21: number;
+							jhtEmployee: number;
+							jpEmployee: number;
+						}
+					>();
 
 					for (const emp of employees) {
-						let ytdContext:
-							| {
-									ytdGrossJanToNov: number;
-									ytdPph21JanToNov: number;
-									ytdJhtEmployeeJanToNov?: number;
-									ytdJpEmployeeJanToNov?: number;
-							  }
-							| undefined;
+						const allowance = allowanceByEmployee.get(emp.id) ?? 0;
+						const overtime = overtimeByEmployee.get(emp.id) ?? {
+							minutes: 0,
+							amount: 0,
+						};
+						const dailyWage = Math.round(
+							emp.basicSalary / WORKING_DAYS_PER_MONTH,
+						);
+						const absenceDeduction =
+							dailyWage * (absenceCountByEmployee.get(emp.id) ?? 0);
+						const leaveDeduction = leaveRows
+							.filter((leave) => leave.employeeId === emp.id)
+							.reduce((total, leave) => {
+								const days = overlapWorkdays(
+									leave.startDate,
+									leave.endDate,
+									periodRow.startDate,
+									periodRow.endDate,
+								);
+								const deductionRate =
+									(100 - leave.salaryPercentageAtTime) / 100;
+								return total + Math.round(dailyWage * days * deductionRate);
+							}, 0);
+						const otherDeductions = absenceDeduction + leaveDeduction;
 
-						if (periodRow.month === 12) {
-							const [ytd] = await dbActive(db)
-								.select()
-								.from(employeeTaxYtd)
-								.where(
-									and(
-										eq(employeeTaxYtd.employeeId, emp.id),
-										eq(employeeTaxYtd.taxYear, periodRow.year),
-									),
-								)
-								.limit(1);
-
-							if (ytd) {
-								ytdContext = {
-									ytdGrossJanToNov: ytd.totalGross,
-									ytdPph21JanToNov: ytd.totalPph21Paid,
-									ytdJhtEmployeeJanToNov: ytd.totalJhtEmployee,
-									ytdJpEmployeeJanToNov: ytd.totalJpEmployee,
-								};
-							}
-						}
+						const ytd = ytdByEmployee.get(emp.id);
+						const ytdContext =
+							periodRow.month === 12
+								? {
+										ytdGrossJanToNov: ytd?.gross ?? 0,
+										ytdPph21JanToNov: ytd?.pph21 ?? 0,
+										ytdJhtEmployeeJanToNov: ytd?.jhtEmployee ?? 0,
+										ytdJpEmployeeJanToNov: ytd?.jpEmployee ?? 0,
+									}
+								: undefined;
 
 						const calc = calculatePayroll({
 							basicSalary: emp.basicSalary,
 							ptkpCode: emp.ptkpCode as any,
 							taxMethod: emp.taxMethod as any,
+							allowances: allowance,
+							overtimePay: overtime.amount,
+							otherDeductions,
 							jkkRiskGrade: emp.jkkRiskGrade,
 							month: periodRow.month,
 							ytdContext,
 						});
 
-						await dbActive(db).insert(payrollItem).values({
+						const deductionNote =
+							otherDeductions > 0
+								? `Potongan ketidakhadiran Rp ${absenceDeduction.toLocaleString("id-ID")}, potongan cuti tidak berbayar Rp ${leaveDeduction.toLocaleString("id-ID")}.`
+								: null;
+
+						await activeDb.insert(payrollItem).values({
 							payrollPeriodId: periodId,
 							employeeId: emp.id,
 							employeeCode: emp.employeeCode,
@@ -227,7 +444,7 @@ export const payrollRepoLayer = Layer.effect(
 							position: emp.position,
 							basicSalary: calc.basicSalary,
 							allowanceTotal: calc.allowances,
-							overtimeHours: 0,
+							overtimeHours: overtime.minutes / 60,
 							overtimePay: calc.overtimePay,
 							bonusTotal: calc.bonus,
 							naturaTotal: calc.natura,
@@ -237,7 +454,22 @@ export const payrollRepoLayer = Layer.effect(
 							taxBreakdown: calc.tax,
 							deductionTotal: calc.totalEmployeeDeductions,
 							netPay: calc.netPay,
-							calculationLog: calc.explanation,
+							calculationLog: [calc.explanation, deductionNote]
+								.filter(Boolean)
+								.join(" "),
+						});
+
+						const previous = currentYtd.get(emp.id) ?? {
+							gross: 0,
+							pph21: 0,
+							jhtEmployee: 0,
+							jpEmployee: 0,
+						};
+						currentYtd.set(emp.id, {
+							gross: previous.gross + calc.cashGross,
+							pph21: previous.pph21 + calc.tax.pph21Monthly,
+							jhtEmployee: previous.jhtEmployee + calc.bpjs.jhtEmployee,
+							jpEmployee: previous.jpEmployee + calc.bpjs.jpEmployee,
 						});
 
 						totalGross += calc.cashGross;
@@ -246,8 +478,50 @@ export const payrollRepoLayer = Layer.effect(
 						processed += 1;
 					}
 
+					// Simpan akumulasi tahun berjalan agar rekonsiliasi berikutnya konsisten.
+					const existingYtd = await activeDb
+						.select()
+						.from(employeeTaxYtd)
+						.where(eq(employeeTaxYtd.taxYear, periodRow.year));
+					const existingYtdByEmployee = new Map(
+						existingYtd.map((row) => [row.employeeId, row]),
+					);
+
+					for (const emp of employees) {
+						const prior = ytdByEmployee.get(emp.id) ?? {
+							gross: 0,
+							pph21: 0,
+							jhtEmployee: 0,
+							jpEmployee: 0,
+						};
+						const current = currentYtd.get(emp.id) ?? {
+							gross: 0,
+							pph21: 0,
+							jhtEmployee: 0,
+							jpEmployee: 0,
+						};
+						const values = {
+							employeeId: emp.id,
+							taxYear: periodRow.year,
+							totalGross: prior.gross + current.gross,
+							totalPph21Paid: prior.pph21 + current.pph21,
+							totalJhtEmployee: prior.jhtEmployee + current.jhtEmployee,
+							totalJpEmployee: prior.jpEmployee + current.jpEmployee,
+							updatedAt: new Date(),
+						};
+						const existing = existingYtdByEmployee.get(emp.id);
+						if (existing) {
+							await activeDb
+								.update(employeeTaxYtd)
+								.set(values)
+								.where(eq(employeeTaxYtd.id, existing.id));
+						} else {
+							await activeDb.insert(employeeTaxYtd).values(values);
+						}
+					}
+
 					// Update rangkuman periode
-					const [updatedPeriod] = await dbActive(db)
+					const [updatedPeriod] = await activeDb
 						.update(payrollPeriod)
 						.set({
 							totalEmployees: processed,

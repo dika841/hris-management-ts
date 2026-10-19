@@ -9,23 +9,20 @@ import {
 import { CheckCircle2, Database, Layers, ShieldCheck } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useI18n } from "#/libs/i18n/index.ts";
-import { useDashboardEmployees } from "#/routes/_authenticated/dashboard/_hooks/use-dashboard.ts";
+import { useDashboardEmployeeStats } from "#/routes/_authenticated/dashboard/_hooks/use-dashboard.ts";
 
 export const ComplianceOverviewCard: FC = (): ReactElement => {
-	const employeeQuery = useDashboardEmployees();
-	const employees = employeeQuery.data?.items ?? [];
+	const employeeQuery = useDashboardEmployeeStats();
 	const { t } = useI18n();
 
-	const total = employees.length;
-	const consentedCount = employees.filter((e) => e.pdpConsentGiven).length;
+	const total = employeeQuery.data?.total ?? 0;
+	const consentedCount = employeeQuery.data?.pdpConsent ?? 0;
 	const consentRate =
 		total > 0 ? Math.round((consentedCount / total) * 100) : 100;
 
-	const grossCount = employees.filter((e) => e.taxMethod === "gross").length;
-	const grossUpCount = employees.filter(
-		(e) => e.taxMethod === "gross_up",
-	).length;
-	const nettCount = employees.filter((e) => e.taxMethod === "nett").length;
+	const grossCount = employeeQuery.data?.taxMethodGross ?? 0;
+	const grossUpCount = employeeQuery.data?.taxMethodGrossUp ?? 0;
+	const nettCount = employeeQuery.data?.taxMethodNett ?? 0;
 
 	return (
 		<Card className="border border-border/60 bg-card">

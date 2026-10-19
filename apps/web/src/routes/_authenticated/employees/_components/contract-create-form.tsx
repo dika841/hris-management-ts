@@ -128,7 +128,7 @@ export const ContractCreateForm: FC<TProps> = ({ employee }): ReactElement => {
 							<Input
 								value={contractNumber}
 								onChange={(e) => setContractNumber(e.target.value)}
-								placeholder="Contoh: 001/HR-PKWT/X/2026"
+								placeholder={`Contoh: 001/HR-PKWT/X/${new Date().getFullYear()}`}
 								required
 							/>
 						</div>

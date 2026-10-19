@@ -96,7 +96,7 @@ export const OvertimeTable: FC<TOvertimeTableProps> = ({
 									<TableCell>
 										<div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
 											<User className="size-3.5 text-muted-foreground" />
-											{ot.employeeId.slice(0, 8)}...
+											{ot.employeeName ?? `${ot.employeeId.slice(0, 8)}...`}
 										</div>
 									</TableCell>
 									<TableCell className="font-mono text-xs text-foreground">

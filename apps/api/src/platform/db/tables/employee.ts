@@ -70,10 +70,8 @@ export const employee = pgTable(
 		bpjsKetenagakerjaanNumber: text("bpjs_ketenagakerjaan_number"),
 		jkkRiskGrade: integer("jkk_risk_grade").notNull().default(1),
 		// UU PDP
-		pdpConsentGiven: boolean("pdp_consent_given").notNull().default(true),
-		pdpConsentDate: timestamp("pdp_consent_date", { withTimezone: true })
-			.notNull()
-			.defaultNow(),
+		pdpConsentGiven: boolean("pdp_consent_given").notNull().default(false),
+		pdpConsentDate: timestamp("pdp_consent_date", { withTimezone: true }),
 		createdAt: timestamp("created_at", { withTimezone: true })
 			.notNull()
 			.defaultNow(),

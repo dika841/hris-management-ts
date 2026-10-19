@@ -1,15 +1,23 @@
 import { type TEmployee, employeeSchema } from "@app/schemas";
 import type { TEmployeeRow } from "#/employee/domain/employee.ts";
 
-export const toEmployeeDto = (row: TEmployeeRow): TEmployee =>
+const MASKED_VALUE = "••••••••";
+
+const maskValue = (value: string | null): string | null =>
+	value === null ? null : MASKED_VALUE;
+
+export const toEmployeeDto = (
+	row: TEmployeeRow,
+	maskSensitive = false,
+): TEmployee =>
 	employeeSchema.parse({
 		id: row.id,
 		userId: row.userId,
 		employeeCode: row.employeeCode,
-		idCardNumber: row.idCardNumber,
+		idCardNumber: maskSensitive ? MASKED_VALUE : row.idCardNumber,
 		fullName: row.fullName,
 		email: row.email,
-		phone: row.phone,
+		phone: maskSensitive ? maskValue(row.phone) : row.phone,
 		gender: row.gender,
 		dateOfBirth: row.dateOfBirth,
 		department: row.department,
@@ -20,12 +28,20 @@ export const toEmployeeDto = (row: TEmployeeRow): TEmployee =>
 		basicSalary: row.basicSalary,
 		taxMethod: row.taxMethod,
 		ptkpCode: row.ptkpCode,
-		npwp: row.npwp,
+		npwp: maskSensitive ? maskValue(row.npwp) : row.npwp,
 		bankName: row.bankName,
-		bankAccountNumber: row.bankAccountNumber,
-		bankAccountHolder: row.bankAccountHolder,
-		bpjsKesehatanNumber: row.bpjsKesehatanNumber,
-		bpjsKetenagakerjaanNumber: row.bpjsKetenagakerjaanNumber,
+		bankAccountNumber: maskSensitive
+			? maskValue(row.bankAccountNumber)
+			: row.bankAccountNumber,
+		bankAccountHolder: maskSensitive
+			? maskValue(row.bankAccountHolder)
+			: row.bankAccountHolder,
+		bpjsKesehatanNumber: maskSensitive
+			? maskValue(row.bpjsKesehatanNumber)
+			: row.bpjsKesehatanNumber,
+		bpjsKetenagakerjaanNumber: maskSensitive
+			? maskValue(row.bpjsKetenagakerjaanNumber)
+			: row.bpjsKetenagakerjaanNumber,
 		jkkRiskGrade: row.jkkRiskGrade,
 		pdpConsentGiven: row.pdpConsentGiven,
 		pdpConsentDate: row.pdpConsentDate

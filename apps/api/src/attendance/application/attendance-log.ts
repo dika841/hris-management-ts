@@ -14,6 +14,25 @@ import {
 } from "#/shared/activity-recorder.ts";
 import { type EDatabase, ENotFound } from "#/shared/errors.ts";
 
+const STANDARD_WORK_START_MINUTES = 8 * 60;
+const STANDARD_WORK_END_MINUTES = 17 * 60;
+const JAKARTA_TIME_ZONE = "Asia/Jakarta";
+
+const minutesInJakarta = (value: Date): number => {
+	const formatter = new Intl.DateTimeFormat("en-GB", {
+		timeZone: JAKARTA_TIME_ZONE,
+		hour: "2-digit",
+		minute: "2-digit",
+		hour12: false,
+	});
+	const parts = formatter.formatToParts(value);
+	const hour = Number(parts.find((part) => part.type === "hour")?.value ?? "0");
+	const minute = Number(
+		parts.find((part) => part.type === "minute")?.value ?? "0",
+	);
+	return hour * 60 + minute;
+};
+
 export const attendanceLog = Effect.fn("attendanceLog")(function* (
 	input: TAttendanceLogInput,
 	actorId: string,
@@ -34,10 +53,10 @@ export const attendanceLog = Effect.fn("attendanceLog")(function* (
 	// Check if holiday
 	const holiday = yield* attendanceRepo.findHolidayByDate(input.attendanceDate);
 
-	// Calculate effective work and late minutes
+	// Calculate effective work, late, and early-departure minutes in WIB.
 	let effectiveWorkMinutes = 0;
 	let lateMinutes = 0;
-	const STANDARD_WORK_START = 8 * 60; // 08:00
+	let earlyDepartureMinutes = 0;
 
 	if (input.checkIn && input.checkOut) {
 		const checkInTime = new Date(input.checkIn);
@@ -47,9 +66,14 @@ export const attendanceLog = Effect.fn("attendanceLog")(function* (
 			Math.round((checkOutTime.getTime() - checkInTime.getTime()) / 60000),
 		);
 
-		const checkInMinutes =
-			checkInTime.getHours() * 60 + checkInTime.getMinutes();
-		lateMinutes = Math.max(0, checkInMinutes - STANDARD_WORK_START);
+		lateMinutes = Math.max(
+			0,
+			minutesInJakarta(checkInTime) - STANDARD_WORK_START_MINUTES,
+		);
+		earlyDepartureMinutes = Math.max(
+			0,
+			STANDARD_WORK_END_MINUTES - minutesInJakarta(checkOutTime),
+		);
 	}
 
 	const row = yield* attendanceRepo.upsertAttendanceLog({
@@ -59,7 +83,7 @@ export const attendanceLog = Effect.fn("attendanceLog")(function* (
 		checkOut: input.checkOut ? new Date(input.checkOut) : null,
 		status: holiday !== null ? "holiday" : (input.status ?? "present"),
 		lateMinutes,
-		earlyDepartureMinutes: 0,
+		earlyDepartureMinutes,
 		effectiveWorkMinutes,
 		leaveRequestId: null,
 		notes:

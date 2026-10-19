@@ -180,6 +180,12 @@ export const employeeRepoLayer = Layer.effect(
 							D.merge(patch, {
 								updatedAt: new Date(),
 								...(patch.email ? { email: patch.email.toLowerCase() } : {}),
+								...(patch.pdpConsentGiven === true
+									? { pdpConsentDate: new Date() }
+									: {}),
+								...(patch.pdpConsentGiven === false
+									? { pdpConsentDate: null }
+									: {}),
 							}),
 						)
 						.where(eq(employee.id, id))
@@ -327,6 +333,53 @@ export const employeeRepoLayer = Layer.effect(
 				catch: (cause) => new EDatabase({ cause }),
 			});
 
+		const stats: TEmployeeRepo["stats"] = () =>
+			Effect.tryPromise({
+				try: async () => {
+					const countBy = (where?: SQL) =>
+						dbActive(db)
+							.select({ value: count() })
+							.from(employee)
+							.where(where)
+							.then(([row]) => row?.value ?? 0);
+
+					const [
+						total,
+						permanent,
+						contract,
+						probation,
+						intern,
+						pdpConsent,
+						taxMethodGross,
+						taxMethodGrossUp,
+						taxMethodNett,
+					] = await Promise.all([
+						countBy(),
+						countBy(eq(employee.employmentStatus, "permanent")),
+						countBy(eq(employee.employmentStatus, "contract")),
+						countBy(eq(employee.employmentStatus, "probation")),
+						countBy(eq(employee.employmentStatus, "intern")),
+						countBy(eq(employee.pdpConsentGiven, true)),
+						countBy(eq(employee.taxMethod, "gross")),
+						countBy(eq(employee.taxMethod, "gross_up")),
+						countBy(eq(employee.taxMethod, "nett")),
+					]);
+
+					return {
+						total,
+						permanent,
+						contract,
+						probation,
+						intern,
+						pdpConsent,
+						taxMethodGross,
+						taxMethodGrossUp,
+						taxMethodNett,
+					};
+				},
+				catch: (cause) => new EDatabase({ cause }),
+			});
+
 		return EmployeeRepo.of({
 			list,
 			findById,
@@ -335,6 +388,7 @@ export const employeeRepoLayer = Layer.effect(
 			create,
 			update,
 			remove,
+			stats,
 			listContracts,
 			findContractById,
 			createContract,
