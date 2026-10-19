@@ -1,10 +1,15 @@
-import { ROLE_MESSAGE } from "@app/messages";
-import { isRole } from "@app/permissions";
+import { ROLE_MESSAGE, AUTH_MESSAGE } from "@app/messages";
+import { isRole, PERMISSION, ROLE } from "@app/permissions";
 import type { TRoleDto, TRoleUpdateInput } from "@app/schemas";
 import { Effect } from "effect";
 import { toRoleDto } from "#/role/application/to-role-dto.ts";
 import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
-import { EBadRequest, type EDatabase, ENotFound } from "#/shared/errors.ts";
+import {
+	EBadRequest,
+	type EDatabase,
+	EForbidden,
+	ENotFound,
+} from "#/shared/errors.ts";
 import {
 	ActivityRecorder,
 	type TActivityRecorderId,
@@ -17,13 +22,21 @@ import {
 export const roleUpdate = Effect.fn("roleUpdate")(function* (
 	input: TRoleUpdateInput,
 	actorId: string,
+	actorRole: string,
 ): Effect.fn.Return<
 	TRoleDto,
-	ENotFound | EBadRequest | EDatabase,
+	ENotFound | EBadRequest | EForbidden | EDatabase,
 	TCustomRoleRepoId | TActivityRecorderId
 > {
 	const customRoleRepo = yield* CustomRoleRepo;
 	const activityRepo = yield* ActivityRecorder;
+
+	if (
+		input.permissions?.includes(PERMISSION.FEATURE_FLAG_MANAGE) === true &&
+		actorRole !== ROLE.SUPERADMIN
+	) {
+		return yield* new EForbidden({ message: AUTH_MESSAGE.FORBIDDEN });
+	}
 
 	if (isRole(input.key)) {
 		return yield* new EBadRequest({ message: ROLE_MESSAGE.FIXED });

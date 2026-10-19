@@ -30,7 +30,8 @@ export const ROLE_LABEL = {
 } as const satisfies Record<TRole, string>;
 
 export const ROLE_DESCRIPTION = {
-	superadmin: "Full access, including feature flag management and ownership bypass.",
+	superadmin:
+		"Full access, including feature flag management and ownership bypass.",
 	admin: "Full access except feature flag management.",
 	member: "Standard member access.",
 	viewer: "Read-only access.",

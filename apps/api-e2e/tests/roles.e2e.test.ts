@@ -49,6 +49,20 @@ describe("roles REST endpoints", () => {
 		);
 	});
 
+	it("prevents admins from granting feature flag management", async (): Promise<void> => {
+		const response = await apiFetch({
+			path: "/roles",
+			cookie: adminCookie,
+			method: "POST",
+			body: {
+				key: "e2e-flag-admin",
+				label: "Flag Admin",
+				permissions: [PERMISSION.FEATURE_FLAG_MANAGE],
+			},
+		});
+		expect(response.status).toBe(403);
+	});
+
 	it("refuses to modify or delete a fixed role", async (): Promise<void> => {
 		const update = await apiFetch({
 			path: `/roles/${ROLE.ADMIN}`,

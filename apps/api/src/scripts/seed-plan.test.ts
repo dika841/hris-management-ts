@@ -22,7 +22,7 @@ describe("seedPlanFor", () => {
 		).toBeNull();
 	});
 
-	it("seeds only the admin in production, with the configured password", () => {
+	it("seeds the fixed accounts in production without demo data", () => {
 		expect(
 			seedPlanFor({ NODE_ENV: "production", SEED_PASSWORD: CONFIGURED }),
 		).toEqual({ password: CONFIGURED, demoData: false });

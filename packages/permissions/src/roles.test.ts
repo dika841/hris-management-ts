@@ -11,11 +11,12 @@ describe("permissionsForRole", () => {
 				PERMISSION.USER_MANAGE,
 				PERMISSION.EMPLOYEE_MANAGE,
 				PERMISSION.PAYROLL_CALCULATE,
+				PERMISSION.FEATURE_FLAG_MANAGE,
 			]),
 		).toBe(true);
 	});
 
-	it("grants every permission to admin", (): void => {
+	it("grants admin access except feature flag management", (): void => {
 		const granted = permissionsForRole(ROLE.ADMIN);
 		expect(
 			canAll(granted, [
@@ -24,6 +25,7 @@ describe("permissionsForRole", () => {
 				PERMISSION.PAYROLL_CALCULATE,
 			]),
 		).toBe(true);
+		expect(canAll(granted, [PERMISSION.FEATURE_FLAG_MANAGE])).toBe(false);
 	});
 
 	it("restricts viewer to read-only", (): void => {

@@ -42,7 +42,15 @@ describe("permissionsResolve", () => {
 			),
 		);
 
-		expect(canAll(granted, ALL_PERMISSIONS)).toBe(true);
+		expect(
+			canAll(
+				granted,
+				ALL_PERMISSIONS.filter(
+					(permission) => permission !== PERMISSION.FEATURE_FLAG_MANAGE,
+				),
+			),
+		).toBe(true);
+		expect(granted).not.toContain(PERMISSION.FEATURE_FLAG_MANAGE);
 		expect(findByKey).not.toHaveBeenCalled();
 	});
 

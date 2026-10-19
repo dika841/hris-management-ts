@@ -24,6 +24,13 @@ import { seedPlanFor, type TSeedPlan } from "#/scripts/seed-plan.ts";
 const EXIT_OK = 0;
 const EXIT_FAILURE = 1;
 
+const superadminUserFor = (password: string): TUserCreateInput => ({
+	name: "Superadmin",
+	email: "superadmin@test.app",
+	password,
+	role: ROLE.SUPERADMIN,
+});
+
 const adminUserFor = (password: string): TUserCreateInput => ({
 	name: "Admin",
 	email: "admin@test.app",
@@ -329,7 +336,9 @@ const seedRun = (
 	plan: TSeedPlan,
 ): Effect.Effect<void, never, TDbServiceId | TAuthServiceId> =>
 	Effect.gen(function* () {
+		const superadmin = superadminUserFor(plan.password);
 		const admin = adminUserFor(plan.password);
+		yield* userEnsure(superadmin);
 		yield* userEnsure(admin);
 		yield* referenceSeed();
 
@@ -338,8 +347,8 @@ const seedRun = (
 			.otherwise(() => Effect.void);
 
 		const seeded = match(plan.demoData)
-			.with(true, () => [admin, ...demoUsersFor(plan.password)])
-			.otherwise(() => [admin]);
+			.with(true, () => [superadmin, admin, ...demoUsersFor(plan.password)])
+			.otherwise(() => [superadmin, admin]);
 
 		logger.info(
 			{
