@@ -12,6 +12,7 @@ import {
 	employeeListInputSchema,
 	employeeListSchema,
 	employeeSchema,
+	employeeStatsSchema,
 	employeeUpdateInputSchema,
 	positionCreateInputSchema,
 	positionSchema,
@@ -28,6 +29,7 @@ import { employeeCreate } from "#/employee/application/employee-create.ts";
 import { employeeDelete } from "#/employee/application/employee-delete.ts";
 import { employeeGet } from "#/employee/application/employee-get.ts";
 import { employeeList } from "#/employee/application/employee-list.ts";
+import { employeeStats } from "#/employee/application/employee-stats.ts";
 import { employeeUpdate } from "#/employee/application/employee-update.ts";
 import { expiringContractsGet } from "#/employee/application/expiring-contracts-get.ts";
 import { positionCreate } from "#/employee/application/position-create.ts";
@@ -46,15 +48,32 @@ const employeeRouter = {
 		.input(employeeListInputSchema)
 		.output(employeeListSchema)
 		.handler(({ input, context }) =>
-			effectRun(context.runtime, employeeList(input)),
+			effectRun(
+				context.runtime,
+				employeeList(
+					input,
+					!context.permissions.includes(PERMISSION.EMPLOYEE_MANAGE),
+				),
+			),
 		),
+
+	stats: permissionRequire(PERMISSION.EMPLOYEE_READ)
+		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.EMPLOYEE_STATS })
+		.output(employeeStatsSchema)
+		.handler(({ context }) => effectRun(context.runtime, employeeStats())),
 
 	get: permissionRequire(PERMISSION.EMPLOYEE_READ)
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.EMPLOYEE })
 		.input(employeeIdInputSchema)
 		.output(employeeSchema)
 		.handler(({ input, context }) =>
-			effectRun(context.runtime, employeeGet(input)),
+			effectRun(
+				context.runtime,
+				employeeGet(
+					input,
+					!context.permissions.includes(PERMISSION.EMPLOYEE_MANAGE),
+				),
+			),
 		),
 
 	create: permissionRequire(PERMISSION.EMPLOYEE_MANAGE)

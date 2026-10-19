@@ -13,6 +13,7 @@ import {
 	type TAttendanceRepoId,
 } from "#/attendance/domain/attendance.ts";
 import {
+	calculateMaternitySalarySchedule,
 	calculateWorkingDays,
 	isAnnualLeaveEligible,
 } from "#/attendance/domain/overtime-calculator.ts";
@@ -105,36 +106,61 @@ export const leaveRequestCreate = Effect.fn("leaveRequestCreate")(function* (
 			});
 		}
 
-		// Check balance
+		// Check balance, lazily creating the yearly allocation from the leave type
 		const year = new Date(input.startDate).getFullYear();
-		const balance = yield* attendanceRepo.findLeaveBalance(
+		const existingBalance = yield* attendanceRepo.findLeaveBalance(
 			input.employeeId,
 			input.leaveTypeId,
 			year,
 		);
+		const balance =
+			existingBalance ??
+			(yield* attendanceRepo.upsertLeaveBalance({
+				employeeId: input.employeeId,
+				leaveTypeId: input.leaveTypeId,
+				year,
+				allocatedDays: leaveType.defaultDays,
+				carryOverDays: 0,
+				usedDays: 0,
+				pendingDays: 0,
+				forfeitedDays: 0,
+			}));
 
-		if (balance !== null) {
-			const available =
-				balance.allocatedDays +
-				balance.carryOverDays -
-				balance.usedDays -
-				balance.pendingDays -
-				balance.forfeitedDays;
+		const available =
+			balance.allocatedDays +
+			balance.carryOverDays -
+			balance.usedDays -
+			balance.pendingDays -
+			balance.forfeitedDays;
 
-			if (available < totalDays) {
-				return yield* new EBadRequest({
-					message: ATTENDANCE_MESSAGE.LEAVE_INSUFFICIENT_BALANCE,
-				});
-			}
-
-			// Update pending days
-			yield* attendanceRepo.updateLeaveBalance(balance.id, {
-				pendingDays: balance.pendingDays + totalDays,
+		if (available < totalDays) {
+			return yield* new EBadRequest({
+				message: ATTENDANCE_MESSAGE.LEAVE_INSUFFICIENT_BALANCE,
 			});
 		}
+
+		// Update pending days
+		yield* attendanceRepo.updateLeaveBalance(balance.id, {
+			pendingDays: balance.pendingDays + totalDays,
+		});
 	}
 
-	// 9. Create the leave request
+	// 9. Determine the statutory salary percentage for this request.
+	const maternitySchedule =
+		leaveType.code === LEAVE_CODE.MATERNITY
+			? calculateMaternitySalarySchedule(Math.max(3, Math.ceil(totalDays / 30)))
+			: [];
+	const salaryPercentageAtTime =
+		maternitySchedule.length > 0
+			? Math.round(
+					maternitySchedule.reduce(
+						(total, month) => total + month.salaryPercentage,
+						0,
+					) / maternitySchedule.length,
+				)
+			: leaveType.salaryPercentage;
+
+	// 10. Create the leave request
 	const row = yield* attendanceRepo.createLeaveRequest({
 		employeeId: input.employeeId,
 		leaveTypeId: input.leaveTypeId,
@@ -148,7 +174,7 @@ export const leaveRequestCreate = Effect.fn("leaveRequestCreate")(function* (
 		approverId: null,
 		approvedAt: null,
 		rejectionReason: null,
-		salaryPercentageAtTime: leaveType.salaryPercentage,
+		salaryPercentageAtTime,
 		notes: null,
 	});
 

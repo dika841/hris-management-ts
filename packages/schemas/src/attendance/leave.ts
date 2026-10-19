@@ -100,6 +100,7 @@ export const leaveRequestStatusSchema = z.enum([
 
 export const leaveRequestSchema = baseSchema(leaveRequestIdSchema).extend({
 	employeeId: z.string(),
+	employeeName: z.string().optional(),
 	leaveTypeId: z.string(),
 	leaveTypeName: z.string().optional(),
 	startDate: z.string(),

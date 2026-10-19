@@ -51,7 +51,9 @@ export const EmployeeCreateForm: FC = (): ReactElement => {
 	const [employmentStatus, setEmploymentStatus] = useState<TEmploymentStatus>(
 		EMPLOYMENT_STATUS.PERMANENT,
 	);
-	const [joinDate, setJoinDate] = useState("2026-01-01");
+	const [joinDate, setJoinDate] = useState(
+		new Date().toISOString().split("T")[0] ?? "",
+	);
 
 	// Compensation & Tax (PMK 168/2023)
 	const [basicSalary, setBasicSalary] = useState(12_000_000);
@@ -68,7 +70,7 @@ export const EmployeeCreateForm: FC = (): ReactElement => {
 		useState("");
 
 	// Privacy consent (UU PDP)
-	const [pdpConsentGiven, setPdpConsentGiven] = useState(true);
+	const [pdpConsentGiven, setPdpConsentGiven] = useState(false);
 
 	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault();
@@ -569,6 +571,7 @@ export const EmployeeCreateForm: FC = (): ReactElement => {
 						<input
 							id="pdp-consent"
 							type="checkbox"
+							required
 							checked={pdpConsentGiven}
 							onChange={(e) => setPdpConsentGiven(e.target.checked)}
 							className="mt-0.5 rounded border-border"

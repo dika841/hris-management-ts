@@ -10,6 +10,7 @@ import { type EDatabase, ENotFound } from "#/shared/errors.ts";
 
 export const employeeGet = Effect.fn("employeeGet")(function* (
 	input: TEmployeeIdInput,
+	maskSensitive = false,
 ): Effect.fn.Return<TEmployee, ENotFound | EDatabase, TEmployeeRepoId> {
 	const employeeRepo = yield* EmployeeRepo;
 	const row = yield* employeeRepo.findById(input.id);
@@ -18,5 +19,5 @@ export const employeeGet = Effect.fn("employeeGet")(function* (
 		return yield* new ENotFound({ message: EMPLOYEE_MESSAGE.NOT_FOUND });
 	}
 
-	return toEmployeeDto(row);
+	return toEmployeeDto(row, maskSensitive);
 });

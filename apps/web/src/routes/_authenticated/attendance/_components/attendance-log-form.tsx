@@ -40,7 +40,12 @@ export const AttendanceLogForm: FC = (): ReactElement => {
 	const [status, setStatus] = useState<TAttendanceStatus>(
 		ATTENDANCE_STATUS.PRESENT,
 	);
+	const [checkIn, setCheckIn] = useState("08:00");
+	const [checkOut, setCheckOut] = useState("17:00");
 	const [notes, setNotes] = useState("");
+
+	const toJakartaIso = (time: string): string =>
+		new Date(`${attendanceDate}T${time}:00+07:00`).toISOString();
 
 	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault();
@@ -49,6 +54,8 @@ export const AttendanceLogForm: FC = (): ReactElement => {
 				employeeId,
 				attendanceDate,
 				status,
+				checkIn: checkIn ? toJakartaIso(checkIn) : undefined,
+				checkOut: checkOut ? toJakartaIso(checkOut) : undefined,
 				notes: notes || undefined,
 			},
 			{
@@ -165,6 +172,32 @@ export const AttendanceLogForm: FC = (): ReactElement => {
 					</div>
 				</CardHeader>
 				<CardContent className="space-y-4">
+					<div className="grid gap-4 sm:grid-cols-2">
+						<div className="space-y-1.5">
+							<Label htmlFor="checkIn" className="text-xs font-medium">
+								Jam Masuk (WIB)
+							</Label>
+							<Input
+								id="checkIn"
+								type="time"
+								value={checkIn}
+								onChange={(e) => setCheckIn(e.target.value)}
+								className="text-xs font-mono"
+							/>
+						</div>
+						<div className="space-y-1.5">
+							<Label htmlFor="checkOut" className="text-xs font-medium">
+								Jam Keluar (WIB)
+							</Label>
+							<Input
+								id="checkOut"
+								type="time"
+								value={checkOut}
+								onChange={(e) => setCheckOut(e.target.value)}
+								className="text-xs font-mono"
+							/>
+						</div>
+					</div>
 					<div className="space-y-1.5">
 						<Label htmlFor="notes" className="text-xs font-medium">
 							Catatan Tambahan

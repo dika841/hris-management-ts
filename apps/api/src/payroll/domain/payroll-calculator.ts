@@ -217,11 +217,16 @@ export const calculatePayroll = (
 	const annualPph21Calculated =
 		calculateArticle17ProgressiveTax(taxableIncomeAnnual);
 
-	// PPh 21 Desember = PPh 21 Setahun - PPh 21 yang telah dipotong Jan s/d Nov
+	// PPh 21 Desember = PPh 21 Setahun - PPh 21 yang telah dipotong Jan s/d Nov.
+	// Nilai negatif adalah lebih bayar (refund) dan mengurangi potongan karyawan.
 	const rawDecemberPph21 = annualPph21Calculated - ytdPph21JanToNov;
-	pph21Monthly = Math.max(0, rawDecemberPph21);
+	pph21Monthly = rawDecemberPph21;
 
-	explanation = `Bulan 12 (Rekonsiliasi Tahunan): PKP Setahun Rp ${taxableIncomeAnnual.toLocaleString("id-ID")}, PPh 21 Setahun Rp ${annualPph21Calculated.toLocaleString("id-ID")}, telah dipotong Jan-Nov Rp ${ytdPph21JanToNov.toLocaleString("id-ID")}, PPh 21 Masa Desember Rp ${pph21Monthly.toLocaleString("id-ID")}.`;
+	const reconciliationNote =
+		pph21Monthly < 0
+			? ` Terjadi lebih bayar sebesar Rp ${Math.abs(pph21Monthly).toLocaleString("id-ID")} yang dikembalikan ke karyawan.`
+			: "";
+	explanation = `Bulan 12 (Rekonsiliasi Tahunan): PKP Setahun Rp ${taxableIncomeAnnual.toLocaleString("id-ID")}, PPh 21 Setahun Rp ${annualPph21Calculated.toLocaleString("id-ID")}, telah dipotong Jan-Nov Rp ${ytdPph21JanToNov.toLocaleString("id-ID")}, PPh 21 Masa Desember Rp ${pph21Monthly.toLocaleString("id-ID")}.${reconciliationNote}`;
 
 	const isPphDeductedFromEmployee = input.taxMethod !== TAX_METHOD.NETT;
 

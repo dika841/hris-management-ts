@@ -134,7 +134,7 @@ export const employeeCreateInputSchema = z.object({
 	bpjsKesehatanNumber: z.string().max(50).optional(),
 	bpjsKetenagakerjaanNumber: z.string().max(50).optional(),
 	jkkRiskGrade: z.number().min(1).max(5).default(1),
-	pdpConsentGiven: z.boolean().default(true),
+	pdpConsentGiven: z.boolean().default(false),
 });
 export type TEmployeeCreateInput = z.infer<typeof employeeCreateInputSchema>;
 
@@ -178,3 +178,16 @@ export type TEmployeeListInput = z.infer<typeof employeeListInputSchema>;
 
 export const employeeListSchema = paginated(employeeSchema);
 export type TEmployeeList = z.infer<typeof employeeListSchema>;
+
+export const employeeStatsSchema = z.object({
+	total: z.number().int().nonnegative(),
+	permanent: z.number().int().nonnegative(),
+	contract: z.number().int().nonnegative(),
+	probation: z.number().int().nonnegative(),
+	intern: z.number().int().nonnegative(),
+	pdpConsent: z.number().int().nonnegative(),
+	taxMethodGross: z.number().int().nonnegative(),
+	taxMethodGrossUp: z.number().int().nonnegative(),
+	taxMethodNett: z.number().int().nonnegative(),
+});
+export type TEmployeeStats = z.infer<typeof employeeStatsSchema>;

@@ -87,7 +87,7 @@ export const LeaveRequestTable: FC<TLeaveRequestTableProps> = ({
 								<TableCell>
 									<div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
 										<User className="size-3.5 text-muted-foreground" />
-										{req.employeeId.slice(0, 8)}...
+										{req.employeeName ?? `${req.employeeId.slice(0, 8)}...`}
 									</div>
 								</TableCell>
 								<TableCell>

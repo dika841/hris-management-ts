@@ -40,7 +40,7 @@ export const payrollPeriodSchema = baseSchema(payrollPeriodIdSchema).extend({
 	status: payrollPeriodStatusSchema,
 	totalEmployees: z.number().int().nonnegative().default(0),
 	totalGross: z.number().int().nonnegative().default(0),
-	totalPph21: z.number().int().nonnegative().default(0),
+	totalPph21: z.number().int().default(0),
 	totalNetPay: z.number().int().nonnegative().default(0),
 });
 export type TPayrollPeriod = TEntityOf<z.infer<typeof payrollPeriodSchema>>;
@@ -96,8 +96,8 @@ export const taxBreakdownSchema = z.object({
 	taxableGrossMonthly: z.number().int().nonnegative(),
 	// Untuk Gross-Up
 	taxAllowance: z.number().int().nonnegative(),
-	// PPh 21 Terhitung
-	pph21Monthly: z.number().int().nonnegative(),
+	// PPh 21 Terhitung. Negatif berarti lebih bayar pada rekonsiliasi Desember.
+	pph21Monthly: z.number().int(),
 	// Data Tahunan (bila rekonsiliasi Desember)
 	annualizedGross: z.number().int().nonnegative().optional(),
 	occupationalCost: z.number().int().nonnegative().optional(), // Biaya jabatan maks 6jt/thn

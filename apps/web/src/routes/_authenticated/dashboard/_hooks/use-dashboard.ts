@@ -42,13 +42,10 @@ export const useDashboardActivity = (): TActivityOut["list"] => {
 	return data;
 };
 
-export const useDashboardEmployees = () => {
+export const useDashboardEmployeeStats = () => {
 	return useQuery(
-		orpc.employee.list.queryOptions({
-			input: { page: 1, pageSize: 100 },
-			queryKey: orpc.employee.list.key({
-				input: { page: 1, pageSize: 100 },
-			}),
+		orpc.employee.stats.queryOptions({
+			queryKey: orpc.employee.stats.key(),
 		}),
 	);
 };

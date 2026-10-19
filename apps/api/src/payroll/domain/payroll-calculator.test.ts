@@ -158,4 +158,20 @@ describe("Payroll Calculator Unified Engine", () => {
 		expect(result.tax.annualPph21Calculated).toBeDefined();
 		expect(result.explanation).toContain("Bulan 12 (Rekonsiliasi Tahunan)");
 	});
+
+	it("records a December overpayment as a negative PPh 21 deduction", () => {
+		const result = calculatePayroll({
+			basicSalary: 10_000_000,
+			ptkpCode: "TK/0",
+			taxMethod: "gross",
+			month: 12,
+			ytdContext: {
+				ytdGrossJanToNov: 110_000_000,
+				ytdPph21JanToNov: 50_000_000,
+			},
+		});
+
+		expect(result.tax.pph21Monthly).toBeLessThan(0);
+		expect(result.explanation).toContain("lebih bayar");
+	});
 });

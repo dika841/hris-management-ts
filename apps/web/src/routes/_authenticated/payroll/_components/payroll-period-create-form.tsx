@@ -14,16 +14,46 @@ import { AlertCircle, Calendar, CalendarPlus, Loader2 } from "lucide-react";
 import { useState, type FC, type FormEvent, type ReactElement } from "react";
 import { usePayrollPeriodCreate } from "#/routes/_authenticated/payroll/_hooks/use-payroll.ts";
 
+const dateOnly = (date: Date): string =>
+	`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+		date.getDate(),
+	).padStart(2, "0")}`;
+
+const payrollDefaults = (): {
+	name: string;
+	month: number;
+	year: number;
+	startDate: string;
+	endDate: string;
+	payDate: string;
+} => {
+	const now = new Date();
+	const year = now.getFullYear();
+	const month = now.getMonth() + 1;
+	return {
+		name: new Intl.DateTimeFormat("id-ID", {
+			month: "long",
+			year: "numeric",
+		}).format(now),
+		month,
+		year,
+		startDate: dateOnly(new Date(year, month - 1, 1)),
+		endDate: dateOnly(new Date(year, month, 0)),
+		payDate: dateOnly(new Date(year, month - 1, 25)),
+	};
+};
+
 export const PayrollPeriodCreateForm: FC = (): ReactElement => {
 	const navigate = useNavigate();
 	const createMutation = usePayrollPeriodCreate();
+	const defaults = payrollDefaults();
 
-	const [name, setName] = useState("Oktober 2026");
-	const [month, setMonth] = useState(10);
-	const [year, setYear] = useState(2026);
-	const [startDate, setStartDate] = useState("2026-10-01");
-	const [endDate, setEndDate] = useState("2026-10-31");
-	const [payDate, setPayDate] = useState("2026-10-28");
+	const [name, setName] = useState(defaults.name);
+	const [month, setMonth] = useState(defaults.month);
+	const [year, setYear] = useState(defaults.year);
+	const [startDate, setStartDate] = useState(defaults.startDate);
+	const [endDate, setEndDate] = useState(defaults.endDate);
+	const [payDate, setPayDate] = useState(defaults.payDate);
 
 	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault();
@@ -74,7 +104,7 @@ export const PayrollPeriodCreateForm: FC = (): ReactElement => {
 							required
 							value={name}
 							onChange={(e) => setName(e.target.value)}
-							placeholder="Oktober 2026"
+							placeholder={`Contoh: ${defaults.name}`}
 							className="text-xs"
 						/>
 					</div>

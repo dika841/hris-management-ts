@@ -13,9 +13,18 @@ import type { FC, ReactElement } from "react";
 import { useI18n } from "#/libs/i18n/index.ts";
 import { useExpiringContracts } from "#/routes/_authenticated/employees/_hooks/use-employees.ts";
 
+const daysUntil = (date: string): number =>
+	Math.ceil(
+		(new Date(`${date}T00:00:00Z`).getTime() - Date.now()) / 86_400_000,
+	);
+
 export const ContractExpirationAlertCard: FC = (): ReactElement => {
-	const { data: expiringContracts } = useExpiringContracts(30);
-	const { t } = useI18n();
+	const { data: expiringContracts } = useExpiringContracts(60);
+	const { t, isIndonesian } = useI18n();
+	const urgentCount = expiringContracts.filter(
+		(contract) =>
+			contract.endDate !== null && daysUntil(contract.endDate) <= 30,
+	).length;
 
 	return (
 		<Card className="border-border/60">
@@ -27,10 +36,12 @@ export const ContractExpirationAlertCard: FC = (): ReactElement => {
 					</CardTitle>
 				</div>
 				<Badge
-					variant={expiringContracts.length > 0 ? "destructive" : "outline"}
+					variant={urgentCount > 0 ? "destructive" : "outline"}
 					className="text-[11px]"
 				>
-					{expiringContracts.length} {t("dashboard.contractExpiringSoon")}
+					{urgentCount > 0
+						? `${urgentCount} H-30`
+						: `${expiringContracts.length} ${isIndonesian ? "H-60" : "within 60d"}`}
 				</Badge>
 			</CardHeader>
 			<CardContent className="space-y-3">
@@ -63,6 +74,18 @@ export const ContractExpirationAlertCard: FC = (): ReactElement => {
 										</span>
 										<span>•</span>
 										<span>{contract.department}</span>
+										{contract.endDate && (
+											<Badge
+												variant="outline"
+												className={`text-[9px] px-1.5 py-0 ${
+													daysUntil(contract.endDate) <= 30
+														? "border-rose-500/40 text-rose-600"
+														: "border-amber-500/40 text-amber-600"
+												}`}
+											>
+												H-{Math.max(0, daysUntil(contract.endDate))}
+											</Badge>
+										)}
 									</div>
 								</div>
 								<Button

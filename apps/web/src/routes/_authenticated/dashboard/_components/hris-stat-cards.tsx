@@ -2,34 +2,34 @@ import { Card, CardContent } from "@app/components/ui/card";
 import { formatRupiah } from "@app/format";
 import { Link } from "@tanstack/react-router";
 import {
-	AlertTriangle,
 	ArrowUpRight,
 	BadgePercent,
 	Coins,
+	ShieldCheck,
 	TrendingUp,
 	Users,
 } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useI18n } from "#/libs/i18n/index.ts";
 import {
-	useDashboardEmployees,
+	useDashboardEmployeeStats,
 	useDashboardPayrollPeriods,
 } from "#/routes/_authenticated/dashboard/_hooks/use-dashboard.ts";
 
 export const HrisStatCards: FC = (): ReactElement => {
-	const employeeQuery = useDashboardEmployees();
+	const employeeQuery = useDashboardEmployeeStats();
 	const payrollQuery = useDashboardPayrollPeriods();
-	const { t } = useI18n();
+	const { t, isIndonesian } = useI18n();
 
-	const employees = employeeQuery.data?.items ?? [];
-	const totalEmployees = employeeQuery.data?.total ?? employees.length;
-
-	const permanentCount = employees.filter(
-		(e) => e.employmentStatus === "permanent",
-	).length;
-	const contractCount = employees.filter(
-		(e) => e.employmentStatus === "contract",
-	).length;
+	const stats = employeeQuery.data;
+	const totalEmployees = stats?.total ?? 0;
+	const permanentCount = stats?.permanent ?? 0;
+	const contractCount = stats?.contract ?? 0;
+	const pdpConsentCount = stats?.pdpConsent ?? 0;
+	const pdpConsentRate =
+		totalEmployees > 0
+			? Math.round((pdpConsentCount / totalEmployees) * 100)
+			: 100;
 
 	const periods = payrollQuery.data?.items ?? [];
 	const latestPeriod = periods[0];
@@ -137,31 +137,32 @@ export const HrisStatCards: FC = (): ReactElement => {
 				</CardContent>
 			</Card>
 
-			{/* Card 4: AI Retention & Burnout Radar */}
+			{/* Card 4: PDP Consent Compliance */}
 			<Card className="relative overflow-hidden border border-border/60 bg-card hover:border-primary/30 transition-all duration-200">
 				<CardContent className="p-5">
 					<div className="flex items-center justify-between">
 						<span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-							{t("dashboard.aiBurnoutAttrition")}
+							{isIndonesian ? "Kepatuhan UU PDP" : "PDP Compliance"}
 						</span>
-						<div className="flex size-9 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
-							<AlertTriangle className="size-4.5" />
+						<div className="flex size-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+							<ShieldCheck className="size-4.5" />
 						</div>
 					</div>
 					<div className="mt-3 flex items-baseline gap-2">
 						<span className="text-3xl font-bold tracking-tight text-foreground">
-							98.4%
+							{pdpConsentRate}%
 						</span>
 						<span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-							{t("dashboard.safeZone")}
+							{isIndonesian ? "Consent tercatat" : "Consent recorded"}
 						</span>
 					</div>
 					<div className="mt-3 flex items-center justify-between border-t border-border/40 pt-3 text-xs text-muted-foreground">
 						<span className="truncate">
-							{t("dashboard.overtimeSpikesSafe")}
+							{pdpConsentCount}/{totalEmployees}{" "}
+							{isIndonesian ? "karyawan" : "employees"}
 						</span>
 						<span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-							{t("dashboard.xaiActive")}
+							UU 27/2022
 						</span>
 					</div>
 				</CardContent>

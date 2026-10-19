@@ -7,6 +7,7 @@ import {
 	timestamp,
 	uuid,
 } from "drizzle-orm/pg-core";
+import { user } from "./auth.ts";
 import { employee } from "./employee.ts";
 
 // ============================================================
@@ -85,7 +86,7 @@ export const leaveRequest = pgTable(
 		doctorNoteUrl: text("doctor_note_url"),
 		attachmentUrl: text("attachment_url"),
 		status: text("status").notNull().default("pending"),
-		approverId: uuid("approver_id").references(() => employee.id, {
+		approverId: text("approver_id").references(() => user.id, {
 			onDelete: "set null",
 		}),
 		approvedAt: timestamp("approved_at", { withTimezone: true }),
@@ -174,7 +175,7 @@ export const overtimeRequest = pgTable(
 		taskDescription: text("task_description"),
 		status: text("status").notNull().default("pending"),
 		// "pending" | "approved" | "rejected" | "cancelled"
-		approverId: uuid("approver_id").references(() => employee.id, {
+		approverId: text("approver_id").references(() => user.id, {
 			onDelete: "set null",
 		}),
 		approvedAt: timestamp("approved_at", { withTimezone: true }),
