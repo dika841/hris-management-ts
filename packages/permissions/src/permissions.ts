@@ -19,6 +19,7 @@ export const PERMISSION = {
 	OVERTIME_APPROVE: "overtime:approve",
 	AI_GOVERNANCE_READ: "ai:governance_read",
 	AI_GOVERNANCE_MANAGE: "ai:governance_manage",
+	FEATURE_FLAG_MANAGE: "feature_flag:manage",
 } as const;
 
 export type TPermission = (typeof PERMISSION)[keyof typeof PERMISSION];

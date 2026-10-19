@@ -23,7 +23,7 @@ import {
 import { effectRun } from "#/platform/orpc/run-effect.ts";
 
 const featureFlagRouter = {
-	list: permissionRequire(PERMISSION.USER_MANAGE)
+	list: permissionRequire(PERMISSION.FEATURE_FLAG_MANAGE)
 		.route({ method: HTTP_METHOD.GET, path: "/feature-flags" })
 		.output(featureFlagListSchema)
 		.handler(({ context }) => effectRun(context.runtime, featureFlagList())),
@@ -35,7 +35,7 @@ const featureFlagRouter = {
 			effectRun(context.runtime, featureFlagEvaluate(context.session!.user.id)),
 		),
 
-	create: permissionRequire(PERMISSION.USER_MANAGE)
+	create: permissionRequire(PERMISSION.FEATURE_FLAG_MANAGE)
 		.route({ method: HTTP_METHOD.POST, path: "/feature-flags" })
 		.input(featureFlagCreateInputSchema)
 		.output(featureFlagSchema)
@@ -46,7 +46,7 @@ const featureFlagRouter = {
 			),
 		),
 
-	update: permissionRequire(PERMISSION.USER_MANAGE)
+	update: permissionRequire(PERMISSION.FEATURE_FLAG_MANAGE)
 		.route({ method: HTTP_METHOD.PATCH, path: "/feature-flags/{id}" })
 		.input(featureFlagUpdateWithIdInputSchema)
 		.output(featureFlagSchema)
@@ -58,7 +58,7 @@ const featureFlagRouter = {
 			);
 		}),
 
-	remove: permissionRequire(PERMISSION.USER_MANAGE)
+	remove: permissionRequire(PERMISSION.FEATURE_FLAG_MANAGE)
 		.route({ method: HTTP_METHOD.DELETE, path: "/feature-flags/{id}" })
 		.input(featureFlagIdInputSchema)
 		.output(z.object({ message: z.string() }))

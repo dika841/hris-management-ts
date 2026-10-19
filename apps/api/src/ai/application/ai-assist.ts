@@ -70,7 +70,9 @@ export const aiAssist = Effect.fn("aiAssist")(function* (
 	EForbidden | EBadRequest | EUpstream | EDatabase,
 	TAiDecisionRepoId | TActivityRecorderId | TFeatureFlagRepoId | TAiProviderId
 > {
-	const enabled = yield* featureFlagEnabled(actorId, AI_ASSISTANT_FLAG);
+	// The flag is a kill switch, not a setup prerequisite: when no flag exists
+	// the assistant is available to users who already hold the permission.
+	const enabled = yield* featureFlagEnabled(actorId, AI_ASSISTANT_FLAG, true);
 	if (!enabled) {
 		return yield* new EForbidden({
 			message: "AI assistant is not enabled for this account.",

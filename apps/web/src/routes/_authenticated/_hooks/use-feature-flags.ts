@@ -51,6 +51,13 @@ export const useFeatureFlag = (key: string): boolean => {
 	return evaluation.data?.find((flag) => flag.key === key)?.enabled ?? false;
 };
 
+export const useFeatureFlagDisabled = (key: string): boolean => {
+	const evaluation = useFeatureFlagEvaluation();
+	return (
+		evaluation.data?.some((flag) => flag.key === key && !flag.enabled) ?? false
+	);
+};
+
 export const useFeatureFlagCreate = (): UseMutationResult<
 	TFlagOut["create"],
 	TFlagErr["create"],

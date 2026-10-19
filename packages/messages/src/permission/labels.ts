@@ -19,6 +19,7 @@ export const PERMISSION_LABEL = {
 	"overtime:approve": "Approve or reject overtime requests",
 	"ai:governance_read": "View AI decisions and review queue",
 	"ai:governance_manage": "Review and manage AI decisions",
+	"feature_flag:manage": "Manage feature flags",
 } as const satisfies Record<TPermission, string>;
 
 export const ROLE_LABEL = {
@@ -29,8 +30,8 @@ export const ROLE_LABEL = {
 } as const satisfies Record<TRole, string>;
 
 export const ROLE_DESCRIPTION = {
-	superadmin: "Full access, including ownership bypass.",
-	admin: "Full access, including user and role management.",
+	superadmin: "Full access, including feature flag management and ownership bypass.",
+	admin: "Full access except feature flag management.",
 	member: "Standard member access.",
 	viewer: "Read-only access.",
 } as const satisfies Record<TRole, string>;

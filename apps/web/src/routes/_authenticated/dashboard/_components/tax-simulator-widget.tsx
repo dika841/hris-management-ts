@@ -73,9 +73,9 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 	];
 
 	return (
-		<Card className="border border-border/60 bg-card overflow-hidden">
+		<Card className="border border-border/60 bg-card overflow-hidden py-0">
 			<CardHeader className="bg-muted/30 pb-4 border-b border-border/40">
-				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-3">
 					<div className="flex items-center gap-2">
 						<div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
 							<Calculator className="size-4.5" />
@@ -158,11 +158,10 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 										key={code}
 										type="button"
 										onClick={() => setPtkpCode(code)}
-										className={`py-1.5 px-2 rounded-md text-xs font-medium border transition-colors ${
-											ptkpCode === code
-												? "bg-primary text-primary-foreground border-primary"
-												: "bg-muted/40 text-muted-foreground border-border/60 hover:bg-muted"
-										}`}
+										className={`py-1.5 px-2 rounded-md text-xs font-medium border transition-colors ${ptkpCode === code
+											? "bg-primary text-primary-foreground border-primary"
+											: "bg-muted/40 text-muted-foreground border-border/60 hover:bg-muted"
+											}`}
 									>
 										{code}
 									</button>
@@ -180,11 +179,10 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 										key={method.id}
 										type="button"
 										onClick={() => setTaxMethod(method.id)}
-										className={`p-2 rounded-lg text-left border transition-all ${
-											taxMethod === method.id
-												? "bg-primary/5 border-primary text-primary dark:bg-primary/10"
-												: "bg-muted/20 border-border/60 text-muted-foreground hover:bg-muted/40"
-										}`}
+										className={`p-2 rounded-lg text-left border transition-all ${taxMethod === method.id
+											? "bg-primary/5 border-primary text-primary dark:bg-primary/10"
+											: "bg-muted/20 border-border/60 text-muted-foreground hover:bg-muted/40"
+											}`}
 									>
 										<div className="text-xs font-semibold">{method.label}</div>
 										<div className="text-[10px] text-muted-foreground">

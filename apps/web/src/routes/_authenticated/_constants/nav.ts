@@ -127,7 +127,7 @@ export const NAV_ITEMS: readonly TNavItem[] = [
 		to: "/feature-flags",
 		key: "featureFlags",
 		label: NAV_MESSAGE.FEATURE_FLAGS,
-		permissions: [PERMISSION.USER_MANAGE],
+		permissions: [PERMISSION.FEATURE_FLAG_MANAGE],
 		icon: Flag,
 	},
 	{

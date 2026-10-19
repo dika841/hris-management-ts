@@ -25,7 +25,7 @@ import {
 	useAiDecisionApprove,
 	useAiDecisionReject,
 } from "#/routes/_authenticated/_hooks/use-ai-governance.ts";
-import { useFeatureFlag } from "#/routes/_authenticated/_hooks/use-feature-flags.ts";
+import { useFeatureFlagDisabled } from "#/routes/_authenticated/_hooks/use-feature-flags.ts";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
 	Bot,
@@ -109,7 +109,7 @@ const QUICK_ACTIONS: readonly TQuickAction[] = [
 
 const AiAssistantPage: FC = (): ReactElement => {
 	const { isIndonesian } = useI18n();
-	const enabled = useFeatureFlag("ai_assistant");
+	const disabled = useFeatureFlagDisabled("ai_assistant");
 	const assist = useAiAssist();
 	const approve = useAiDecisionApprove();
 	const reject = useAiDecisionReject();
@@ -195,26 +195,19 @@ const AiAssistantPage: FC = (): ReactElement => {
 				</p>
 			</div>
 
-			{!enabled ? (
+			{disabled ? (
 				<Card className="border-amber-500/40">
 					<CardHeader>
 						<CardTitle className="flex items-center gap-2 text-sm font-semibold">
 							<ShieldCheck className="size-4 text-amber-500" />
-							{isIndonesian ? "Fitur belum aktif" : "Feature not enabled"}
+							{isIndonesian ? "Fitur dinonaktifkan" : "Feature disabled"}
 						</CardTitle>
 						<CardDescription className="text-xs">
 							{isIndonesian
-								? "Aktifkan feature flag ai_assistant untuk akun Anda melalui halaman Feature Flags."
-								: "Enable the ai_assistant feature flag for your account on the Feature Flags page."}
+								? "Asisten AI dinonaktifkan oleh admin untuk akun ini. Hubungi admin jika membutuhkan akses."
+								: "The AI Assistant has been disabled by an administrator for this account. Contact an administrator if you need access."}
 						</CardDescription>
 					</CardHeader>
-					<CardContent>
-						<Button size="sm" variant="outline" asChild>
-							<Link to="/feature-flags">
-								{isIndonesian ? "Buka Feature Flags" : "Open Feature Flags"}
-							</Link>
-						</Button>
-					</CardContent>
 				</Card>
 			) : (
 				<Card>
@@ -334,8 +327,8 @@ const AiAssistantPage: FC = (): ReactElement => {
 									</p>
 									<p className="text-[11px] text-muted-foreground">
 										{isIndonesian
-											? "Data pendukung tidak disimpan. Hanya hash prompt dan hasil yang sudah disensor yang tersimpan."
-											: "Supporting data is not stored. Only the prompt hash and the redacted result are saved."}
+											? "Data pendukung tidak disimpan. Hanya hasil AI yang sudah disensor dan catatan audit yang tersimpan."
+											: "Supporting data is not stored. Only the redacted AI result and an audit record are saved."}
 									</p>
 								</CollapsibleContent>
 							</Collapsible>

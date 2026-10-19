@@ -346,7 +346,9 @@ const FeatureFlagsPage: FC = (): ReactElement => {
 };
 
 export const Route = createFileRoute("/_authenticated/feature-flags/")({
-	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
+	beforeLoad: checkRoutePermissions({
+		permissions: [PERMISSION.FEATURE_FLAG_MANAGE],
+	}),
 	loader: ({ context }) =>
 		context.queryClient.ensureQueryData(featureFlagListOptions()),
 	component: FeatureFlagsPage,
