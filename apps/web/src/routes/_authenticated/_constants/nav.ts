@@ -10,6 +10,7 @@ import {
 	CircleUser,
 	Coins,
 	ContactRound,
+	Flag,
 	KeyRound,
 	UserRound,
 	LayoutDashboard,
@@ -20,6 +21,7 @@ import {
 export type TNavItemKey =
 	| "dashboard"
 	| "analytics"
+	| "featureFlags"
 	| "employees"
 	| "organization"
 	| "attendance"
@@ -102,6 +104,13 @@ export const NAV_ITEMS: readonly TNavItem[] = [
 		label: NAV_MESSAGE.PERMISSIONS,
 		permissions: [PERMISSION.USER_MANAGE],
 		icon: KeyRound,
+	},
+	{
+		to: "/feature-flags",
+		key: "featureFlags",
+		label: NAV_MESSAGE.FEATURE_FLAGS,
+		permissions: [PERMISSION.USER_MANAGE],
+		icon: Flag,
 	},
 	{
 		to: "/activity",

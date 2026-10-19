@@ -17,6 +17,7 @@ export const LAYER_MAY_IMPORT: Readonly<Record<TLayer, readonly TLayer[]>> = {
 export const MODULE = {
 	ACTIVITY: "activity",
 	ANALYTICS: "analytics",
+	FEATURE_FLAG: "feature-flag",
 	ATTENDANCE: "attendance",
 	AUTH: "auth",
 	EMPLOYEE: "employee",
@@ -35,6 +36,7 @@ export const MODULE_MAY_IMPORT: Readonly<Record<TModule, readonly TModule[]>> =
 	{
 		[MODULE.ACTIVITY]: [],
 		[MODULE.ANALYTICS]: [],
+		[MODULE.FEATURE_FLAG]: [],
 		[MODULE.ATTENDANCE]: [
 			MODULE.ACTIVITY,
 			MODULE.EMPLOYEE,

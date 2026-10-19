@@ -3,6 +3,7 @@ export * from "./analytics/index.ts";
 export * from "./notification/index.ts";
 export * from "./auth/index.ts";
 export * from "./employee/index.ts";
+export * from "./feature-flag/index.ts";
 export * from "./health/index.ts";
 export * from "./payroll/index.ts";
 export * from "./permission/index.ts";

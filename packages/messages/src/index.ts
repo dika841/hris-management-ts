@@ -8,6 +8,7 @@ export { AUTH_MESSAGE } from "./auth/message.ts";
 export { DASHBOARD_MESSAGE } from "./dashboard/message.ts";
 export { EMPLOYEE_MESSAGE } from "./employee/message.ts";
 export { ERROR_MESSAGE } from "./error/message.ts";
+export { FEATURE_FLAG_MESSAGE } from "./feature-flag/message.ts";
 export { HEALTH_MESSAGE } from "./health/message.ts";
 export { MAIL_MESSAGE } from "./mail/message.ts";
 export { NAV_MESSAGE } from "./nav/message.ts";

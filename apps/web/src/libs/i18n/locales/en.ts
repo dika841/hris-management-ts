@@ -24,6 +24,7 @@ export const en = {
 		all: "All",
 	},
 	nav: {
+		featureFlags: "Feature Flags",
 		analytics: "Analytics",
 		dashboard: "Dashboard",
 		employees: "Employees",

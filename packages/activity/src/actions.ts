@@ -12,6 +12,7 @@ export const ACTIVITY_RESOURCE_TYPE = {
 	ATTENDANCE: "attendance",
 	OVERTIME: "overtime",
 	PUBLIC_HOLIDAY: "public_holiday",
+	FEATURE_FLAG: "feature_flag",
 } as const;
 
 export type TActivityResourceType =
@@ -60,6 +61,9 @@ export const ACTIVITY_ACTION = {
 	OVERTIME_CANCEL: "overtime.cancel",
 	PUBLIC_HOLIDAY_CREATE: "public_holiday.create",
 	PUBLIC_HOLIDAY_DELETE: "public_holiday.delete",
+	FEATURE_FLAG_CREATE: "feature_flag.create",
+	FEATURE_FLAG_UPDATE: "feature_flag.update",
+	FEATURE_FLAG_DELETE: "feature_flag.delete",
 } as const;
 
 export type TActivityAction =

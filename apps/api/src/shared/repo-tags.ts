@@ -9,4 +9,5 @@ export const REPO_TAG = {
 	ATTENDANCE: "app/AttendanceRepo",
 	NOTIFICATION: "app/NotificationRepo",
 	ANALYTICS: "app/AnalyticsRepo",
+	FEATURE_FLAG: "app/FeatureFlagRepo",
 } as const;

@@ -63,6 +63,9 @@ export const ACTIVITY_ACTION_LABEL = {
 	[ACTIVITY_ACTION.OVERTIME_CANCEL]: "Overtime cancelled",
 	[ACTIVITY_ACTION.PUBLIC_HOLIDAY_CREATE]: "Public holiday added",
 	[ACTIVITY_ACTION.PUBLIC_HOLIDAY_DELETE]: "Public holiday removed",
+	[ACTIVITY_ACTION.FEATURE_FLAG_CREATE]: "Feature flag created",
+	[ACTIVITY_ACTION.FEATURE_FLAG_UPDATE]: "Feature flag updated",
+	[ACTIVITY_ACTION.FEATURE_FLAG_DELETE]: "Feature flag deleted",
 } as const satisfies Record<TActivityAction, string>;
 
 export const ACTIVITY_ENTITY_LABEL = {
@@ -79,4 +82,5 @@ export const ACTIVITY_ENTITY_LABEL = {
 	[ACTIVITY_RESOURCE_TYPE.ATTENDANCE]: "Attendance",
 	[ACTIVITY_RESOURCE_TYPE.OVERTIME]: "Overtime",
 	[ACTIVITY_RESOURCE_TYPE.PUBLIC_HOLIDAY]: "Public Holiday",
+	[ACTIVITY_RESOURCE_TYPE.FEATURE_FLAG]: "Feature Flag",
 } as const satisfies Record<TActivityResourceType, string>;

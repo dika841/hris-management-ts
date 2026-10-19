@@ -1,5 +1,6 @@
 import { activityModule } from "#/activity/index.ts";
 import { analyticsModule } from "#/analytics/index.ts";
+import { featureFlagModule } from "#/feature-flag/index.ts";
 import { attendanceModule } from "#/attendance/index.ts";
 import { authModule } from "#/auth/index.ts";
 import { employeeModule } from "#/employee/index.ts";
@@ -24,6 +25,7 @@ const appRouter = {
 	notification: notificationModule.routerBuild(),
 	self: selfServiceModule.routerBuild(),
 	analytics: analyticsModule.routerBuild(),
+	featureFlags: featureFlagModule.routerBuild(),
 };
 
 export type TAppRouter = typeof appRouter;
