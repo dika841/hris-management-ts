@@ -4,6 +4,8 @@ import { ATTENDANCE_MESSAGE } from "@app/messages";
 import {
 	LEAVE_CODE,
 	LEAVE_REQUEST_STATUS,
+	NOTIFICATION_TYPE,
+	WORK_SCHEDULE_TYPE,
 	type TLeaveRequest,
 	type TLeaveRequestApproveInput,
 } from "@app/schemas";
@@ -14,6 +16,10 @@ import {
 	type TAttendanceRepoId,
 } from "#/attendance/domain/attendance.ts";
 import { EmployeeRepo, type TEmployeeRepoId } from "#/employee/index.ts";
+import {
+	notificationCreate,
+	type TNotificationRepoId,
+} from "#/notification/index.ts";
 import { MailService, type TMailServiceId } from "#/platform/mail/mailer.ts";
 import { logger } from "#/platform/observability/logger.ts";
 import {
@@ -33,7 +39,11 @@ export const leaveRequestApprove = Effect.fn("leaveRequestApprove")(function* (
 ): Effect.fn.Return<
 	TLeaveRequest,
 	ENotFound | EConflict | EBadRequest | EDatabase,
-	TAttendanceRepoId | TActivityRecorderId | TEmployeeRepoId | TMailServiceId
+	| TAttendanceRepoId
+	| TActivityRecorderId
+	| TEmployeeRepoId
+	| TMailServiceId
+	| TNotificationRepoId
 > {
 	const attendanceRepo = yield* AttendanceRepo;
 	const activityRepo = yield* ActivityRecorder;
@@ -86,13 +96,19 @@ export const leaveRequestApprove = Effect.fn("leaveRequestApprove")(function* (
 		}
 	}
 
+	const employee = yield* employeeRepo.findById(request.employeeId);
+
 	// Log attendance for the leave period
 	const start = new Date(request.startDate);
 	const end = new Date(request.endDate);
 	const current = new Date(start);
 	while (current <= end) {
 		const dayOfWeek = current.getDay();
-		if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+		const isWorkday =
+			dayOfWeek !== 0 &&
+			(dayOfWeek !== 6 ||
+				employee?.workScheduleType === WORK_SCHEDULE_TYPE.SIX_DAYS);
+		if (isWorkday) {
 			const dateStr = current.toISOString().split("T")[0] ?? "";
 			yield* attendanceRepo.upsertAttendanceLog({
 				employeeId: request.employeeId,
@@ -125,7 +141,15 @@ export const leaveRequestApprove = Effect.fn("leaveRequestApprove")(function* (
 		},
 	});
 
-	const employee = yield* employeeRepo.findById(request.employeeId);
+	if (employee !== null && employee.userId !== null) {
+		yield* notificationCreate({
+			userId: employee.userId,
+			type: NOTIFICATION_TYPE.LEAVE_STATUS,
+			title: "Leave request approved",
+			body: `${leaveType?.name ?? "Leave"} ${request.startDate} - ${request.endDate}`,
+			link: "/attendance",
+		});
+	}
 	if (employee !== null) {
 		yield* Effect.promise(() =>
 			mailSendSafe(

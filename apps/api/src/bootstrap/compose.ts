@@ -4,6 +4,7 @@ import { attendanceModule } from "#/attendance/index.ts";
 import { authModule } from "#/auth/index.ts";
 import { employeeModule } from "#/employee/index.ts";
 import { healthModule } from "#/health/index.ts";
+import { notificationModule } from "#/notification/index.ts";
 import { payrollModule } from "#/payroll/index.ts";
 import { cacheServiceLayer } from "#/platform/cache/redis.ts";
 import { dbServiceLayer } from "#/platform/db/db-service.ts";
@@ -27,6 +28,7 @@ export const AppLayer = Layer.mergeAll(
 	employeeModule.layer,
 	payrollModule.layer,
 	attendanceModule.layer,
+	notificationModule.layer,
 ) as Layer.Layer<
 	| Layer.Success<typeof dbServiceLayer>
 	| Layer.Success<typeof cacheServiceLayer>
@@ -41,6 +43,7 @@ export const AppLayer = Layer.mergeAll(
 	| Layer.Success<typeof employeeModule.layer>
 	| Layer.Success<typeof payrollModule.layer>
 	| Layer.Success<typeof attendanceModule.layer>
+	| Layer.Success<typeof notificationModule.layer>
 >;
 
 export const appMemoMap = Layer.makeMemoMapUnsafe();

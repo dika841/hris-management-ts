@@ -16,18 +16,22 @@ import {
 	SelectValue,
 } from "@app/components/ui/select";
 import { APP_MESSAGE } from "@app/messages";
+import { PERMISSION } from "@app/permissions";
 import {
 	EMPLOYMENT_STATUS,
 	GENDER,
 	PTKP_CODE,
 	TAX_METHOD,
+	WORK_SCHEDULE_TYPE,
 	type TEmployee,
 	type TEmploymentStatus,
 	type TGender,
 	type TPtkpCode,
 	type TTaxMethod,
+	type TWorkScheduleType,
 } from "@app/schemas";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { usePermissions } from "@app/components/guard/use-permissions";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
 	Building2,
@@ -42,8 +46,10 @@ import { useState, type FC, type FormEvent, type ReactElement } from "react";
 import { orpc } from "#/libs/orpc/client.ts";
 import { suspenseQueryOptionsFor } from "#/libs/orpc/procedure-query.ts";
 import {
+	useDepartmentList,
 	useEmployeeCreate,
 	useEmployeeUpdate,
+	usePositionList,
 } from "#/routes/_authenticated/employees/_hooks/use-employees.ts";
 
 type TEmployeeFormProps = {
@@ -54,6 +60,8 @@ const EmployeeForm: FC<TEmployeeFormProps> = ({ employee }): ReactElement => {
 	const navigate = useNavigate();
 	const createMutation = useEmployeeCreate();
 	const updateMutation = useEmployeeUpdate();
+	const { canAll } = usePermissions();
+	const canManageUsers = canAll([PERMISSION.USER_MANAGE]);
 
 	// Primary identifiers
 	const [employeeCode, setEmployeeCode] = useState(
@@ -73,17 +81,48 @@ const EmployeeForm: FC<TEmployeeFormProps> = ({ employee }): ReactElement => {
 	const [dateOfBirth, setDateOfBirth] = useState(
 		employee?.dateOfBirth ?? "1995-05-15",
 	);
+	const departments = useDepartmentList();
+	const positions = usePositionList();
+	const [departmentId, setDepartmentId] = useState(
+		employee?.departmentId ??
+			departments.data.find((item) => item.name === employee?.department)?.id ??
+			departments.data[0]?.id ??
+			"",
+	);
 	const [department, setDepartment] = useState(
-		employee?.department ?? "Engineering",
+		employee?.department ??
+			departments.data.find((item) => item.id === departmentId)?.name ??
+			"Engineering",
+	);
+	const [positionId, setPositionId] = useState(
+		employee?.positionId ??
+			positions.data.find((item) => item.title === employee?.position)?.id ??
+			positions.data.find(
+				(item) =>
+					item.departmentId === departmentId || item.departmentId === null,
+			)?.id ??
+			"",
 	);
 	const [position, setPosition] = useState(
-		employee?.position ?? "Software Engineer",
+		employee?.position ??
+			positions.data.find((item) => item.id === positionId)?.title ??
+			"Software Engineer",
 	);
+	const [userId, setUserId] = useState(employee?.userId ?? "none");
 	const [employmentStatus, setEmploymentStatus] = useState<TEmploymentStatus>(
 		employee?.employmentStatus ?? EMPLOYMENT_STATUS.PERMANENT,
 	);
 	const [joinDate, setJoinDate] = useState(
 		employee?.joinDate ?? new Date().toISOString().split("T")[0] ?? "",
+	);
+	const [workScheduleType, setWorkScheduleType] = useState<TWorkScheduleType>(
+		employee?.workScheduleType ?? WORK_SCHEDULE_TYPE.FIVE_DAYS,
+	);
+	const [workStartTime, setWorkStartTime] = useState(
+		employee?.workStartTime ?? "08:00",
+	);
+	const [workEndTime, setWorkEndTime] = useState(
+		employee?.workEndTime ?? "17:00",
 	);
 	const [endDate, setEndDate] = useState(employee?.endDate ?? "");
 	const [managerId, setManagerId] = useState(employee?.managerId ?? "none");
@@ -93,6 +132,20 @@ const EmployeeForm: FC<TEmployeeFormProps> = ({ employee }): ReactElement => {
 	);
 	const managerOptions = employeesQuery.data.items.filter(
 		(candidate) => candidate.id !== employee?.id,
+	);
+	const usersQuery = useQuery({
+		...orpc.user.list.queryOptions({
+			input: { page: 1, pageSize: 100 },
+		}),
+		queryKey: orpc.user.list.key({ input: { page: 1, pageSize: 100 } }),
+		enabled: canManageUsers,
+	});
+	const userOptions = usersQuery.data?.items ?? [];
+	const positionOptions = positions.data.filter(
+		(candidate) =>
+			candidate.departmentId === null ||
+			departmentId === "" ||
+			candidate.departmentId === departmentId,
 	);
 
 	// Compensation & Tax (PMK 168/2023)
@@ -140,9 +193,15 @@ const EmployeeForm: FC<TEmployeeFormProps> = ({ employee }): ReactElement => {
 			idCardNumber,
 			gender,
 			dateOfBirth,
+			departmentId: departmentId || undefined,
 			department,
+			positionId: positionId || undefined,
 			position,
+			userId: userId === "none" ? null : userId,
 			employmentStatus,
+			workScheduleType,
+			workStartTime,
+			workEndTime,
 			joinDate,
 			endDate: endDate || undefined,
 			managerId: managerId === "none" ? null : managerId,
@@ -345,28 +404,65 @@ const EmployeeForm: FC<TEmployeeFormProps> = ({ employee }): ReactElement => {
 						<Label htmlFor="department" className="text-xs font-medium">
 							Departemen / Divisi <span className="text-destructive">*</span>
 						</Label>
-						<Input
-							id="department"
-							required
-							value={department}
-							onChange={(e) => setDepartment(e.target.value)}
-							placeholder="Engineering"
-							className="text-xs"
-						/>
+						<Select
+							value={departmentId}
+							onValueChange={(value) => {
+								setDepartmentId(value);
+								const selected = departments.data.find(
+									(item) => item.id === value,
+								);
+								setDepartment(selected?.name ?? "");
+								const currentPosition = positions.data.find(
+									(item) => item.id === positionId,
+								);
+								if (
+									currentPosition !== undefined &&
+									currentPosition.departmentId !== null &&
+									currentPosition.departmentId !== value
+								) {
+									setPositionId("");
+									setPosition("");
+								}
+							}}
+						>
+							<SelectTrigger id="department" className="text-xs">
+								<SelectValue placeholder="Pilih departemen" />
+							</SelectTrigger>
+							<SelectContent>
+								{departments.data.map((item) => (
+									<SelectItem key={item.id} value={item.id}>
+										{item.name}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
 					</div>
 
 					<div className="space-y-1.5">
 						<Label htmlFor="position" className="text-xs font-medium">
 							Jabatan / Posisi <span className="text-destructive">*</span>
 						</Label>
-						<Input
-							id="position"
-							required
-							value={position}
-							onChange={(e) => setPosition(e.target.value)}
-							placeholder="Senior Software Engineer"
-							className="text-xs"
-						/>
+						<Select
+							value={positionId}
+							onValueChange={(value) => {
+								setPositionId(value);
+								const selected = positions.data.find(
+									(item) => item.id === value,
+								);
+								setPosition(selected?.title ?? "");
+							}}
+						>
+							<SelectTrigger id="position" className="text-xs">
+								<SelectValue placeholder="Pilih jabatan" />
+							</SelectTrigger>
+							<SelectContent>
+								{positionOptions.map((item) => (
+									<SelectItem key={item.id} value={item.id}>
+										{item.title}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
 					</div>
 
 					<div className="space-y-1.5">
@@ -425,6 +521,59 @@ const EmployeeForm: FC<TEmployeeFormProps> = ({ employee }): ReactElement => {
 					</div>
 
 					<div className="space-y-1.5">
+						<Label htmlFor="workScheduleType" className="text-xs font-medium">
+							Tipe Jadwal Kerja
+						</Label>
+						<Select
+							value={workScheduleType}
+							onValueChange={(value) =>
+								setWorkScheduleType(value as TWorkScheduleType)
+							}
+						>
+							<SelectTrigger id="workScheduleType" className="text-xs">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value={WORK_SCHEDULE_TYPE.FIVE_DAYS}>
+									5 Hari Kerja (Senin–Jumat)
+								</SelectItem>
+								<SelectItem value={WORK_SCHEDULE_TYPE.SIX_DAYS}>
+									6 Hari Kerja (Senin–Sabtu)
+								</SelectItem>
+							</SelectContent>
+						</Select>
+					</div>
+
+					<div className="grid grid-cols-2 gap-2">
+						<div className="space-y-1.5">
+							<Label htmlFor="workStartTime" className="text-xs font-medium">
+								Jam Masuk
+							</Label>
+							<Input
+								id="workStartTime"
+								type="time"
+								required
+								value={workStartTime}
+								onChange={(e) => setWorkStartTime(e.target.value)}
+								className="text-xs font-mono"
+							/>
+						</div>
+						<div className="space-y-1.5">
+							<Label htmlFor="workEndTime" className="text-xs font-medium">
+								Jam Keluar
+							</Label>
+							<Input
+								id="workEndTime"
+								type="time"
+								required
+								value={workEndTime}
+								onChange={(e) => setWorkEndTime(e.target.value)}
+								className="text-xs font-mono"
+							/>
+						</div>
+					</div>
+
+					<div className="space-y-1.5">
 						<Label htmlFor="endDate" className="text-xs font-medium">
 							Tanggal Akhir Kontrak
 						</Label>
@@ -459,6 +608,30 @@ const EmployeeForm: FC<TEmployeeFormProps> = ({ employee }): ReactElement => {
 							</SelectContent>
 						</Select>
 					</div>
+
+					{canManageUsers && (
+						<div className="space-y-1.5 sm:col-span-2">
+							<Label htmlFor="userId" className="text-xs font-medium">
+								Akun Login Terhubung
+							</Label>
+							<Select value={userId} onValueChange={setUserId}>
+								<SelectTrigger id="userId" className="text-xs">
+									<SelectValue placeholder="Pilih akun login" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="none">Tidak terhubung</SelectItem>
+									{userOptions.map((user) => (
+										<SelectItem key={user.id} value={user.id}>
+											{user.name} ({user.email})
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+							<p className="text-[10px] text-muted-foreground">
+								Satu akun login hanya dapat terhubung ke satu karyawan.
+							</p>
+						</div>
+					)}
 				</CardContent>
 			</Card>
 

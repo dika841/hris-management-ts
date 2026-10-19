@@ -1,5 +1,6 @@
 import { expect, type Page, test } from "@playwright/test";
 import { SEED_CREDENTIALS } from "../support/credentials.ts";
+import { selectOption } from "../support/select.ts";
 import { signIn } from "../support/sign-in.ts";
 
 const EMPLOYEE = {
@@ -7,7 +8,8 @@ const EMPLOYEE = {
 	name: "E2E Web Employee",
 	email: "e2e-web-employee@test.app",
 	idCard: "3171010101900099",
-	updatedPosition: "Engineering Manager",
+	updatedDepartment: "Human Resources",
+	updatedPosition: "HR Officer",
 };
 
 test.describe.configure({ mode: "serial" });
@@ -52,10 +54,22 @@ test.describe("employee flow", () => {
 			page.getByRole("heading", { name: "Perbarui Data Karyawan" }),
 		).toBeVisible();
 
-		await page.getByLabel(/Jabatan \/ Posisi/).fill(EMPLOYEE.updatedPosition);
+		await selectOption(
+			page,
+			page.getByLabel(/Departemen \/ Divisi/),
+			EMPLOYEE.updatedDepartment,
+		);
+		await selectOption(
+			page,
+			page.getByLabel(/Jabatan \/ Posisi/),
+			EMPLOYEE.updatedPosition,
+		);
 		await page.getByRole("button", { name: "Simpan Perubahan" }).click();
 
 		await expect(page).toHaveURL(/\/employees\/[^/]+$/);
+		await expect(
+			page.getByText(EMPLOYEE.updatedDepartment, { exact: true }),
+		).toBeVisible();
 		await expect(
 			page.getByText(EMPLOYEE.updatedPosition, { exact: true }),
 		).toBeVisible();

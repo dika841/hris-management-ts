@@ -14,9 +14,12 @@ import {
 } from "#/shared/activity-recorder.ts";
 import { type EDatabase, ENotFound } from "#/shared/errors.ts";
 
-const STANDARD_WORK_START_MINUTES = 8 * 60;
-const STANDARD_WORK_END_MINUTES = 17 * 60;
 const JAKARTA_TIME_ZONE = "Asia/Jakarta";
+
+const timeToMinutes = (value: string): number => {
+	const [hour, minute] = value.split(":").map(Number);
+	return (hour ?? 0) * 60 + (minute ?? 0);
+};
 
 const minutesInJakarta = (value: Date): number => {
 	const formatter = new Intl.DateTimeFormat("en-GB", {
@@ -53,10 +56,13 @@ export const attendanceLog = Effect.fn("attendanceLog")(function* (
 	// Check if holiday
 	const holiday = yield* attendanceRepo.findHolidayByDate(input.attendanceDate);
 
-	// Calculate effective work, late, and early-departure minutes in WIB.
+	// Calculate effective work, late, and early-departure minutes in WIB
+	// against the employee's configured work schedule.
 	let effectiveWorkMinutes = 0;
 	let lateMinutes = 0;
 	let earlyDepartureMinutes = 0;
+	const workStartMinutes = timeToMinutes(employee.workStartTime);
+	const workEndMinutes = timeToMinutes(employee.workEndTime);
 
 	if (input.checkIn && input.checkOut) {
 		const checkInTime = new Date(input.checkIn);
@@ -66,13 +72,10 @@ export const attendanceLog = Effect.fn("attendanceLog")(function* (
 			Math.round((checkOutTime.getTime() - checkInTime.getTime()) / 60000),
 		);
 
-		lateMinutes = Math.max(
-			0,
-			minutesInJakarta(checkInTime) - STANDARD_WORK_START_MINUTES,
-		);
+		lateMinutes = Math.max(0, minutesInJakarta(checkInTime) - workStartMinutes);
 		earlyDepartureMinutes = Math.max(
 			0,
-			STANDARD_WORK_END_MINUTES - minutesInJakarta(checkOutTime),
+			workEndMinutes - minutesInJakarta(checkOutTime),
 		);
 	}
 

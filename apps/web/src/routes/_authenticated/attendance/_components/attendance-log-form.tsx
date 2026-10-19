@@ -17,16 +17,33 @@ import {
 } from "@app/components/ui/select";
 import { Textarea } from "@app/components/ui/textarea";
 import { ATTENDANCE_STATUS, type TAttendanceStatus } from "@app/schemas";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { getRouteApi, Link, useNavigate } from "@tanstack/react-router";
 import { CalendarCheck, Clock, Loader2, User } from "lucide-react";
-import { useState, type FC, type FormEvent, type ReactElement } from "react";
+import {
+	useEffect,
+	useState,
+	type FC,
+	type FormEvent,
+	type ReactElement,
+} from "react";
 import { orpc } from "#/libs/orpc/client.ts";
 import { suspenseQueryOptionsFor } from "#/libs/orpc/procedure-query.ts";
 import { useAttendanceLog } from "#/routes/_authenticated/attendance/_hooks/use-attendance.ts";
 
+const logRouteApi = getRouteApi("/_authenticated/attendance/log/create");
+
+const jakartaTime = (value: string): string =>
+	new Intl.DateTimeFormat("en-GB", {
+		timeZone: "Asia/Jakarta",
+		hour: "2-digit",
+		minute: "2-digit",
+		hour12: false,
+	}).format(new Date(value));
+
 export const AttendanceLogForm: FC = (): ReactElement => {
 	const navigate = useNavigate();
+	const search = logRouteApi.useSearch();
 	const logMutation = useAttendanceLog();
 
 	const employeesQuery = useSuspenseQuery(
@@ -35,14 +52,50 @@ export const AttendanceLogForm: FC = (): ReactElement => {
 	const employees = employeesQuery.data.items;
 
 	const today = new Date().toISOString().split("T")[0] ?? "2026-10-01";
-	const [employeeId, setEmployeeId] = useState(employees[0]?.id ?? "");
-	const [attendanceDate, setAttendanceDate] = useState(today);
+	const [employeeId, setEmployeeId] = useState(
+		search.employeeId ?? employees[0]?.id ?? "",
+	);
+	const [attendanceDate, setAttendanceDate] = useState(search.date ?? today);
 	const [status, setStatus] = useState<TAttendanceStatus>(
 		ATTENDANCE_STATUS.PRESENT,
 	);
 	const [checkIn, setCheckIn] = useState("08:00");
 	const [checkOut, setCheckOut] = useState("17:00");
 	const [notes, setNotes] = useState("");
+
+	const dateParts = attendanceDate.split("-").map(Number);
+	const existingQuery = useQuery({
+		...orpc.attendance.attendanceList.queryOptions({
+			input: {
+				page: 1,
+				pageSize: 50,
+				employeeId,
+				month: dateParts[1] ?? 1,
+				year: dateParts[0] ?? new Date().getFullYear(),
+			},
+		}),
+		queryKey: orpc.attendance.attendanceList.key({
+			input: {
+				page: 1,
+				pageSize: 50,
+				employeeId,
+				month: dateParts[1] ?? 1,
+				year: dateParts[0] ?? new Date().getFullYear(),
+			},
+		}),
+		enabled: Boolean(search.employeeId && search.date && employeeId),
+	});
+	const existingLog = existingQuery.data?.items.find(
+		(item) => item.attendanceDate === attendanceDate,
+	);
+
+	useEffect(() => {
+		if (!existingLog) return;
+		setStatus(existingLog.status);
+		setCheckIn(existingLog.checkIn ? jakartaTime(existingLog.checkIn) : "");
+		setCheckOut(existingLog.checkOut ? jakartaTime(existingLog.checkOut) : "");
+		setNotes(existingLog.notes ?? "");
+	}, [existingLog]);
 
 	const toJakartaIso = (time: string): string =>
 		new Date(`${attendanceDate}T${time}:00+07:00`).toISOString();

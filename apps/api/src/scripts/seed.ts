@@ -188,6 +188,15 @@ const demoEmployeeSeed = (): Effect.Effect<void, never, TDbServiceId> =>
 		const year = new Date().getFullYear();
 
 		yield* Effect.promise(async () => {
+			const departments = await db.select().from(department);
+			const positions = await db.select().from(position);
+			const departmentByName = new Map(
+				departments.map((row) => [row.name, row.id]),
+			);
+			const positionByTitle = new Map(
+				positions.map((row) => [row.title, row.id]),
+			);
+
 			await db
 				.insert(employee)
 				.values([
@@ -199,7 +208,9 @@ const demoEmployeeSeed = (): Effect.Effect<void, never, TDbServiceId> =>
 						phone: "081234567890",
 						gender: "male",
 						dateOfBirth: "1990-01-01",
+						departmentId: departmentByName.get("Engineering") ?? null,
 						department: "Engineering",
+						positionId: positionByTitle.get("Software Engineer") ?? null,
 						position: "Software Engineer",
 						employmentStatus: "permanent",
 						joinDate: "2024-01-15",
@@ -217,7 +228,9 @@ const demoEmployeeSeed = (): Effect.Effect<void, never, TDbServiceId> =>
 						phone: "081234567891",
 						gender: "female",
 						dateOfBirth: "1992-02-02",
+						departmentId: departmentByName.get("Human Resources") ?? null,
 						department: "Human Resources",
+						positionId: positionByTitle.get("HR Officer") ?? null,
 						position: "HR Officer",
 						employmentStatus: "contract",
 						joinDate: "2024-03-01",
@@ -236,7 +249,9 @@ const demoEmployeeSeed = (): Effect.Effect<void, never, TDbServiceId> =>
 						phone: "081234567892",
 						gender: "male",
 						dateOfBirth: "1993-03-03",
+						departmentId: departmentByName.get("Finance") ?? null,
 						department: "Finance",
+						positionId: positionByTitle.get("Finance Staff") ?? null,
 						position: "Finance Staff",
 						employmentStatus: "probation",
 						joinDate: `${year}-01-01`,
@@ -254,7 +269,9 @@ const demoEmployeeSeed = (): Effect.Effect<void, never, TDbServiceId> =>
 						phone: "081234567893",
 						gender: "female",
 						dateOfBirth: "2004-04-04",
+						departmentId: departmentByName.get("Engineering") ?? null,
 						department: "Engineering",
+						positionId: positionByTitle.get("Software Engineer") ?? null,
 						position: "Software Engineer",
 						employmentStatus: "intern",
 						joinDate: `${year}-02-01`,

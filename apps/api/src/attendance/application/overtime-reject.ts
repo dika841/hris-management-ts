@@ -6,6 +6,7 @@ import {
 } from "@app/mail";
 import { ATTENDANCE_MESSAGE } from "@app/messages";
 import {
+	NOTIFICATION_TYPE,
 	OVERTIME_STATUS,
 	type TOvertimeRejectInput,
 	type TOvertimeRequest,
@@ -17,6 +18,10 @@ import {
 	type TAttendanceRepoId,
 } from "#/attendance/domain/attendance.ts";
 import { EmployeeRepo, type TEmployeeRepoId } from "#/employee/index.ts";
+import {
+	notificationCreate,
+	type TNotificationRepoId,
+} from "#/notification/index.ts";
 import { MailService, type TMailServiceId } from "#/platform/mail/mailer.ts";
 import { logger } from "#/platform/observability/logger.ts";
 import {
@@ -31,7 +36,11 @@ export const overtimeReject = Effect.fn("overtimeReject")(function* (
 ): Effect.fn.Return<
 	TOvertimeRequest,
 	ENotFound | EConflict | EDatabase,
-	TAttendanceRepoId | TActivityRecorderId | TEmployeeRepoId | TMailServiceId
+	| TAttendanceRepoId
+	| TActivityRecorderId
+	| TEmployeeRepoId
+	| TMailServiceId
+	| TNotificationRepoId
 > {
 	const attendanceRepo = yield* AttendanceRepo;
 	const activityRepo = yield* ActivityRecorder;
@@ -71,6 +80,15 @@ export const overtimeReject = Effect.fn("overtimeReject")(function* (
 	});
 
 	const employee = yield* employeeRepo.findById(request.employeeId);
+	if (employee !== null && employee.userId !== null) {
+		yield* notificationCreate({
+			userId: employee.userId,
+			type: NOTIFICATION_TYPE.OVERTIME_STATUS,
+			title: "Overtime request rejected",
+			body: `${request.overtimeDate} · ${request.durationMinutes} minutes`,
+			link: "/attendance",
+		});
+	}
 	if (employee !== null) {
 		yield* Effect.promise(() =>
 			mailSendSafe(

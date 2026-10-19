@@ -120,7 +120,10 @@ const payrollRouter = {
 		.input(z.object({ id: z.string().min(1) }))
 		.output(payrollPayslipSchema)
 		.handler(({ input, context }) =>
-			effectRun(context.runtime, payrollPayslipGet(input.id)),
+			effectRun(
+				context.runtime,
+				payrollPayslipGet(input.id, context.session!.user.id),
+			),
 		),
 
 	listComponents: permissionRequire(PERMISSION.PAYROLL_READ)

@@ -26,6 +26,9 @@ const EMPLOYEE: TEmployeeCreateInput = {
 	department: "Human Resources",
 	position: "HR Officer",
 	employmentStatus: "permanent",
+	workScheduleType: "5_days",
+	workStartTime: "08:00",
+	workEndTime: "17:00",
 	joinDate: "2024-01-01",
 	basicSalary: 10_000_000,
 	taxMethod: "gross",
@@ -57,7 +60,14 @@ beforeAll(async (): Promise<void> => {
 });
 
 describe("attendance REST endpoints", () => {
-	it("logs attendance, calculates late minutes, and returns a monthly summary", async (): Promise<void> => {
+	it("logs attendance against the employee schedule and returns a monthly summary", async (): Promise<void> => {
+		await apiFetch({
+			path: `/employees/${employee.id}`,
+			cookie: adminCookie,
+			method: "PATCH",
+			body: { workStartTime: "08:30", workEndTime: "17:30" },
+		});
+
 		const logResponse = await apiFetch({
 			path: "/attendance",
 			cookie: adminCookie,
@@ -65,8 +75,8 @@ describe("attendance REST endpoints", () => {
 			body: {
 				employeeId: employee.id,
 				attendanceDate: "2026-10-01",
-				checkIn: "2026-10-01T08:15:00+07:00",
-				checkOut: "2026-10-01T17:10:00+07:00",
+				checkIn: "2026-10-01T08:45:00+07:00",
+				checkOut: "2026-10-01T17:45:00+07:00",
 				status: "present",
 			},
 		});
@@ -74,7 +84,25 @@ describe("attendance REST endpoints", () => {
 		const log = (await logResponse.json()) as TAttendanceLog;
 		expect(log.lateMinutes).toBe(15);
 		expect(log.earlyDepartureMinutes).toBe(0);
-		expect(log.effectiveWorkMinutes).toBe(535);
+		expect(log.effectiveWorkMinutes).toBe(540);
+
+		const correctedResponse = await apiFetch({
+			path: "/attendance",
+			cookie: adminCookie,
+			method: "POST",
+			body: {
+				employeeId: employee.id,
+				attendanceDate: "2026-10-01",
+				checkIn: "2026-10-01T08:50:00+07:00",
+				checkOut: "2026-10-01T17:50:00+07:00",
+				status: "present",
+			},
+		});
+		expect(correctedResponse.status).toBe(200);
+		const corrected = (await correctedResponse.json()) as TAttendanceLog;
+		expect(corrected.id).toBe(log.id);
+		expect(corrected.lateMinutes).toBe(20);
+		expect(corrected.effectiveWorkMinutes).toBe(540);
 
 		const list = await apiJson<TAttendanceList>({
 			path: `/attendance?page=1&pageSize=20&employeeId=${employee.id}&month=10&year=2026`,
@@ -87,7 +115,7 @@ describe("attendance REST endpoints", () => {
 			cookie: adminCookie,
 		});
 		expect(summary.totalPresent).toBe(1);
-		expect(summary.totalLateMinutes).toBe(15);
+		expect(summary.totalLateMinutes).toBe(20);
 	});
 
 	it("creates and approves a paid leave request and updates the balance", async (): Promise<void> => {
