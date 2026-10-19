@@ -67,6 +67,14 @@ export type TPayrollPeriodUpdateInput = z.infer<
 	typeof payrollPeriodUpdateInputSchema
 >;
 
+export const payrollPeriodStatusUpdateInputSchema = z.object({
+	id: payrollPeriodIdSchema,
+	status: payrollPeriodStatusSchema,
+});
+export type TPayrollPeriodStatusUpdateInput = z.infer<
+	typeof payrollPeriodStatusUpdateInputSchema
+>;
+
 // Rincian Komponen BPJS
 export const bpjsBreakdownSchema = z.object({
 	// BPJS Kesehatan

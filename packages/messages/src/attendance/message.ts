@@ -11,6 +11,7 @@ export const ATTENDANCE_MESSAGE = {
 	LEAVE_TYPE_SYSTEM_PROTECTED: "Jenis cuti bawaan sistem tidak dapat dihapus.",
 	LEAVE_TYPE_CREATED: "Jenis cuti berhasil dibuat.",
 	LEAVE_TYPE_UPDATED: "Jenis cuti berhasil diperbarui.",
+	LEAVE_BALANCE_UPDATED: "Saldo cuti berhasil diperbarui.",
 
 	// Leave Requests
 	LEAVE_REQUEST_NOT_FOUND: "Pengajuan cuti tidak ditemukan.",
@@ -61,6 +62,7 @@ export const ATTENDANCE_MESSAGE = {
 	OVERTIME_APPROVED:
 		"Lembur disetujui. Kompensasi lembur dihitung sesuai PP 35/2021.",
 	OVERTIME_REJECTED: "Pengajuan lembur ditolak.",
+	OVERTIME_CANCELLED: "Pengajuan lembur dibatalkan.",
 	OVERTIME_ALREADY_PROCESSED: "Pengajuan lembur ini sudah diproses sebelumnya.",
 	OVERTIME_EXEMPT_EMPLOYEE:
 		"Karyawan manajerial (thinking worker) tidak berhak atas uang lembur (PP 35/2021 Pasal 27).",

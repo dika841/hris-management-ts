@@ -2,6 +2,7 @@ import { cacheCreate, type TCache, type TCacheClient } from "@app/cache";
 import { Context, Effect, Layer } from "effect";
 import { Redis } from "ioredis";
 import { env } from "#/platform/config/env.ts";
+import { logger } from "#/platform/observability/logger.ts";
 import { closeQuietly } from "#/platform/resource-close.ts";
 import type { TServiceId } from "#/shared/service-id.ts";
 import { SERVICE_TAG } from "#/platform/service-tags.ts";
@@ -18,11 +19,21 @@ const REDIS_TOKEN = {
 const sanitizeRedisUrl = (url: string): string =>
 	url.trim().replace(/^["']|["']$/g, "");
 
+const redisHostOf = (url: string): string => {
+	try {
+		return new URL(sanitizeRedisUrl(url)).host;
+	} catch {
+		return "invalid-url";
+	}
+};
+
 export const cacheClientCreate = (redisUrl: string): Redis =>
 	new Redis(sanitizeRedisUrl(redisUrl), {
 		maxRetriesPerRequest: MAX_RETRIES_PER_REQUEST,
 		commandTimeout: COMMAND_TIMEOUT_MS,
-		enableOfflineQueue: false,
+		// Keep commands queued until the lazy connection is ready. Without this,
+		// the first command on a cold start fails with "Stream isn't writeable".
+		enableOfflineQueue: true,
 		lazyConnect: true,
 	});
 
@@ -73,6 +84,8 @@ export const cacheServiceLayer = Layer.effect(
 		);
 
 		const client = cacheClientOf(redis);
+
+		logger.info({ host: redisHostOf(env.REDIS_URL) }, "cache.configured");
 
 		return CacheService.of({ client, cache: cacheCreate(client) });
 	}),

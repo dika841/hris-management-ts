@@ -67,8 +67,11 @@ export const PayrollPeriodCreateForm: FC = (): ReactElement => {
 				payDate,
 			},
 			{
-				onSuccess: () => {
-					void navigate({ to: "/payroll" });
+				onSuccess: (created) => {
+					void navigate({
+						to: "/payroll/$periodId",
+						params: { periodId: created.id },
+					});
 				},
 			},
 		);

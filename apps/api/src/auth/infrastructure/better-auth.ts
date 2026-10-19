@@ -27,12 +27,8 @@ export const authCreate = (deps: TCreateAuthOptions) =>
 		secret: env.BETTER_AUTH_SECRET,
 		trustedOrigins: [
 			env.WEB_ORIGIN,
-			"https://hris.randikaa.my.id",
-			"https://*.randikaa.my.id",
 			"https://hris.randika.dev",
 			"https://*.randika.dev",
-			"https://hris-management-web.pages.dev",
-			"https://*.pages.dev",
 			"http://localhost:5173",
 			"http://localhost:*",
 		],

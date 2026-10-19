@@ -20,6 +20,13 @@ const envRead = (): TEnv => {
 		return parsed;
 	}
 
+	// Local fallbacks are only for the test runner. Everywhere else a missing
+	// required variable, such as REDIS_URL, must fail loudly instead of silently
+	// pointing the process at localhost.
+	if (process.env.NODE_ENV !== "test") {
+		throw attempt.error;
+	}
+
 	const merged = { ...FALLBACK_ENV, ...process.env };
 	const fallbackAttempt = envSchema.safeParse(merged);
 	if (fallbackAttempt.success) {

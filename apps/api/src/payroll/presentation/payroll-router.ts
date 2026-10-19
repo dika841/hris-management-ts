@@ -8,6 +8,7 @@ import {
 	payrollPeriodListInputSchema,
 	payrollPeriodListSchema,
 	payrollPeriodSchema,
+	payrollPeriodStatusUpdateInputSchema,
 	taxSimulationInputSchema,
 	taxSimulationResultSchema,
 } from "@app/schemas";
@@ -17,6 +18,7 @@ import { payrollItemList } from "#/payroll/application/payroll-item-list.ts";
 import { payrollPeriodCreate } from "#/payroll/application/payroll-period-create.ts";
 import { payrollPeriodGet } from "#/payroll/application/payroll-period-get.ts";
 import { payrollPeriodList } from "#/payroll/application/payroll-period-list.ts";
+import { payrollPeriodStatusUpdate } from "#/payroll/application/payroll-period-status-update.ts";
 import { payrollTaxSimulate } from "#/payroll/application/payroll-tax-simulate.ts";
 import { HTTP_METHOD } from "#/platform/http/http-methods.ts";
 import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
@@ -51,6 +53,20 @@ const payrollRouter = {
 			effectRunTransactional(
 				context.runtime,
 				payrollPeriodCreate(input, context.session!.user.id),
+			),
+		),
+
+	updateStatus: permissionRequire(PERMISSION.PAYROLL_MANAGE)
+		.route({
+			method: HTTP_METHOD.PATCH,
+			path: ROUTE_PATH.PAYROLL_PERIOD_STATUS,
+		})
+		.input(payrollPeriodStatusUpdateInputSchema)
+		.output(payrollPeriodSchema)
+		.handler(({ input, context }) =>
+			effectRunTransactional(
+				context.runtime,
+				payrollPeriodStatusUpdate(input, context.session!.user.id),
 			),
 		),
 

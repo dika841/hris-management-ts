@@ -71,6 +71,13 @@
       "when": 1792381737438,
       "tag": "0009_pdp_consent_explicit",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792386058875,
+      "tag": "0010_attendance_leave_unique_targets",
+      "breakpoints": true
     }
   ]
 }

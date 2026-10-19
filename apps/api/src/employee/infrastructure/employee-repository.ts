@@ -7,6 +7,7 @@ import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import {
 	EmployeeRepo,
 	type TDepartmentRow,
+	type TEmployeeCareerRow,
 	type TEmployeeContractRow,
 	type TEmployeeRepo,
 	type TEmployeeRow,
@@ -17,6 +18,7 @@ import { containsWhere } from "#/platform/db/search.ts";
 import {
 	department,
 	employee,
+	employeeCareerHistory,
 	employeeContract,
 	position,
 } from "#/platform/db/tables/employee.ts";
@@ -284,6 +286,34 @@ export const employeeRepoLayer = Layer.effect(
 				catch: (cause) => new EDatabase({ cause }),
 			});
 
+		// Career History
+		const listCareerHistory: TEmployeeRepo["listCareerHistory"] = (
+			employeeId,
+		) =>
+			Effect.tryPromise({
+				try: async () => {
+					const rows = await dbActive(db)
+						.select()
+						.from(employeeCareerHistory)
+						.where(eq(employeeCareerHistory.employeeId, employeeId))
+						.orderBy(desc(employeeCareerHistory.effectiveDate));
+					return rows as TEmployeeCareerRow[];
+				},
+				catch: (cause) => new EDatabase({ cause }),
+			});
+
+		const createCareerHistory: TEmployeeRepo["createCareerHistory"] = (data) =>
+			Effect.tryPromise({
+				try: async () => {
+					const [row] = await dbActive(db)
+						.insert(employeeCareerHistory)
+						.values(data)
+						.returning();
+					return row as TEmployeeCareerRow;
+				},
+				catch: (cause) => new EDatabase({ cause }),
+			});
+
 		// Organization
 		const listDepartments: TEmployeeRepo["listDepartments"] = () =>
 			Effect.tryPromise({
@@ -394,6 +424,8 @@ export const employeeRepoLayer = Layer.effect(
 			createContract,
 			updateContract,
 			listExpiringContracts,
+			listCareerHistory,
+			createCareerHistory,
 			listDepartments,
 			createDepartment,
 			listPositions,

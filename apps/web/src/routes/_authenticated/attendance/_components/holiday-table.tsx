@@ -1,4 +1,6 @@
+import { Guard } from "@app/components/guard/guard";
 import { Badge } from "@app/components/ui/badge";
+import { Button } from "@app/components/ui/button";
 import {
 	Table,
 	TableBody,
@@ -7,9 +9,11 @@ import {
 	TableHeader,
 	TableRow,
 } from "@app/components/ui/table";
+import { PERMISSION } from "@app/permissions";
 import type { TPublicHoliday } from "@app/schemas";
-import { Calendar, Sparkles } from "lucide-react";
+import { Calendar, Sparkles, Trash2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
+import { usePublicHolidayDelete } from "#/routes/_authenticated/attendance/_hooks/use-attendance.ts";
 
 type THolidayTableProps = {
 	list: readonly TPublicHoliday[];
@@ -18,6 +22,16 @@ type THolidayTableProps = {
 export const HolidayTable: FC<THolidayTableProps> = ({
 	list,
 }): ReactElement => {
+	const deleteMutation = usePublicHolidayDelete();
+
+	const handleDelete = (holiday: TPublicHoliday): void => {
+		if (
+			window.confirm(`Hapus hari libur "${holiday.name}" (${holiday.date})?`)
+		) {
+			deleteMutation.mutate({ id: holiday.id });
+		}
+	};
+
 	return (
 		<div className="rounded-lg border border-border/60 bg-card overflow-hidden">
 			<Table>
@@ -34,13 +48,16 @@ export const HolidayTable: FC<THolidayTableProps> = ({
 						<TableHead className="text-xs font-semibold">
 							Pengaruh Ke Payroll
 						</TableHead>
+						<TableHead className="w-16 text-right text-xs font-semibold">
+							Aksi
+						</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
 					{list.length === 0 ? (
 						<TableRow>
 							<TableCell
-								colSpan={5}
+								colSpan={6}
 								className="py-10 text-center text-xs text-muted-foreground"
 							>
 								Belum ada kalender hari libur untuk tahun ini. Klik "Tambah Hari
@@ -84,6 +101,20 @@ export const HolidayTable: FC<THolidayTableProps> = ({
 											? "Pengali lembur libur 2x-4x (PP 35/2021)"
 											: "Memotong hak cuti bersama / operasional kantor"}
 									</span>
+								</TableCell>
+								<TableCell className="text-right">
+									<Guard permissions={[PERMISSION.ATTENDANCE_MANAGE]}>
+										<Button
+											variant="ghost"
+											size="sm"
+											onClick={() => handleDelete(h)}
+											disabled={deleteMutation.isPending}
+											className="size-8 p-0 text-muted-foreground hover:text-destructive"
+											title="Hapus hari libur"
+										>
+											<Trash2 className="size-3.5" />
+										</Button>
+									</Guard>
 								</TableCell>
 							</TableRow>
 						))

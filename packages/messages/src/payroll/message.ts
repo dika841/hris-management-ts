@@ -9,7 +9,11 @@ export const PAYROLL_MESSAGE = {
 	SIMULATION_DESCRIPTION:
 		"Simulate monthly income tax, BPJS deductions, and take-home pay based on official Indonesian government regulations.",
 	PERIOD_APPROVED: "Payroll period approved.",
+	PERIOD_PAID: "Payroll period marked as paid.",
 	PERIOD_LOCKED: "Payroll period locked.",
+	PERIOD_STATUS_INVALID:
+		"The requested payroll status transition is not allowed.",
+	PERIOD_HAS_NO_ITEMS: "Calculate payroll before approving this period.",
 	DECEMBER_RECONCILIATION_NOTE:
 		"December payroll calculation includes annual reconciliation using Article 17 progressive rates.",
 } as const;

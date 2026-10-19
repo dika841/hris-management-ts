@@ -9,7 +9,6 @@ import {
 } from "../support/access.ts";
 import { SEED_CREDENTIALS } from "../support/credentials.ts";
 import {
-	ADMIN_NAV_LABELS,
 	expectNavHidden,
 	expectNavVisible,
 	NAV_LABEL,
@@ -100,7 +99,7 @@ test.describe("roles admin flow", () => {
 		).toBeVisible();
 	});
 
-	test("edits the custom role's label and grants user:manage", async (): Promise<void> => {
+	test("edits the custom role's label and grants employee:read", async (): Promise<void> => {
 		await rowWithCell(page, NEW_ROLE.key)
 			.getByRole("link", { name: "Edit" })
 			.click();
@@ -113,7 +112,7 @@ test.describe("roles admin flow", () => {
 		await page.getByLabel("Label", { exact: true }).fill(RENAMED_LABEL);
 		await page
 			.getByRole("checkbox", {
-				name: PERMISSION_LABEL[PERMISSION_KEY.USER_MANAGE],
+				name: PERMISSION_LABEL[PERMISSION_KEY.EMPLOYEE_READ],
 			})
 			.check();
 		await page.getByRole("button", { name: ROLE_MESSAGE.SAVE_CHANGES }).click();
@@ -141,6 +140,7 @@ test.describe("roles admin flow", () => {
 
 		await expectNavVisible(page, [
 			NAV_LABEL.DASHBOARD,
+			NAV_LABEL.EMPLOYEES,
 			NAV_LABEL.ACTIVITY,
 			NAV_LABEL.ACCOUNT,
 		]);

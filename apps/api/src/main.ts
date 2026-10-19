@@ -135,7 +135,6 @@ app.use(
 			const cleanOrigin = origin.endsWith("/") ? origin.slice(0, -1) : origin;
 			if (
 				cleanOrigin === configuredOrigin ||
-				cleanOrigin.endsWith(".randikaa.my.id") ||
 				cleanOrigin.endsWith(".randika.dev") ||
 				cleanOrigin.endsWith(".pages.dev") ||
 				cleanOrigin.endsWith(".onrender.com") ||
@@ -184,7 +183,7 @@ const isWorker =
 	process.env.CLOUDFLARE === "true" ||
 	Boolean(process.env.WORKER);
 
-if (!isWorker && process.env.NODE_ENV !== "test") {
+if (!isWorker) {
 	const server = serve({ fetch: app.fetch, port: env.PORT }, (info): void => {
 		logger.info({ port: info.port }, "api listening");
 	});

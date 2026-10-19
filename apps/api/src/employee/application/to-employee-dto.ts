@@ -25,6 +25,7 @@ export const toEmployeeDto = (
 		employmentStatus: row.employmentStatus,
 		joinDate: row.joinDate,
 		endDate: row.endDate,
+		managerId: row.managerId,
 		basicSalary: row.basicSalary,
 		taxMethod: row.taxMethod,
 		ptkpCode: row.ptkpCode,

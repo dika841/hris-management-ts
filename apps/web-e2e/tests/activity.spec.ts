@@ -4,8 +4,8 @@ import {
 	ERROR_MESSAGE,
 	ROLE_LABEL,
 } from "@app/messages";
-import { ROLE } from "@app/permissions";
 import { expect, type Page, test } from "@playwright/test";
+import { ROLE_KEY } from "../support/access.ts";
 import { SEED_CREDENTIALS } from "../support/credentials.ts";
 import { expectNavHidden, NAV_LABEL } from "../support/nav.ts";
 import { selectOption } from "../support/select.ts";
@@ -17,7 +17,7 @@ const AUDITED_USER = {
 	name: "Audited User",
 	email: "audited-e2e@test.app",
 	password: "Password123!",
-	role: ROLE.MEMBER,
+	role: ROLE_KEY.MEMBER,
 };
 
 test.describe.configure({ mode: "serial" });

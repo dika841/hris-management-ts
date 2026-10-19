@@ -1,4 +1,5 @@
 import type {
+	TCareerChangeType,
 	TContractStatus,
 	TContractType,
 	TEmployeeCreateInput,
@@ -65,6 +66,19 @@ export type TEmployeeContractRow = TBaseRow & {
 	notes: string | null;
 };
 
+export type TEmployeeCareerRow = TBaseRow & {
+	employeeId: string;
+	changeType: TCareerChangeType;
+	effectiveDate: string;
+	previousDepartment: string | null;
+	newDepartment: string;
+	previousPosition: string | null;
+	newPosition: string;
+	previousSalary: number | null;
+	newSalary: number;
+	notes: string | null;
+};
+
 export type TDepartmentRow = TBaseRow & {
 	code: string;
 	name: string;
@@ -110,6 +124,14 @@ export type TEmployeeRepo = {
 	listExpiringContracts: (
 		days: number,
 	) => Effect.Effect<readonly TEmployeeContractRow[], EDatabase>;
+
+	// Career History
+	listCareerHistory: (
+		employeeId: string,
+	) => Effect.Effect<readonly TEmployeeCareerRow[], EDatabase>;
+	createCareerHistory: (
+		data: Omit<TEmployeeCareerRow, "id" | "createdAt" | "updatedAt">,
+	) => Effect.Effect<TEmployeeCareerRow, EDatabase>;
 
 	// Organization
 	listDepartments: () => Effect.Effect<readonly TDepartmentRow[], EDatabase>;

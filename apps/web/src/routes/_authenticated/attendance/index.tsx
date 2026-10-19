@@ -11,11 +11,13 @@ import { PERMISSION } from "@app/permissions";
 import { ATTENDANCE_STATUS, type TAttendanceStatus } from "@app/schemas";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
+	BarChart3,
 	Calendar,
 	CalendarCheck,
 	Clock,
 	FileText,
 	Plus,
+	Settings,
 	Sparkles,
 } from "lucide-react";
 import { useState, type FC, type ReactElement } from "react";
@@ -107,6 +109,30 @@ const AttendancePage: FC = (): ReactElement => {
 
 				{/* Primary Action Button (Navigates to dedicated full page) */}
 				<div className="flex items-center gap-2">
+					<Button
+						size="sm"
+						variant="outline"
+						asChild
+						className="gap-1.5 text-xs font-medium"
+					>
+						<Link to="/attendance/report">
+							<BarChart3 className="size-3.5" />
+							Rekap Absensi
+						</Link>
+					</Button>
+					<Guard permissions={[PERMISSION.LEAVE_MANAGE]}>
+						<Button
+							size="sm"
+							variant="outline"
+							asChild
+							className="gap-1.5 text-xs font-medium"
+						>
+							<Link to="/attendance/settings">
+								<Settings className="size-3.5" />
+								Pengaturan Cuti
+							</Link>
+						</Button>
+					</Guard>
 					{activeTab === "attendance" && (
 						<Guard permissions={[PERMISSION.ATTENDANCE_MANAGE]}>
 							<Button

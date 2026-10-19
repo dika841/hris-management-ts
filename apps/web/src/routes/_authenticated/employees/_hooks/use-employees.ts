@@ -164,3 +164,43 @@ export const positionListOptions = (): UseSuspenseQueryOptions<
 export const usePositionList = (): UseSuspenseQueryResult<
 	TEmployeeOut["positionList"]
 > => useSuspenseQuery(positionListOptions());
+
+export const careerHistoryListOptions = (
+	employeeId: string,
+): UseSuspenseQueryOptions<TEmployeeOut["careerList"]> =>
+	suspenseQueryOptionsFor(orpc.employee.careerList, { employeeId });
+
+export const useCareerHistoryList = (
+	employeeId: string,
+): UseSuspenseQueryResult<TEmployeeOut["careerList"]> =>
+	useSuspenseQuery(careerHistoryListOptions(employeeId));
+
+export const useCareerHistoryCreate = (): UseMutationResult<
+	TEmployeeOut["careerCreate"],
+	TEmployeeErr["careerCreate"],
+	TEmployeeIn["careerCreate"]
+> =>
+	useProcedureMutation(orpc.employee.careerCreate, {
+		message: EMPLOYEE_MESSAGE.UPDATED,
+		invalidates: employeeKeys(),
+	});
+
+export const useDepartmentCreate = (): UseMutationResult<
+	TEmployeeOut["departmentCreate"],
+	TEmployeeErr["departmentCreate"],
+	TEmployeeIn["departmentCreate"]
+> =>
+	useProcedureMutation(orpc.employee.departmentCreate, {
+		message: EMPLOYEE_MESSAGE.DEPARTMENT_CREATED,
+		invalidates: employeeKeys(),
+	});
+
+export const usePositionCreate = (): UseMutationResult<
+	TEmployeeOut["positionCreate"],
+	TEmployeeErr["positionCreate"],
+	TEmployeeIn["positionCreate"]
+> =>
+	useProcedureMutation(orpc.employee.positionCreate, {
+		message: EMPLOYEE_MESSAGE.POSITION_CREATED,
+		invalidates: employeeKeys(),
+	});

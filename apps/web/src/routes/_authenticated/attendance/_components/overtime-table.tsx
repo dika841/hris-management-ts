@@ -12,10 +12,11 @@ import {
 import { formatRupiah } from "@app/format";
 import { PERMISSION } from "@app/permissions";
 import type { TOvertimeRequest, TOvertimeList } from "@app/schemas";
-import { AlertTriangle, Check, Clock, User, X } from "lucide-react";
+import { AlertTriangle, Ban, Check, Clock, User, X } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import {
 	useOvertimeApprove,
+	useOvertimeCancel,
 	useOvertimeReject,
 } from "#/routes/_authenticated/attendance/_hooks/use-attendance.ts";
 import { OvertimeStatusBadge } from "./attendance-status-badge.tsx";
@@ -29,6 +30,7 @@ export const OvertimeTable: FC<TOvertimeTableProps> = ({
 }): ReactElement => {
 	const approveMutation = useOvertimeApprove();
 	const rejectMutation = useOvertimeReject();
+	const cancelMutation = useOvertimeCancel();
 
 	const handleApprove = (id: string) => {
 		approveMutation.mutate({ id });
@@ -41,16 +43,23 @@ export const OvertimeTable: FC<TOvertimeTableProps> = ({
 		});
 	};
 
-	const isProcessing = approveMutation.isPending || rejectMutation.isPending;
+	const handleCancel = (id: string) => {
+		if (window.confirm("Batalkan pengajuan lembur ini?")) {
+			cancelMutation.mutate({ id });
+		}
+	};
+
+	const isProcessing =
+		approveMutation.isPending ||
+		rejectMutation.isPending ||
+		cancelMutation.isPending;
 
 	return (
 		<div className="rounded-lg border border-border/60 bg-card overflow-hidden">
 			<Table>
 				<TableHeader>
 					<TableRow className="border-b border-border/40 bg-muted/30">
-						<TableHead className="text-xs font-semibold">
-							Karyawan (ID)
-						</TableHead>
+						<TableHead className="text-xs font-semibold">Karyawan</TableHead>
 						<TableHead className="text-xs font-semibold">Tanggal</TableHead>
 						<TableHead className="text-xs font-semibold">
 							Waktu Lembur
@@ -139,31 +148,45 @@ export const OvertimeTable: FC<TOvertimeTableProps> = ({
 										<OvertimeStatusBadge status={ot.status} />
 									</TableCell>
 									<TableCell className="text-right">
-										{ot.status === "pending" ? (
-											<Guard permissions={[PERMISSION.OVERTIME_APPROVE]}>
-												<div className="flex items-center justify-end gap-1.5">
+										{ot.status === "pending" || ot.status === "approved" ? (
+											<div className="flex items-center justify-end gap-1.5">
+												{ot.status === "pending" && (
+													<Guard permissions={[PERMISSION.OVERTIME_APPROVE]}>
+														<Button
+															size="sm"
+															variant="outline"
+															disabled={isProcessing}
+															onClick={() => handleApprove(ot.id)}
+															className="h-7 px-2 text-xs border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 gap-1"
+														>
+															<Check className="size-3" />
+															Setujui
+														</Button>
+														<Button
+															size="sm"
+															variant="outline"
+															disabled={isProcessing}
+															onClick={() => handleReject(ot.id)}
+															className="h-7 px-2 text-xs border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 gap-1"
+														>
+															<X className="size-3" />
+															Tolak
+														</Button>
+													</Guard>
+												)}
+												<Guard permissions={[PERMISSION.OVERTIME_MANAGE]}>
 													<Button
 														size="sm"
-														variant="outline"
+														variant="ghost"
 														disabled={isProcessing}
-														onClick={() => handleApprove(ot.id)}
-														className="h-7 px-2 text-xs border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 gap-1"
+														onClick={() => handleCancel(ot.id)}
+														className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive gap-1"
 													>
-														<Check className="size-3" />
-														Setujui
+														<Ban className="size-3" />
+														Batalkan
 													</Button>
-													<Button
-														size="sm"
-														variant="outline"
-														disabled={isProcessing}
-														onClick={() => handleReject(ot.id)}
-														className="h-7 px-2 text-xs border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 gap-1"
-													>
-														<X className="size-3" />
-														Tolak
-													</Button>
-												</div>
-											</Guard>
+												</Guard>
+											</div>
 										) : (
 											<span className="text-xs text-muted-foreground">-</span>
 										)}

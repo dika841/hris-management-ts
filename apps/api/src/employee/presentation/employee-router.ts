@@ -1,11 +1,13 @@
 import { PERMISSION } from "@app/permissions";
 import {
+	careerHistoryCreateInputSchema,
 	contractConvertInputSchema,
 	contractCreateInputSchema,
 	contractPayCompensationInputSchema,
 	contractRenewInputSchema,
 	departmentCreateInputSchema,
 	departmentSchema,
+	employeeCareerHistorySchema,
 	employeeContractSchema,
 	employeeCreateInputSchema,
 	employeeIdInputSchema,
@@ -18,6 +20,8 @@ import {
 	positionSchema,
 } from "@app/schemas";
 import { z } from "zod";
+import { careerHistoryCreate } from "#/employee/application/career-history-create.ts";
+import { careerHistoryList } from "#/employee/application/career-history-list.ts";
 import { contractCompensationPay } from "#/employee/application/contract-compensation-pay.ts";
 import { contractConvert } from "#/employee/application/contract-convert.ts";
 import { contractCreate } from "#/employee/application/contract-create.ts";
@@ -106,6 +110,26 @@ const employeeRouter = {
 			effectRunTransactional(
 				context.runtime,
 				employeeDelete(input, context.session!.user.id),
+			),
+		),
+
+	// Career History
+	careerList: permissionRequire(PERMISSION.EMPLOYEE_READ)
+		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.EMPLOYEE_CAREER })
+		.input(z.object({ employeeId: z.string() }))
+		.output(z.array(employeeCareerHistorySchema))
+		.handler(({ input, context }) =>
+			effectRun(context.runtime, careerHistoryList(input.employeeId)),
+		),
+
+	careerCreate: permissionRequire(PERMISSION.EMPLOYEE_MANAGE)
+		.route({ method: HTTP_METHOD.POST, path: ROUTE_PATH.EMPLOYEE_CAREER })
+		.input(careerHistoryCreateInputSchema)
+		.output(employeeCareerHistorySchema)
+		.handler(({ input, context }) =>
+			effectRunTransactional(
+				context.runtime,
+				careerHistoryCreate(input, context.session!.user.id),
 			),
 		),
 

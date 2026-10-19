@@ -27,6 +27,7 @@ import {
 	exampleJobProcess,
 	type TExampleJobPayload,
 } from "#/worker/job-handler.ts";
+import { scheduledJobsRun } from "#/worker/scheduled-jobs.ts";
 
 const EXIT_OK = 0;
 const EXIT_FAILURE = 1;
@@ -126,7 +127,15 @@ const prune = async (): Promise<void> => {
 	);
 };
 
+const runScheduledJobs = async (): Promise<void> => {
+	await runtime.runPromise(scheduledJobsRun()).catch((cause: unknown) => {
+		logger.error({ err: cause }, "scheduled jobs failed");
+	});
+};
+
 await prune();
+await runScheduledJobs();
 setInterval((): void => {
 	void prune();
+	void runScheduledJobs();
 }, PRUNE_INTERVAL_MS).unref();

@@ -1,5 +1,7 @@
+import { Guard } from "@app/components/guard/guard";
 import { Button } from "@app/components/ui/button";
 import { formatDate } from "@app/format";
+import { PERMISSION } from "@app/permissions";
 import type { TEmployee } from "@app/schemas";
 import { Link } from "@tanstack/react-router";
 import {
@@ -7,6 +9,7 @@ import {
 	Building2,
 	Calendar,
 	FilePlus2,
+	Pencil,
 	RefreshCw,
 	UserCheck,
 } from "lucide-react";
@@ -72,6 +75,22 @@ export const EmployeeDetailHeader: FC<TProps> = ({
 				</div>
 
 				<div className="flex flex-wrap items-center gap-2">
+					<Guard permissions={[PERMISSION.EMPLOYEE_MANAGE]}>
+						<Button
+							size="sm"
+							variant="outline"
+							asChild
+							className="gap-1.5 text-xs font-medium"
+						>
+							<Link
+								to="/employees/$employeeId/edit"
+								params={{ employeeId: employee.id }}
+							>
+								<Pencil className="size-3.5" />
+								Edit Data
+							</Link>
+						</Button>
+					</Guard>
 					<Button
 						size="sm"
 						variant="outline"

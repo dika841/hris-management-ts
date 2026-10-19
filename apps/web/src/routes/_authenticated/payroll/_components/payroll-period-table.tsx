@@ -10,7 +10,8 @@ import {
 } from "@app/components/ui/table";
 import { formatRupiah } from "@app/format";
 import type { TPayrollPeriod, TPayrollPeriodList } from "@app/schemas";
-import { Calendar, Play } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Calendar, Eye, Play } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { usePayrollCalculate } from "#/routes/_authenticated/payroll/_hooks/use-payroll.ts";
 
@@ -122,16 +123,35 @@ export const PayrollPeriodTable: FC<TPayrollPeriodTableProps> = ({
 									</Badge>
 								</TableCell>
 								<TableCell className="text-right">
-									<Button
-										variant="outline"
-										size="sm"
-										onClick={() => handleCalculate(period.id)}
-										disabled={calculateMutation.isPending}
-										className="h-8 gap-1.5 text-xs font-medium border-border/60 hover:bg-primary hover:text-primary-foreground transition-colors"
-									>
-										<Play className="size-3 text-emerald-500 fill-emerald-500" />
-										Hitung Payroll
-									</Button>
+									<div className="flex items-center justify-end gap-1.5">
+										{(period.status === "draft" ||
+											period.status === "calculating") && (
+											<Button
+												variant="outline"
+												size="sm"
+												onClick={() => handleCalculate(period.id)}
+												disabled={calculateMutation.isPending}
+												className="h-8 gap-1.5 text-xs font-medium border-border/60 hover:bg-primary hover:text-primary-foreground transition-colors"
+											>
+												<Play className="size-3 text-emerald-500 fill-emerald-500" />
+												Hitung
+											</Button>
+										)}
+										<Button
+											variant="ghost"
+											size="sm"
+											asChild
+											className="size-8 p-0"
+											title="Lihat detail periode"
+										>
+											<Link
+												to="/payroll/$periodId"
+												params={{ periodId: period.id }}
+											>
+												<Eye className="size-3.5" />
+											</Link>
+										</Button>
+									</div>
 								</TableCell>
 							</TableRow>
 						))

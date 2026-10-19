@@ -41,6 +41,16 @@ export const useAttendanceList = (
 ): UseSuspenseQueryResult<TAttendanceOut["attendanceList"]> =>
 	useSuspenseQuery(attendanceListOptions(input));
 
+export const attendanceSummaryOptions = (
+	input: TAttendanceIn["attendanceSummary"],
+): UseSuspenseQueryOptions<TAttendanceOut["attendanceSummary"]> =>
+	suspenseQueryOptionsFor(orpc.attendance.attendanceSummary, input);
+
+export const useAttendanceSummary = (
+	input: TAttendanceIn["attendanceSummary"],
+): UseSuspenseQueryResult<TAttendanceOut["attendanceSummary"]> =>
+	useSuspenseQuery(attendanceSummaryOptions(input));
+
 export const useAttendanceLog = (): UseMutationResult<
 	TAttendanceOut["attendanceLog"],
 	TAttendanceErr["attendanceLog"],
@@ -67,6 +77,36 @@ export const useLeaveTypeCreate = (): UseMutationResult<
 > =>
 	useProcedureMutation(orpc.attendance.leaveTypeCreate, {
 		message: ATTENDANCE_MESSAGE.LEAVE_TYPE_CREATED,
+		invalidates: attendanceKeys(),
+	});
+
+export const useLeaveTypeUpdate = (): UseMutationResult<
+	TAttendanceOut["leaveTypeUpdate"],
+	TAttendanceErr["leaveTypeUpdate"],
+	TAttendanceIn["leaveTypeUpdate"]
+> =>
+	useProcedureMutation(orpc.attendance.leaveTypeUpdate, {
+		message: ATTENDANCE_MESSAGE.LEAVE_TYPE_UPDATED,
+		invalidates: attendanceKeys(),
+	});
+
+export const leaveBalanceListOptions = (
+	input: TAttendanceIn["leaveBalanceList"],
+): UseSuspenseQueryOptions<TAttendanceOut["leaveBalanceList"]> =>
+	suspenseQueryOptionsFor(orpc.attendance.leaveBalanceList, input);
+
+export const useLeaveBalanceList = (
+	input: TAttendanceIn["leaveBalanceList"],
+): UseSuspenseQueryResult<TAttendanceOut["leaveBalanceList"]> =>
+	useSuspenseQuery(leaveBalanceListOptions(input));
+
+export const useLeaveBalanceUpsert = (): UseMutationResult<
+	TAttendanceOut["leaveBalanceUpsert"],
+	TAttendanceErr["leaveBalanceUpsert"],
+	TAttendanceIn["leaveBalanceUpsert"]
+> =>
+	useProcedureMutation(orpc.attendance.leaveBalanceUpsert, {
+		message: ATTENDANCE_MESSAGE.LEAVE_BALANCE_UPDATED,
 		invalidates: attendanceKeys(),
 	});
 
@@ -167,6 +207,16 @@ export const useOvertimeReject = (): UseMutationResult<
 		invalidates: attendanceKeys(),
 	});
 
+export const useOvertimeCancel = (): UseMutationResult<
+	TAttendanceOut["overtimeCancel"],
+	TAttendanceErr["overtimeCancel"],
+	TAttendanceIn["overtimeCancel"]
+> =>
+	useProcedureMutation(orpc.attendance.overtimeCancel, {
+		message: ATTENDANCE_MESSAGE.OVERTIME_CANCELLED,
+		invalidates: attendanceKeys(),
+	});
+
 // 4. Public Holidays
 export const publicHolidayListOptions = (
 	input: TPublicHolidayListInput,
@@ -185,5 +235,15 @@ export const usePublicHolidayCreate = (): UseMutationResult<
 > =>
 	useProcedureMutation(orpc.attendance.publicHolidayCreate, {
 		message: ATTENDANCE_MESSAGE.HOLIDAY_CREATED,
+		invalidates: attendanceKeys(),
+	});
+
+export const usePublicHolidayDelete = (): UseMutationResult<
+	TAttendanceOut["publicHolidayDelete"],
+	TAttendanceErr["publicHolidayDelete"],
+	TAttendanceIn["publicHolidayDelete"]
+> =>
+	useProcedureMutation(orpc.attendance.publicHolidayDelete, {
+		message: ATTENDANCE_MESSAGE.HOLIDAY_DELETED,
 		invalidates: attendanceKeys(),
 	});

@@ -5,6 +5,7 @@ import {
 	pgTable,
 	text,
 	timestamp,
+	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth.ts";
@@ -63,6 +64,11 @@ export const leaveBalance = pgTable(
 	(table) => [
 		index("leave_balance_employee_year_idx").on(table.employeeId, table.year),
 		index("leave_balance_type_idx").on(table.leaveTypeId),
+		uniqueIndex("leave_balance_employee_type_year_idx").on(
+			table.employeeId,
+			table.leaveTypeId,
+			table.year,
+		),
 	],
 );
 
@@ -145,7 +151,7 @@ export const attendanceLog = pgTable(
 			.defaultNow(),
 	},
 	(table) => [
-		index("attendance_employee_date_idx").on(
+		uniqueIndex("attendance_employee_date_idx").on(
 			table.employeeId,
 			table.attendanceDate,
 		),

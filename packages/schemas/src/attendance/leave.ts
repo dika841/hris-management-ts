@@ -80,6 +80,28 @@ export const leaveBalanceSchema = baseSchema(z.string()).extend({
 });
 export type TLeaveBalance = TEntityOf<z.infer<typeof leaveBalanceSchema>>;
 
+export const leaveBalanceListInputSchema = z.object({
+	employeeId: z.string().min(1),
+	year: z.number().int().min(2000).max(2100),
+});
+export type TLeaveBalanceListInput = z.infer<
+	typeof leaveBalanceListInputSchema
+>;
+
+export const leaveBalanceUpsertInputSchema = z.object({
+	employeeId: z.string().min(1),
+	leaveTypeId: z.string().min(1),
+	year: z.number().int().min(2000).max(2100),
+	allocatedDays: z.number().int().nonnegative(),
+	carryOverDays: z.number().int().nonnegative().default(0),
+	usedDays: z.number().int().nonnegative().default(0),
+	pendingDays: z.number().int().nonnegative().default(0),
+	forfeitedDays: z.number().int().nonnegative().default(0),
+});
+export type TLeaveBalanceUpsertInput = z.infer<
+	typeof leaveBalanceUpsertInputSchema
+>;
+
 export const LEAVE_REQUEST_STATUS = {
 	PENDING: "pending",
 	APPROVED: "approved",

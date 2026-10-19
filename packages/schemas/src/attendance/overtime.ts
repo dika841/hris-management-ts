@@ -98,6 +98,11 @@ export const overtimeRejectInputSchema = z.object({
 });
 export type TOvertimeRejectInput = z.infer<typeof overtimeRejectInputSchema>;
 
+export const overtimeCancelInputSchema = z.object({
+	id: overtimeRequestIdSchema,
+});
+export type TOvertimeCancelInput = z.infer<typeof overtimeCancelInputSchema>;
+
 export const overtimeListInputSchema = paginationSchema.extend({
 	employeeId: z.string().optional(),
 	status: overtimeStatusSchema.optional(),
@@ -178,4 +183,11 @@ export const publicHolidayListInputSchema = z.object({
 });
 export type TPublicHolidayListInput = z.infer<
 	typeof publicHolidayListInputSchema
+>;
+
+export const publicHolidayDeleteInputSchema = z.object({
+	id: publicHolidayIdSchema,
+});
+export type TPublicHolidayDeleteInput = z.infer<
+	typeof publicHolidayDeleteInputSchema
 >;

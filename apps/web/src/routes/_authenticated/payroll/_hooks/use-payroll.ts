@@ -66,3 +66,33 @@ export const usePayrollCalculate = (): UseMutationResult<
 		message: PAYROLL_MESSAGE.CALCULATE_SUCCESS,
 		invalidates: payrollKeys(),
 	});
+
+export const payrollPeriodGetOptions = (
+	id: string,
+): UseSuspenseQueryOptions<TPayrollOut["getPeriod"]> =>
+	suspenseQueryOptionsFor(orpc.payroll.getPeriod, { id });
+
+export const usePayrollPeriodGet = (
+	id: string,
+): UseSuspenseQueryResult<TPayrollOut["getPeriod"]> =>
+	useSuspenseQuery(payrollPeriodGetOptions(id));
+
+export const payrollItemListOptions = (
+	input: TPayrollIn["listItems"],
+): UseSuspenseQueryOptions<TPayrollOut["listItems"]> =>
+	suspenseQueryOptionsFor(orpc.payroll.listItems, input);
+
+export const usePayrollItemList = (
+	input: TPayrollIn["listItems"],
+): UseSuspenseQueryResult<TPayrollOut["listItems"]> =>
+	useSuspenseQuery(payrollItemListOptions(input));
+
+export const usePayrollStatusUpdate = (): UseMutationResult<
+	TPayrollOut["updateStatus"],
+	TPayrollErr["updateStatus"],
+	TPayrollIn["updateStatus"]
+> =>
+	useProcedureMutation(orpc.payroll.updateStatus, {
+		message: PAYROLL_MESSAGE.PERIOD_APPROVED,
+		invalidates: payrollKeys(),
+	});

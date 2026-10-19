@@ -28,6 +28,7 @@ export const id: TTranslationSchema = {
 	nav: {
 		dashboard: "Dasbor",
 		employees: "Karyawan",
+		organization: "Organisasi",
 		attendance: "Waktu & Kehadiran",
 		payroll: "Penggajian & Pajak",
 		users: "Pengguna",

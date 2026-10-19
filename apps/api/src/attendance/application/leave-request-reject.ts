@@ -1,4 +1,5 @@
 import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
+import { leaveStatusMailBuild, MAIL_TEMPLATE, mailSendSafe } from "@app/mail";
 import { ATTENDANCE_MESSAGE } from "@app/messages";
 import {
 	LEAVE_CODE,
@@ -12,6 +13,9 @@ import {
 	AttendanceRepo,
 	type TAttendanceRepoId,
 } from "#/attendance/domain/attendance.ts";
+import { EmployeeRepo, type TEmployeeRepoId } from "#/employee/index.ts";
+import { MailService, type TMailServiceId } from "#/platform/mail/mailer.ts";
+import { logger } from "#/platform/observability/logger.ts";
 import {
 	ActivityRecorder,
 	type TActivityRecorderId,
@@ -24,10 +28,12 @@ export const leaveRequestReject = Effect.fn("leaveRequestReject")(function* (
 ): Effect.fn.Return<
 	TLeaveRequest,
 	ENotFound | EConflict | EDatabase,
-	TAttendanceRepoId | TActivityRecorderId
+	TAttendanceRepoId | TActivityRecorderId | TEmployeeRepoId | TMailServiceId
 > {
 	const attendanceRepo = yield* AttendanceRepo;
 	const activityRepo = yield* ActivityRecorder;
+	const employeeRepo = yield* EmployeeRepo;
+	const { mailer } = yield* MailService;
 
 	const request = yield* attendanceRepo.findLeaveRequestById(input.id);
 	if (request === null) {
@@ -78,6 +84,26 @@ export const leaveRequestReject = Effect.fn("leaveRequestReject")(function* (
 		resourceId: input.id,
 		metadata: { rejectionReason: input.rejectionReason },
 	});
+
+	const employee = yield* employeeRepo.findById(request.employeeId);
+	if (employee !== null) {
+		yield* Effect.promise(() =>
+			mailSendSafe(
+				mailer,
+				logger,
+				MAIL_TEMPLATE.LEAVE_STATUS,
+				leaveStatusMailBuild({
+					to: employee.email,
+					name: employee.fullName,
+					approved: false,
+					leaveTypeName: leaveType?.name ?? "Cuti",
+					startDate: request.startDate,
+					endDate: request.endDate,
+					note: input.rejectionReason,
+				}),
+			),
+		);
+	}
 
 	return toLeaveRequestDto(updated, leaveType?.name);
 });

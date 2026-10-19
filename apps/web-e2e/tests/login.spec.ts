@@ -8,12 +8,16 @@ test("signs in and views the dashboard", async ({ page }): Promise<void> => {
 		.getByLabel(AUTH_MESSAGE.FIELD_EMAIL)
 		.pressSequentially("admin@test.app");
 	await page
-		.getByLabel(AUTH_MESSAGE.FIELD_PASSWORD)
+		.getByLabel(AUTH_MESSAGE.FIELD_PASSWORD, { exact: true })
 		.pressSequentially("Password123");
-	await page.getByRole("button", { name: AUTH_MESSAGE.LOGIN_ACTION }).click();
+	await page.getByRole("button", { name: "Sign in" }).click();
 
 	await expect(page).toHaveURL(/\/dashboard/);
-	await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
+	await expect(
+		page.getByRole("heading", {
+			name: "Human Capital & Intelligence Dashboard",
+		}),
+	).toBeVisible();
 });
 
 test("returns to the page that asked for sign-in", async ({
@@ -26,9 +30,9 @@ test("returns to the page that asked for sign-in", async ({
 		.getByLabel(AUTH_MESSAGE.FIELD_EMAIL)
 		.pressSequentially("admin@test.app");
 	await page
-		.getByLabel(AUTH_MESSAGE.FIELD_PASSWORD)
+		.getByLabel(AUTH_MESSAGE.FIELD_PASSWORD, { exact: true })
 		.pressSequentially("Password123");
-	await page.getByRole("button", { name: AUTH_MESSAGE.LOGIN_ACTION }).click();
+	await page.getByRole("button", { name: "Sign in" }).click();
 
 	await expect(page).toHaveURL(/\/users\?page=2(&|$)/);
 	await expect(page.getByRole("heading", { name: "Users" })).toBeVisible();

@@ -88,6 +88,7 @@ export const employeeSchema = baseSchema(employeeIdSchema).extend({
 	employmentStatus: employmentStatusSchema,
 	joinDate: z.string(), // YYYY-MM-DD
 	endDate: z.string().nullable(),
+	managerId: employeeIdSchema.nullable(),
 	// Data Finansial & Penggajian
 	basicSalary: z.number().int().nonnegative(), // dalam Rupiah
 	taxMethod: taxMethodSchema,
@@ -123,7 +124,7 @@ export const employeeCreateInputSchema = z.object({
 		.string()
 		.regex(/^\d{4}-\d{2}-\d{2}$/)
 		.optional(),
-	managerId: employeeIdSchema.optional(),
+	managerId: employeeIdSchema.nullable().optional(),
 	basicSalary: z.number().int().nonnegative(),
 	taxMethod: taxMethodSchema.default(TAX_METHOD.GROSS),
 	ptkpCode: ptkpCodeSchema.default(PTKP_CODE.TK_0),

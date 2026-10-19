@@ -1,0 +1,5 @@
+DROP INDEX "attendance_employee_date_idx";--> statement-breakpoint
+DELETE FROM "attendance_log" a USING "attendance_log" b WHERE a."employee_id" = b."employee_id" AND a."attendance_date" = b."attendance_date" AND (a."created_at", a."id") < (b."created_at", b."id");--> statement-breakpoint
+DELETE FROM "leave_balance" a USING "leave_balance" b WHERE a."employee_id" = b."employee_id" AND a."leave_type_id" = b."leave_type_id" AND a."year" = b."year" AND (a."updated_at", a."id") < (b."updated_at", b."id");--> statement-breakpoint
+CREATE UNIQUE INDEX "leave_balance_employee_type_year_idx" ON "leave_balance" USING btree ("employee_id","leave_type_id","year");--> statement-breakpoint
+CREATE UNIQUE INDEX "attendance_employee_date_idx" ON "attendance_log" USING btree ("employee_id","attendance_date");

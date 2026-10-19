@@ -32,6 +32,7 @@ export const ACTIVITY_ACTION_LABEL = {
 	[ACTIVITY_ACTION.EMPLOYEE_CREATE]: "Employee created",
 	[ACTIVITY_ACTION.EMPLOYEE_UPDATE]: "Employee updated",
 	[ACTIVITY_ACTION.EMPLOYEE_DELETE]: "Employee deleted",
+	[ACTIVITY_ACTION.EMPLOYEE_CAREER_CHANGE]: "Employee career changed",
 	[ACTIVITY_ACTION.CONTRACT_CREATE]: "Contract created",
 	[ACTIVITY_ACTION.CONTRACT_RENEW]: "Contract renewed",
 	[ACTIVITY_ACTION.CONTRACT_CONVERT]: "Contract converted",
@@ -39,9 +40,12 @@ export const ACTIVITY_ACTION_LABEL = {
 	[ACTIVITY_ACTION.PAYROLL_PERIOD_CREATE]: "Payroll period created",
 	[ACTIVITY_ACTION.PAYROLL_CALCULATE]: "Payroll calculated",
 	[ACTIVITY_ACTION.PAYROLL_APPROVE]: "Payroll approved",
+	[ACTIVITY_ACTION.PAYROLL_PAY]: "Payroll marked as paid",
+	[ACTIVITY_ACTION.PAYROLL_LOCK]: "Payroll locked",
 	// Fase 2
 	[ACTIVITY_ACTION.LEAVE_TYPE_CREATE]: "Leave type created",
 	[ACTIVITY_ACTION.LEAVE_TYPE_UPDATE]: "Leave type updated",
+	[ACTIVITY_ACTION.LEAVE_BALANCE_UPDATE]: "Leave balance updated",
 	[ACTIVITY_ACTION.LEAVE_REQUEST_CREATE]: "Leave request submitted",
 	[ACTIVITY_ACTION.LEAVE_REQUEST_APPROVE]: "Leave request approved",
 	[ACTIVITY_ACTION.LEAVE_REQUEST_REJECT]: "Leave request rejected",
@@ -51,6 +55,7 @@ export const ACTIVITY_ACTION_LABEL = {
 	[ACTIVITY_ACTION.OVERTIME_CREATE]: "Overtime request submitted",
 	[ACTIVITY_ACTION.OVERTIME_APPROVE]: "Overtime approved",
 	[ACTIVITY_ACTION.OVERTIME_REJECT]: "Overtime rejected",
+	[ACTIVITY_ACTION.OVERTIME_CANCEL]: "Overtime cancelled",
 	[ACTIVITY_ACTION.PUBLIC_HOLIDAY_CREATE]: "Public holiday added",
 	[ACTIVITY_ACTION.PUBLIC_HOLIDAY_DELETE]: "Public holiday removed",
 } as const satisfies Record<TActivityAction, string>;

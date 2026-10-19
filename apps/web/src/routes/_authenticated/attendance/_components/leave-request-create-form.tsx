@@ -31,6 +31,7 @@ import {
 import { useState, type FC, type FormEvent, type ReactElement } from "react";
 import { orpc } from "#/libs/orpc/client.ts";
 import { suspenseQueryOptionsFor } from "#/libs/orpc/procedure-query.ts";
+import { FileUploadField } from "#/routes/_authenticated/_components/file-upload-field.tsx";
 import {
 	useLeaveRequestCreate,
 	useLeaveTypeList,
@@ -55,6 +56,7 @@ export const LeaveRequestCreateForm: FC = (): ReactElement => {
 	const [endDate, setEndDate] = useState(today);
 	const [reason, setReason] = useState("");
 	const [doctorNoteUrl, setDoctorNoteUrl] = useState("");
+	const [attachmentUrl, setAttachmentUrl] = useState("");
 
 	const selectedType = leaveTypes.find((lt) => lt.id === leaveTypeId);
 	const isMaternity =
@@ -75,6 +77,7 @@ export const LeaveRequestCreateForm: FC = (): ReactElement => {
 				endDate,
 				reason,
 				doctorNoteUrl: doctorNoteUrl || undefined,
+				attachmentUrl: attachmentUrl || undefined,
 			},
 			{
 				onSuccess: () => {
@@ -242,24 +245,27 @@ export const LeaveRequestCreateForm: FC = (): ReactElement => {
 					</div>
 
 					<div className="space-y-1.5 sm:col-span-2">
-						<Label
-							htmlFor="doctorNote"
-							className="text-xs font-medium flex items-center justify-between"
-						>
-							<span>Tautan / URL Surat Dokter</span>
-							{selectedType?.requiresDoctorNote && (
-								<span className="text-destructive text-[11px] font-semibold">
-									* Wajib untuk jenis cuti ini
-								</span>
-							)}
-						</Label>
-						<Input
+						<FileUploadField
 							id="doctorNote"
+							label={
+								selectedType?.requiresDoctorNote
+									? "Surat Dokter (wajib untuk jenis cuti ini)"
+									: "Surat Dokter / Dokumen Pendukung"
+							}
+							folder={`leave/${employeeId || "unknown"}`}
 							value={doctorNoteUrl}
-							onChange={(e) => setDoctorNoteUrl(e.target.value)}
-							placeholder="https://drive.google.com/... atau tautan dokumen rekam medis"
-							className="text-xs font-mono"
+							onChange={setDoctorNoteUrl}
 							required={selectedType?.requiresDoctorNote}
+						/>
+					</div>
+
+					<div className="space-y-1.5 sm:col-span-2">
+						<FileUploadField
+							id="leaveAttachment"
+							label="Lampiran Tambahan"
+							folder={`leave/${employeeId || "unknown"}`}
+							value={attachmentUrl}
+							onChange={setAttachmentUrl}
 						/>
 					</div>
 				</CardContent>

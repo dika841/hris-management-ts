@@ -8,17 +8,26 @@ import {
 } from "@app/components/ui/card";
 import { Input } from "@app/components/ui/input";
 import { Label } from "@app/components/ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@app/components/ui/select";
 import { APP_MESSAGE } from "@app/messages";
 import {
 	EMPLOYMENT_STATUS,
 	GENDER,
 	PTKP_CODE,
 	TAX_METHOD,
+	type TEmployee,
 	type TEmploymentStatus,
 	type TGender,
 	type TPtkpCode,
 	type TTaxMethod,
 } from "@app/schemas";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
 	Building2,
@@ -30,89 +39,154 @@ import {
 	User,
 } from "lucide-react";
 import { useState, type FC, type FormEvent, type ReactElement } from "react";
-import { useEmployeeCreate } from "#/routes/_authenticated/employees/_hooks/use-employees.ts";
+import { orpc } from "#/libs/orpc/client.ts";
+import { suspenseQueryOptionsFor } from "#/libs/orpc/procedure-query.ts";
+import {
+	useEmployeeCreate,
+	useEmployeeUpdate,
+} from "#/routes/_authenticated/employees/_hooks/use-employees.ts";
 
-export const EmployeeCreateForm: FC = (): ReactElement => {
+type TEmployeeFormProps = {
+	employee?: TEmployee;
+};
+
+const EmployeeForm: FC<TEmployeeFormProps> = ({ employee }): ReactElement => {
 	const navigate = useNavigate();
 	const createMutation = useEmployeeCreate();
+	const updateMutation = useEmployeeUpdate();
 
 	// Primary identifiers
-	const [employeeCode, setEmployeeCode] = useState("EMP-001");
-	const [fullName, setFullName] = useState("");
-	const [email, setEmail] = useState("");
-	const [phone, setPhone] = useState("");
-	const [idCardNumber, setIdCardNumber] = useState("3171010101900001");
+	const [employeeCode, setEmployeeCode] = useState(
+		employee?.employeeCode ?? "",
+	);
+	const [fullName, setFullName] = useState(employee?.fullName ?? "");
+	const [email, setEmail] = useState(employee?.email ?? "");
+	const [phone, setPhone] = useState(employee?.phone ?? "");
+	const [idCardNumber, setIdCardNumber] = useState(
+		employee?.idCardNumber ?? "",
+	);
 
 	// Demographics & placement
-	const [gender, setGender] = useState<TGender>(GENDER.MALE);
-	const [dateOfBirth, setDateOfBirth] = useState("1995-05-15");
-	const [department, setDepartment] = useState("Engineering");
-	const [position, setPosition] = useState("Software Engineer");
+	const [gender, setGender] = useState<TGender>(
+		employee?.gender ?? GENDER.MALE,
+	);
+	const [dateOfBirth, setDateOfBirth] = useState(
+		employee?.dateOfBirth ?? "1995-05-15",
+	);
+	const [department, setDepartment] = useState(
+		employee?.department ?? "Engineering",
+	);
+	const [position, setPosition] = useState(
+		employee?.position ?? "Software Engineer",
+	);
 	const [employmentStatus, setEmploymentStatus] = useState<TEmploymentStatus>(
-		EMPLOYMENT_STATUS.PERMANENT,
+		employee?.employmentStatus ?? EMPLOYMENT_STATUS.PERMANENT,
 	);
 	const [joinDate, setJoinDate] = useState(
-		new Date().toISOString().split("T")[0] ?? "",
+		employee?.joinDate ?? new Date().toISOString().split("T")[0] ?? "",
+	);
+	const [endDate, setEndDate] = useState(employee?.endDate ?? "");
+	const [managerId, setManagerId] = useState(employee?.managerId ?? "none");
+
+	const employeesQuery = useSuspenseQuery(
+		suspenseQueryOptionsFor(orpc.employee.list, { page: 1, pageSize: 100 }),
+	);
+	const managerOptions = employeesQuery.data.items.filter(
+		(candidate) => candidate.id !== employee?.id,
 	);
 
 	// Compensation & Tax (PMK 168/2023)
-	const [basicSalary, setBasicSalary] = useState(12_000_000);
-	const [ptkpCode, setPtkpCode] = useState<TPtkpCode>(PTKP_CODE.TK_0);
-	const [taxMethod, setTaxMethod] = useState<TTaxMethod>(TAX_METHOD.GROSS);
-	const [npwp, setNpwp] = useState("");
+	const [basicSalary, setBasicSalary] = useState(
+		employee?.basicSalary ?? 12_000_000,
+	);
+	const [ptkpCode, setPtkpCode] = useState<TPtkpCode>(
+		employee?.ptkpCode ?? PTKP_CODE.TK_0,
+	);
+	const [taxMethod, setTaxMethod] = useState<TTaxMethod>(
+		employee?.taxMethod ?? TAX_METHOD.GROSS,
+	);
+	const [npwp, setNpwp] = useState(employee?.npwp ?? "");
 
 	// Banking & BPJS
-	const [bankName, setBankName] = useState("Bank Central Asia (BCA)");
-	const [bankAccountNumber, setBankAccountNumber] = useState("");
-	const [bankAccountHolder, setBankAccountHolder] = useState("");
-	const [bpjsKesehatanNumber, setBpjsKesehatanNumber] = useState("");
-	const [bpjsKetenagakerjaanNumber, setBpjsKetenagakerjaanNumber] =
-		useState("");
+	const [bankName, setBankName] = useState(employee?.bankName ?? "");
+	const [bankAccountNumber, setBankAccountNumber] = useState(
+		employee?.bankAccountNumber ?? "",
+	);
+	const [bankAccountHolder, setBankAccountHolder] = useState(
+		employee?.bankAccountHolder ?? "",
+	);
+	const [bpjsKesehatanNumber, setBpjsKesehatanNumber] = useState(
+		employee?.bpjsKesehatanNumber ?? "",
+	);
+	const [bpjsKetenagakerjaanNumber, setBpjsKetenagakerjaanNumber] = useState(
+		employee?.bpjsKetenagakerjaanNumber ?? "",
+	);
+	const [jkkRiskGrade, setJkkRiskGrade] = useState(employee?.jkkRiskGrade ?? 1);
 
 	// Privacy consent (UU PDP)
-	const [pdpConsentGiven, setPdpConsentGiven] = useState(false);
+	const [pdpConsentGiven, setPdpConsentGiven] = useState(
+		employee?.pdpConsentGiven ?? false,
+	);
+
+	const isPending = createMutation.isPending || updateMutation.isPending;
 
 	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault();
-		createMutation.mutate(
-			{
-				employeeCode,
-				fullName,
-				email,
-				phone: phone.trim() ? phone : undefined,
-				idCardNumber,
-				gender,
-				dateOfBirth,
-				department,
-				position,
-				employmentStatus,
-				joinDate,
-				basicSalary,
-				ptkpCode,
-				taxMethod,
-				npwp: npwp.trim() ? npwp : undefined,
-				bankName: bankName.trim() ? bankName : undefined,
-				bankAccountNumber: bankAccountNumber.trim()
-					? bankAccountNumber
-					: undefined,
-				bankAccountHolder: bankAccountHolder.trim()
-					? bankAccountHolder
-					: undefined,
-				bpjsKesehatanNumber: bpjsKesehatanNumber.trim()
-					? bpjsKesehatanNumber
-					: undefined,
-				bpjsKetenagakerjaanNumber: bpjsKetenagakerjaanNumber.trim()
-					? bpjsKetenagakerjaanNumber
-					: undefined,
-				jkkRiskGrade: 1,
-				pdpConsentGiven,
-			},
-			{
-				onSuccess: () => {
-					void navigate({ to: "/employees" });
+		const payload = {
+			employeeCode,
+			fullName,
+			email,
+			phone: phone.trim() ? phone : undefined,
+			idCardNumber,
+			gender,
+			dateOfBirth,
+			department,
+			position,
+			employmentStatus,
+			joinDate,
+			endDate: endDate || undefined,
+			managerId: managerId === "none" ? null : managerId,
+			basicSalary,
+			ptkpCode,
+			taxMethod,
+			npwp: npwp.trim() ? npwp : undefined,
+			bankName: bankName.trim() ? bankName : undefined,
+			bankAccountNumber: bankAccountNumber.trim()
+				? bankAccountNumber
+				: undefined,
+			bankAccountHolder: bankAccountHolder.trim()
+				? bankAccountHolder
+				: undefined,
+			bpjsKesehatanNumber: bpjsKesehatanNumber.trim()
+				? bpjsKesehatanNumber
+				: undefined,
+			bpjsKetenagakerjaanNumber: bpjsKetenagakerjaanNumber.trim()
+				? bpjsKetenagakerjaanNumber
+				: undefined,
+			jkkRiskGrade,
+			pdpConsentGiven,
+		};
+
+		if (employee) {
+			updateMutation.mutate(
+				{ ...payload, id: employee.id },
+				{
+					onSuccess: () => {
+						void navigate({
+							to: "/employees/$employeeId",
+							params: { employeeId: employee.id },
+						});
+					},
 				},
+			);
+			return;
+		}
+
+		createMutation.mutate(payload, {
+			onSuccess: () => {
+				void navigate({ to: "/employees" });
 			},
-		);
+		});
 	};
 
 	return (
@@ -142,6 +216,7 @@ export const EmployeeCreateForm: FC = (): ReactElement => {
 						<Input
 							id="employeeCode"
 							required
+							disabled={employee !== undefined}
 							value={employeeCode}
 							onChange={(e) => setEmployeeCode(e.target.value)}
 							placeholder="EMP-001"
@@ -309,6 +384,14 @@ export const EmployeeCreateForm: FC = (): ReactElement => {
 										value: EMPLOYMENT_STATUS.CONTRACT,
 										label: "Kontrak (PKWT)",
 									},
+									{
+										value: EMPLOYMENT_STATUS.PROBATION,
+										label: "Masa Percobaan",
+									},
+									{
+										value: EMPLOYMENT_STATUS.INTERN,
+										label: "Magang / Intern",
+									},
 								] as const
 							).map((st) => (
 								<button
@@ -339,6 +422,42 @@ export const EmployeeCreateForm: FC = (): ReactElement => {
 							onChange={(e) => setJoinDate(e.target.value)}
 							className="text-xs"
 						/>
+					</div>
+
+					<div className="space-y-1.5">
+						<Label htmlFor="endDate" className="text-xs font-medium">
+							Tanggal Akhir Kontrak
+						</Label>
+						<Input
+							id="endDate"
+							type="date"
+							value={endDate}
+							onChange={(e) => setEndDate(e.target.value)}
+							className="text-xs"
+						/>
+						<p className="text-[10px] text-muted-foreground">
+							Kosongkan untuk karyawan tetap tanpa batas akhir.
+						</p>
+					</div>
+
+					<div className="space-y-1.5 sm:col-span-2">
+						<Label htmlFor="managerId" className="text-xs font-medium">
+							Atasan Langsung / Reporting Manager
+						</Label>
+						<Select value={managerId} onValueChange={setManagerId}>
+							<SelectTrigger id="managerId" className="text-xs">
+								<SelectValue placeholder="Pilih atasan langsung" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="none">Tanpa atasan langsung</SelectItem>
+								{managerOptions.map((candidate) => (
+									<SelectItem key={candidate.id} value={candidate.id}>
+										{candidate.fullName} ({candidate.employeeCode}) -{" "}
+										{candidate.position}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
 					</div>
 				</CardContent>
 			</Card>
@@ -561,6 +680,29 @@ export const EmployeeCreateForm: FC = (): ReactElement => {
 							className="font-mono text-xs"
 						/>
 					</div>
+
+					<div className="space-y-1.5 sm:col-span-2">
+						<Label htmlFor="jkkRiskGrade" className="text-xs font-medium">
+							Tingkat Risiko JKK (1–5)
+						</Label>
+						<Input
+							id="jkkRiskGrade"
+							type="number"
+							min={1}
+							max={5}
+							value={jkkRiskGrade}
+							onChange={(e) =>
+								setJkkRiskGrade(
+									Math.min(5, Math.max(1, Number(e.target.value) || 1)),
+								)
+							}
+							className="font-mono text-xs"
+						/>
+						<p className="text-[10px] text-muted-foreground">
+							Menentukan tarif iuran JKK: 0,24% (tingkat 1) sampai 1,74%
+							(tingkat 5).
+						</p>
+					</div>
 				</CardContent>
 			</Card>
 
@@ -603,10 +745,10 @@ export const EmployeeCreateForm: FC = (): ReactElement => {
 				</Button>
 				<Button
 					type="submit"
-					disabled={createMutation.isPending}
+					disabled={isPending}
 					className="text-xs font-semibold gap-1.5 min-w-36"
 				>
-					{createMutation.isPending ? (
+					{isPending ? (
 						<>
 							<Loader2 className="size-3.5 animate-spin" />
 							Menyimpan Data…
@@ -614,7 +756,7 @@ export const EmployeeCreateForm: FC = (): ReactElement => {
 					) : (
 						<>
 							<FileText className="size-3.5" />
-							Simpan Data Karyawan
+							{employee ? "Simpan Perubahan" : "Simpan Data Karyawan"}
 						</>
 					)}
 				</Button>
@@ -622,3 +764,9 @@ export const EmployeeCreateForm: FC = (): ReactElement => {
 		</form>
 	);
 };
+
+export const EmployeeCreateForm: FC = (): ReactElement => <EmployeeForm />;
+
+export const EmployeeEditForm: FC<{ employee: TEmployee }> = (props) => (
+	<EmployeeForm employee={props.employee} />
+);

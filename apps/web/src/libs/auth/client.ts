@@ -8,6 +8,8 @@ const API_BASE = rawApiBase.endsWith("/")
 	? rawApiBase.slice(0, -1)
 	: rawApiBase;
 
+export const AUTH_BASE_URL = `${API_BASE}/api/auth`;
+
 export const authClient = createAuthClient({
 	baseURL: API_BASE,
 	fetchOptions: { credentials: "include" },

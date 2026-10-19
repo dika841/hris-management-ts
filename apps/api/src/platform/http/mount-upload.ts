@@ -76,7 +76,7 @@ export const uploadMount = (
 						return Effect.die(new Error("Storage not configured"));
 					}
 					return Effect.promise(() =>
-						storage.getUrl(safeKey, PRESIGN_EXPIRY_SECONDS),
+						storage.getUploadUrl(safeKey, PRESIGN_EXPIRY_SECONDS),
 					);
 				}),
 			);

@@ -9,9 +9,9 @@ const submitLogin = async (
 	await page.goto("/login");
 	await page.getByLabel(AUTH_MESSAGE.FIELD_EMAIL).pressSequentially(email);
 	await page
-		.getByLabel(AUTH_MESSAGE.FIELD_PASSWORD)
+		.getByLabel(AUTH_MESSAGE.FIELD_PASSWORD, { exact: true })
 		.pressSequentially(password);
-	await page.getByRole("button", { name: AUTH_MESSAGE.LOGIN_ACTION }).click();
+	await page.getByRole("button", { name: "Sign in" }).click();
 };
 
 export const signIn = async (

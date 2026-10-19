@@ -43,6 +43,7 @@ export type TStorage = {
 	get: (key: string) => Promise<Uint8Array | null>;
 	remove: (key: string) => Promise<void>;
 	getUrl: (key: string, expiresInSeconds?: number) => Promise<string>;
+	getUploadUrl: (key: string, expiresInSeconds?: number) => Promise<string>;
 };
 
 const objectUrl = (options: TStorageOptions, key: string): string =>
@@ -144,5 +145,18 @@ export const storageCreate = (options: TStorageOptions): TStorage => {
 		return signedRequest.url;
 	};
 
-	return { put, get, remove, getUrl };
+	const getUploadUrl: TStorage["getUploadUrl"] = async (
+		key,
+		expiresInSeconds = STORAGE_URL_EXPIRY_SECONDS,
+	) => {
+		const url = new URL(objectUrl(options, key));
+		url.searchParams.set("X-Amz-Expires", String(expiresInSeconds));
+		const signedRequest = await client.sign(url.toString(), {
+			method: "PUT",
+			aws: { signQuery: true },
+		});
+		return signedRequest.url;
+	};
+
+	return { put, get, remove, getUrl, getUploadUrl };
 };

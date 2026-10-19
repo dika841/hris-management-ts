@@ -17,8 +17,8 @@ const ROLE_KEY = "e2e-reviewer";
 const NEW_ROLE: TRoleCreateInput = {
 	key: ROLE_KEY,
 	label: "Reviewer",
-	description: "Reads notes, nothing else.",
-	permissions: [PERMISSION.NOTE_READ],
+	description: "Reads activity, nothing else.",
+	permissions: [PERMISSION.ACTIVITY_READ],
 };
 
 const REVIEWER: TUserCreateInput = {
@@ -76,7 +76,7 @@ describe("roles REST endpoints", () => {
 		expect(createResponse.status).toBe(200);
 		const role = (await createResponse.json()) as TRoleDto;
 		expect(role.fixed).toBe(false);
-		expect(role.permissions).toEqual([PERMISSION.NOTE_READ]);
+		expect(role.permissions).toEqual([PERMISSION.ACTIVITY_READ]);
 
 		const duplicate = await apiFetch({
 			path: "/roles",
@@ -99,21 +99,19 @@ describe("roles REST endpoints", () => {
 			password: REVIEWER.password,
 		});
 		const me = await apiJson<TMe>({ path: "/me", cookie: reviewerCookie });
-		expect(me.permissions).toEqual([PERMISSION.NOTE_READ]);
+		expect(me.permissions).toEqual([PERMISSION.ACTIVITY_READ]);
 
-		const readNotes = await apiFetch({
-			path: "/notes?page=1&pageSize=5",
+		const readActivity = await apiFetch({
+			path: "/activity?page=1&pageSize=5",
 			cookie: reviewerCookie,
 		});
-		expect(readNotes.status).toBe(200);
+		expect(readActivity.status).toBe(200);
 
-		const writeNote = await apiFetch({
-			path: "/notes",
+		const readEmployees = await apiFetch({
+			path: "/employees?page=1&pageSize=5",
 			cookie: reviewerCookie,
-			method: "POST",
-			body: { title: "nope", body: "" },
 		});
-		expect(writeNote.status).toBe(403);
+		expect(readEmployees.status).toBe(403);
 
 		const deleteInUse = await apiFetch({
 			path: `/roles/${ROLE_KEY}`,
@@ -126,14 +124,22 @@ describe("roles REST endpoints", () => {
 			path: `/roles/${ROLE_KEY}`,
 			cookie: adminCookie,
 			method: "PATCH",
-			body: { permissions: [PERMISSION.NOTE_READ, PERMISSION.NOTE_WRITE] },
+			body: {
+				permissions: [PERMISSION.ACTIVITY_READ, PERMISSION.EMPLOYEE_READ],
+			},
 		});
 		expect(update.status).toBe(200);
 
 		const meAfter = await apiJson<TMe>({ path: "/me", cookie: reviewerCookie });
 		expect(meAfter.permissions).toEqual(
-			expect.arrayContaining([PERMISSION.NOTE_WRITE]),
+			expect.arrayContaining([PERMISSION.EMPLOYEE_READ]),
 		);
+
+		const readEmployeesAfter = await apiFetch({
+			path: "/employees?page=1&pageSize=5",
+			cookie: reviewerCookie,
+		});
+		expect(readEmployeesAfter.status).toBe(200);
 
 		const deleteUser = await apiFetch({
 			path: `/users/${reviewer.id}`,

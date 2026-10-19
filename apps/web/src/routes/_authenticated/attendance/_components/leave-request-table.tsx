@@ -10,10 +10,11 @@ import {
 } from "@app/components/ui/table";
 import { PERMISSION } from "@app/permissions";
 import type { TLeaveRequest, TLeaveRequestList } from "@app/schemas";
-import { Calendar, Check, FileText, User, X } from "lucide-react";
+import { Ban, Calendar, Check, FileText, User, X } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import {
 	useLeaveRequestApprove,
+	useLeaveRequestCancel,
 	useLeaveRequestReject,
 } from "#/routes/_authenticated/attendance/_hooks/use-attendance.ts";
 import { LeaveStatusBadge } from "./attendance-status-badge.tsx";
@@ -27,6 +28,7 @@ export const LeaveRequestTable: FC<TLeaveRequestTableProps> = ({
 }): ReactElement => {
 	const approveMutation = useLeaveRequestApprove();
 	const rejectMutation = useLeaveRequestReject();
+	const cancelMutation = useLeaveRequestCancel();
 
 	const handleApprove = (id: string) => {
 		approveMutation.mutate({ id });
@@ -36,7 +38,16 @@ export const LeaveRequestTable: FC<TLeaveRequestTableProps> = ({
 		rejectMutation.mutate({ id, rejectionReason: "Ditolak oleh HR / Atasan" });
 	};
 
-	const isProcessing = approveMutation.isPending || rejectMutation.isPending;
+	const handleCancel = (id: string) => {
+		if (window.confirm("Batalkan pengajuan cuti ini?")) {
+			cancelMutation.mutate({ id });
+		}
+	};
+
+	const isProcessing =
+		approveMutation.isPending ||
+		rejectMutation.isPending ||
+		cancelMutation.isPending;
 
 	return (
 		<div className="rounded-lg border border-border/60 bg-card overflow-hidden">
@@ -121,31 +132,45 @@ export const LeaveRequestTable: FC<TLeaveRequestTableProps> = ({
 									<LeaveStatusBadge status={req.status} />
 								</TableCell>
 								<TableCell className="text-right">
-									{req.status === "pending" ? (
-										<Guard permissions={[PERMISSION.LEAVE_APPROVE]}>
-											<div className="flex items-center justify-end gap-1.5">
+									{req.status === "pending" || req.status === "approved" ? (
+										<div className="flex items-center justify-end gap-1.5">
+											{req.status === "pending" && (
+												<Guard permissions={[PERMISSION.LEAVE_APPROVE]}>
+													<Button
+														size="sm"
+														variant="outline"
+														disabled={isProcessing}
+														onClick={() => handleApprove(req.id)}
+														className="h-7 px-2 text-xs border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 gap-1"
+													>
+														<Check className="size-3" />
+														Setujui
+													</Button>
+													<Button
+														size="sm"
+														variant="outline"
+														disabled={isProcessing}
+														onClick={() => handleReject(req.id)}
+														className="h-7 px-2 text-xs border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 gap-1"
+													>
+														<X className="size-3" />
+														Tolak
+													</Button>
+												</Guard>
+											)}
+											<Guard permissions={[PERMISSION.LEAVE_MANAGE]}>
 												<Button
 													size="sm"
-													variant="outline"
+													variant="ghost"
 													disabled={isProcessing}
-													onClick={() => handleApprove(req.id)}
-													className="h-7 px-2 text-xs border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 gap-1"
+													onClick={() => handleCancel(req.id)}
+													className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive gap-1"
 												>
-													<Check className="size-3" />
-													Setujui
+													<Ban className="size-3" />
+													Batalkan
 												</Button>
-												<Button
-													size="sm"
-													variant="outline"
-													disabled={isProcessing}
-													onClick={() => handleReject(req.id)}
-													className="h-7 px-2 text-xs border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 gap-1"
-												>
-													<X className="size-3" />
-													Tolak
-												</Button>
-											</div>
-										</Guard>
+											</Guard>
+										</div>
 									) : (
 										<span className="text-xs text-muted-foreground">-</span>
 									)}

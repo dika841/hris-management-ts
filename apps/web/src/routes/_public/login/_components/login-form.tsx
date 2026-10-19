@@ -2,6 +2,7 @@ import { Button } from "@app/components/ui/button";
 import { FieldError, hasFieldError } from "@app/components/ui/field-error";
 import { Input } from "@app/components/ui/input";
 import { Label } from "@app/components/ui/label";
+import { Link } from "@tanstack/react-router";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { type FC, type ReactElement, useState } from "react";
 import { useI18n } from "#/libs/i18n/index.ts";
@@ -9,7 +10,7 @@ import { useLoginForm } from "#/routes/_public/login/_hooks/use-login.ts";
 
 export const LoginForm: FC = (): ReactElement => {
 	const { form, serverError, onSubmit } = useLoginForm();
-	const { t } = useI18n();
+	const { t, isIndonesian } = useI18n();
 	const [showPassword, setShowPassword] = useState(false);
 
 	return (
@@ -77,6 +78,18 @@ export const LoginForm: FC = (): ReactElement => {
 					)}
 				</form.Field>
 				<FieldError errors={serverError ? [{ message: serverError }] : []} />
+				<div className="flex justify-end">
+					<Button
+						variant="link"
+						size="sm"
+						asChild
+						className="h-auto p-0 text-xs font-normal"
+					>
+						<Link to="/forgot-password">
+							{isIndonesian ? "Lupa kata sandi?" : "Forgot password?"}
+						</Link>
+					</Button>
+				</div>
 				<form.Subscribe selector={(state) => state.isSubmitting}>
 					{(isSubmitting) => (
 						<Button type="submit" className="w-full" disabled={isSubmitting}>

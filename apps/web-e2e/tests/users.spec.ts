@@ -93,11 +93,7 @@ test.describe("users admin flow", () => {
 		await signOut(page);
 		await signIn(page, { email: NEW_USER.email, password: RESET_PASSWORD });
 
-		await expectNavVisible(page, [
-			NAV_LABEL.DASHBOARD,
-			NAV_LABEL.NOTES,
-			NAV_LABEL.ACCOUNT,
-		]);
+		await expectNavVisible(page, [NAV_LABEL.DASHBOARD, NAV_LABEL.ACCOUNT]);
 		await expectNavHidden(page, ADMIN_NAV_LABELS);
 
 		await page.goto("/users");

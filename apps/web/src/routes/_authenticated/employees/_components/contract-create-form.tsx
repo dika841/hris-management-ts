@@ -24,6 +24,7 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { AlertCircle, Calculator, FileCheck, Loader2 } from "lucide-react";
 import { type FC, type FormEvent, type ReactElement, useState } from "react";
+import { FileUploadField } from "#/routes/_authenticated/_components/file-upload-field.tsx";
 import { useContractCreate } from "../_hooks/use-employees.ts";
 
 type TProps = {
@@ -49,6 +50,7 @@ export const ContractCreateForm: FC<TProps> = ({ employee }): ReactElement => {
 	const [allowance, setAllowance] = useState(0);
 	const [department, setDepartment] = useState(employee.department);
 	const [position, setPosition] = useState(employee.position);
+	const [documentUrl, setDocumentUrl] = useState("");
 	const [notes, setNotes] = useState("");
 
 	const calculateEstimatedCompensation = (): number => {
@@ -79,6 +81,7 @@ export const ContractCreateForm: FC<TProps> = ({ employee }): ReactElement => {
 			fixedAllowance: allowance,
 			department,
 			position,
+			documentUrl: documentUrl || undefined,
 			notes: notes || undefined,
 		});
 		void navigate({
@@ -130,6 +133,16 @@ export const ContractCreateForm: FC<TProps> = ({ employee }): ReactElement => {
 								onChange={(e) => setContractNumber(e.target.value)}
 								placeholder={`Contoh: 001/HR-PKWT/X/${new Date().getFullYear()}`}
 								required
+							/>
+						</div>
+
+						<div className="space-y-1.5 sm:col-span-2">
+							<FileUploadField
+								id="contractDocument"
+								label="Dokumen Kontrak (PDF/Gambar)"
+								folder={`contracts/${employee.id}`}
+								value={documentUrl}
+								onChange={setDocumentUrl}
 							/>
 						</div>
 					</div>

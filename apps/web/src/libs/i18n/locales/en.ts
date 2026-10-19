@@ -26,6 +26,7 @@ export const en = {
 	nav: {
 		dashboard: "Dashboard",
 		employees: "Employees",
+		organization: "Organization",
 		attendance: "Time & Attendance",
 		payroll: "Payroll & Tax",
 		users: "Users",

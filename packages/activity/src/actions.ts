@@ -29,6 +29,7 @@ export const ACTIVITY_ACTION = {
 	EMPLOYEE_CREATE: "employee.create",
 	EMPLOYEE_UPDATE: "employee.update",
 	EMPLOYEE_DELETE: "employee.delete",
+	EMPLOYEE_CAREER_CHANGE: "employee.career_change",
 	CONTRACT_CREATE: "contract.create",
 	CONTRACT_RENEW: "contract.renew",
 	CONTRACT_CONVERT: "contract.convert",
@@ -36,9 +37,12 @@ export const ACTIVITY_ACTION = {
 	PAYROLL_PERIOD_CREATE: "payroll.period_create",
 	PAYROLL_CALCULATE: "payroll.calculate",
 	PAYROLL_APPROVE: "payroll.approve",
+	PAYROLL_PAY: "payroll.pay",
+	PAYROLL_LOCK: "payroll.lock",
 	// Fase 2: Cuti & Kehadiran
 	LEAVE_TYPE_CREATE: "leave_type.create",
 	LEAVE_TYPE_UPDATE: "leave_type.update",
+	LEAVE_BALANCE_UPDATE: "leave_balance.update",
 	LEAVE_REQUEST_CREATE: "leave_request.create",
 	LEAVE_REQUEST_APPROVE: "leave_request.approve",
 	LEAVE_REQUEST_REJECT: "leave_request.reject",
@@ -48,6 +52,7 @@ export const ACTIVITY_ACTION = {
 	OVERTIME_CREATE: "overtime.create",
 	OVERTIME_APPROVE: "overtime.approve",
 	OVERTIME_REJECT: "overtime.reject",
+	OVERTIME_CANCEL: "overtime.cancel",
 	PUBLIC_HOLIDAY_CREATE: "public_holiday.create",
 	PUBLIC_HOLIDAY_DELETE: "public_holiday.delete",
 } as const;
