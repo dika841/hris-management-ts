@@ -8,6 +8,7 @@ import type {
 	TEmployeeUpdateInput,
 	TEmploymentStatus,
 	TGender,
+	TWorkScheduleType,
 	TPtkpCode,
 	TTaxMethod,
 } from "@app/schemas";
@@ -27,9 +28,14 @@ export type TEmployeeRow = TBaseRow & {
 	phone: string | null;
 	gender: TGender;
 	dateOfBirth: string;
+	departmentId: string | null;
 	department: string;
+	positionId: string | null;
 	position: string;
 	employmentStatus: TEmploymentStatus;
+	workScheduleType: TWorkScheduleType;
+	workStartTime: string;
+	workEndTime: string;
 	joinDate: string;
 	endDate: string | null;
 	managerId: string | null;
@@ -98,6 +104,9 @@ export type TEmployeeRepo = {
 	findById: (id: string) => Effect.Effect<TEmployeeRow | null, EDatabase>;
 	findByCode: (code: string) => Effect.Effect<TEmployeeRow | null, EDatabase>;
 	findByEmail: (email: string) => Effect.Effect<TEmployeeRow | null, EDatabase>;
+	findByUserId: (
+		userId: string,
+	) => Effect.Effect<TEmployeeRow | null, EDatabase>;
 	create: (
 		input: TEmployeeCreateInput,
 	) => Effect.Effect<TEmployeeRow, EDatabase>;

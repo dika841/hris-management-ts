@@ -7,4 +7,5 @@ export const REPO_TAG = {
 	EMPLOYEE: "app/EmployeeRepo",
 	PAYROLL: "app/PayrollRepo",
 	ATTENDANCE: "app/AttendanceRepo",
+	NOTIFICATION: "app/NotificationRepo",
 } as const;

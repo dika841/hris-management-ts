@@ -133,6 +133,19 @@ export const employeeRepoLayer = Layer.effect(
 				catch: (cause) => new EDatabase({ cause }),
 			});
 
+		const findByUserId: TEmployeeRepo["findByUserId"] = (userId) =>
+			Effect.tryPromise({
+				try: async () => {
+					const [row] = await dbActive(db)
+						.select()
+						.from(employee)
+						.where(eq(employee.userId, userId))
+						.limit(1);
+					return (row as TEmployeeRow) ?? null;
+				},
+				catch: (cause) => new EDatabase({ cause }),
+			});
+
 		const create: TEmployeeRepo["create"] = (input) =>
 			Effect.tryPromise({
 				try: async () => {
@@ -147,9 +160,14 @@ export const employeeRepoLayer = Layer.effect(
 							phone: input.phone ?? null,
 							gender: input.gender,
 							dateOfBirth: input.dateOfBirth,
+							departmentId: input.departmentId ?? null,
 							department: input.department,
+							positionId: input.positionId ?? null,
 							position: input.position,
 							employmentStatus: input.employmentStatus,
+							workScheduleType: input.workScheduleType,
+							workStartTime: input.workStartTime,
+							workEndTime: input.workEndTime,
 							joinDate: input.joinDate,
 							endDate: input.endDate ?? null,
 							managerId: input.managerId ?? null,
@@ -415,6 +433,7 @@ export const employeeRepoLayer = Layer.effect(
 			findById,
 			findByCode,
 			findByEmail,
+			findByUserId,
 			create,
 			update,
 			remove,

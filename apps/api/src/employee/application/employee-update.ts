@@ -11,18 +11,27 @@ import {
 	ActivityRecorder,
 	type TActivityRecorderId,
 } from "#/shared/activity-recorder.ts";
-import { type EDatabase, ENotFound } from "#/shared/errors.ts";
+import { EConflict, type EDatabase, ENotFound } from "#/shared/errors.ts";
 
 export const employeeUpdate = Effect.fn("employeeUpdate")(function* (
 	input: TEmployeeUpdateInput,
 	actorId: string,
 ): Effect.fn.Return<
 	TEmployee,
-	ENotFound | EDatabase,
+	ENotFound | EConflict | EDatabase,
 	TEmployeeRepoId | TActivityRecorderId
 > {
 	const employeeRepo = yield* EmployeeRepo;
 	const activityRepo = yield* ActivityRecorder;
+
+	if (input.userId) {
+		const existingLink = yield* employeeRepo.findByUserId(input.userId);
+		if (existingLink !== null && existingLink.id !== input.id) {
+			return yield* new EConflict({
+				message: EMPLOYEE_MESSAGE.USER_ALREADY_LINKED,
+			});
+		}
+	}
 
 	const row = yield* employeeRepo.update(input);
 

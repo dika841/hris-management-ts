@@ -33,6 +33,7 @@ export const ACTIVITY_ACTION_LABEL = {
 	[ACTIVITY_ACTION.EMPLOYEE_UPDATE]: "Employee updated",
 	[ACTIVITY_ACTION.EMPLOYEE_DELETE]: "Employee deleted",
 	[ACTIVITY_ACTION.EMPLOYEE_CAREER_CHANGE]: "Employee career changed",
+	[ACTIVITY_ACTION.EMPLOYEE_SENSITIVE_READ]: "Employee sensitive data viewed",
 	[ACTIVITY_ACTION.CONTRACT_CREATE]: "Contract created",
 	[ACTIVITY_ACTION.CONTRACT_RENEW]: "Contract renewed",
 	[ACTIVITY_ACTION.CONTRACT_CONVERT]: "Contract converted",
@@ -45,6 +46,7 @@ export const ACTIVITY_ACTION_LABEL = {
 	[ACTIVITY_ACTION.PAYROLL_COMPONENT_CREATE]: "Payroll component added",
 	[ACTIVITY_ACTION.PAYROLL_COMPONENT_DELETE]: "Payroll component removed",
 	[ACTIVITY_ACTION.PAYROLL_PAYSLIP_SEND]: "Payslip email sent",
+	[ACTIVITY_ACTION.PAYROLL_PAYSLIP_READ]: "Payslip viewed",
 	// Fase 2
 	[ACTIVITY_ACTION.LEAVE_TYPE_CREATE]: "Leave type created",
 	[ACTIVITY_ACTION.LEAVE_TYPE_UPDATE]: "Leave type updated",

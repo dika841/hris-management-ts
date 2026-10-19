@@ -1,12 +1,18 @@
 import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import { PAYROLL_MESSAGE } from "@app/messages";
 import {
+	NOTIFICATION_TYPE,
 	PAYROLL_PERIOD_STATUS,
 	type TPayrollPeriod,
 	type TPayrollPeriodStatus,
 	type TPayrollPeriodStatusUpdateInput,
 } from "@app/schemas";
 import { Effect } from "effect";
+import { EmployeeRepo, type TEmployeeRepoId } from "#/employee/index.ts";
+import {
+	notificationCreate,
+	type TNotificationRepoId,
+} from "#/notification/index.ts";
 import { toPayrollPeriodDto } from "#/payroll/application/to-payroll-dto.ts";
 import { PayrollRepo, type TPayrollRepoId } from "#/payroll/domain/payroll.ts";
 import {
@@ -42,10 +48,11 @@ export const payrollPeriodStatusUpdate = Effect.fn("payrollPeriodStatusUpdate")(
 	): Effect.fn.Return<
 		TPayrollPeriod,
 		ENotFound | EConflict | EDatabase,
-		TPayrollRepoId | TActivityRecorderId
+		TPayrollRepoId | TActivityRecorderId | TEmployeeRepoId | TNotificationRepoId
 	> {
 		const payrollRepo = yield* PayrollRepo;
 		const activityRepo = yield* ActivityRecorder;
+		const employeeRepo = yield* EmployeeRepo;
 
 		const period = yield* payrollRepo.findPeriodById(input.id);
 		if (period === null) {
@@ -91,6 +98,22 @@ export const payrollPeriodStatusUpdate = Effect.fn("payrollPeriodStatusUpdate")(
 				newStatus: updated.status,
 			},
 		});
+
+		if (input.status === PAYROLL_PERIOD_STATUS.PAID) {
+			const items = yield* payrollRepo.listAllItems(updated.id);
+			for (const item of items) {
+				const employee = yield* employeeRepo.findById(item.employeeId);
+				if (employee?.userId) {
+					yield* notificationCreate({
+						userId: employee.userId,
+						type: NOTIFICATION_TYPE.PAYROLL_PAID,
+						title: "Payroll paid",
+						body: `${updated.name} · Net pay Rp ${item.netPay.toLocaleString("id-ID")}`,
+						link: `/payroll/${updated.id}/payslip/${item.id}`,
+					});
+				}
+			}
+		}
 
 		return toPayrollPeriodDto(updated);
 	},

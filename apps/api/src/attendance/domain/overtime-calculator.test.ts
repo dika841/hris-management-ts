@@ -121,6 +121,11 @@ describe("overtime-calculator (PP 35/2021 & UU KIA 2024)", () => {
 		expect(calculateWorkingDays("2026-06-01", "2026-06-07")).toBe(5);
 	});
 
+	it("counts Saturday for a 6-day work week", () => {
+		expect(calculateWorkingDays("2026-06-01", "2026-06-06", "6_days")).toBe(6);
+		expect(calculateWorkingDays("2026-06-01", "2026-06-07", "6_days")).toBe(6);
+	});
+
 	it("checks annual leave eligibility (1 year rule)", () => {
 		expect(isAnnualLeaveEligible("2025-01-01", "2025-12-31")).toBe(false);
 		expect(isAnnualLeaveEligible("2025-01-01", "2026-01-01")).toBe(true);

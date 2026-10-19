@@ -30,6 +30,7 @@ export const ACTIVITY_ACTION = {
 	EMPLOYEE_UPDATE: "employee.update",
 	EMPLOYEE_DELETE: "employee.delete",
 	EMPLOYEE_CAREER_CHANGE: "employee.career_change",
+	EMPLOYEE_SENSITIVE_READ: "employee.sensitive_read",
 	CONTRACT_CREATE: "contract.create",
 	CONTRACT_RENEW: "contract.renew",
 	CONTRACT_CONVERT: "contract.convert",
@@ -42,6 +43,7 @@ export const ACTIVITY_ACTION = {
 	PAYROLL_COMPONENT_CREATE: "payroll.component_create",
 	PAYROLL_COMPONENT_DELETE: "payroll.component_delete",
 	PAYROLL_PAYSLIP_SEND: "payroll.payslip_send",
+	PAYROLL_PAYSLIP_READ: "payroll.payslip_read",
 	// Fase 2: Cuti & Kehadiran
 	LEAVE_TYPE_CREATE: "leave_type.create",
 	LEAVE_TYPE_UPDATE: "leave_type.update",

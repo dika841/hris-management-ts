@@ -20,7 +20,17 @@ const AttendanceLogCreatePage: FC = (): ReactElement => {
 	);
 };
 
+type TAttendanceLogSearch = {
+	employeeId?: string;
+	date?: string;
+};
+
 export const Route = createFileRoute("/_authenticated/attendance/log/create")({
+	validateSearch: (search: Record<string, unknown>): TAttendanceLogSearch => ({
+		employeeId:
+			typeof search.employeeId === "string" ? search.employeeId : undefined,
+		date: typeof search.date === "string" ? search.date : undefined,
+	}),
 	beforeLoad: checkRoutePermissions({
 		permissions: [PERMISSION.ATTENDANCE_MANAGE],
 	}),

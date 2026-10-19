@@ -11,6 +11,7 @@ import { EServerUnreachable } from "#/libs/auth/server-unreachable.ts";
 import { SESSION_REACH } from "#/libs/auth/session-reach.ts";
 import { LanguageSwitcher } from "#/libs/i18n/index.ts";
 import { AppSidebar } from "#/routes/_authenticated/_components/app-sidebar.tsx";
+import { NotificationBell } from "#/routes/_authenticated/_components/notification-bell.tsx";
 
 const AuthenticatedLayout: FC = (): ReactElement => (
 	<SidebarProvider>
@@ -21,7 +22,8 @@ const AuthenticatedLayout: FC = (): ReactElement => (
 					<SidebarTrigger className="-ml-1" />
 					<Separator orientation="vertical" className="mr-2 h-4!" />
 				</div>
-				<div className="flex items-center gap-2">
+				<div className="flex items-center gap-1">
+					<NotificationBell />
 					<LanguageSwitcher variant="header" />
 				</div>
 			</header>

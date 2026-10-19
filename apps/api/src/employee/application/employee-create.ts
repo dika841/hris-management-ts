@@ -34,6 +34,15 @@ export const employeeCreate = Effect.fn("employeeCreate")(function* (
 		return yield* new EConflict({ message: EMPLOYEE_MESSAGE.EMAIL_TAKEN });
 	}
 
+	if (input.userId) {
+		const existingLink = yield* employeeRepo.findByUserId(input.userId);
+		if (existingLink !== null) {
+			return yield* new EConflict({
+				message: EMPLOYEE_MESSAGE.USER_ALREADY_LINKED,
+			});
+		}
+	}
+
 	const row = yield* employeeRepo.create(input);
 
 	yield* activityRepo.insert({

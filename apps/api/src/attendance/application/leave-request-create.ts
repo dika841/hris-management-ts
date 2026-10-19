@@ -92,7 +92,11 @@ export const leaveRequestCreate = Effect.fn("leaveRequestCreate")(function* (
 	}
 
 	// 7. Calculate working days
-	const totalDays = calculateWorkingDays(input.startDate, input.endDate);
+	const totalDays = calculateWorkingDays(
+		input.startDate,
+		input.endDate,
+		employee.workScheduleType,
+	);
 
 	// 8. Annual leave eligibility check
 	if (leaveType.code === LEAVE_CODE.ANNUAL) {

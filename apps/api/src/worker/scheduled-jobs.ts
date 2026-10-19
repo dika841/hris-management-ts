@@ -3,9 +3,14 @@ import {
 	MAIL_TEMPLATE,
 	mailSendSafe,
 } from "@app/mail";
+import { NOTIFICATION_TYPE } from "@app/schemas";
 import { Effect } from "effect";
 import { AttendanceRepo, type TAttendanceRepoId } from "#/attendance/index.ts";
 import { EmployeeRepo, type TEmployeeRepoId } from "#/employee/index.ts";
+import {
+	notificationCreate,
+	type TNotificationRepoId,
+} from "#/notification/index.ts";
 import { CacheService, type TCacheServiceId } from "#/platform/cache/redis.ts";
 import { MailService, type TMailServiceId } from "#/platform/mail/mailer.ts";
 import { logger } from "#/platform/observability/logger.ts";
@@ -26,7 +31,7 @@ export const contractExpiryRun = Effect.fn("contractExpiryRun")(
 	function* (): Effect.fn.Return<
 		{ checked: number; sent: number },
 		EDatabase,
-		TEmployeeRepoId | TMailServiceId | TCacheServiceId
+		TEmployeeRepoId | TMailServiceId | TCacheServiceId | TNotificationRepoId
 	> {
 		const employeeRepo = yield* EmployeeRepo;
 		const { mailer } = yield* MailService;
@@ -66,6 +71,16 @@ export const contractExpiryRun = Effect.fn("contractExpiryRun")(
 				),
 			);
 			if (delivered) sent += 1;
+
+			if (employee.userId) {
+				yield* notificationCreate({
+					userId: employee.userId,
+					type: NOTIFICATION_TYPE.CONTRACT_EXPIRY,
+					title: "Employment contract expiring soon",
+					body: `${contract.contractNumber} ends on ${contract.endDate} (${remaining} days left).`,
+					link: `/employees/${employee.id}`,
+				});
+			}
 		}
 
 		logger.info(

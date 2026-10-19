@@ -85,6 +85,27 @@
       "when": 1792387913311,
       "tag": "0011_payroll_components",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792388947003,
+      "tag": "0012_employee_org_and_user_link",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792389386137,
+      "tag": "0013_in_app_notifications",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1792390011611,
+      "tag": "0014_employee_work_schedule",
+      "breakpoints": true
     }
   ]
 }

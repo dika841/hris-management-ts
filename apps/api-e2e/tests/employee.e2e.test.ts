@@ -1,10 +1,13 @@
 import type {
+	TDepartment,
 	TEmployee,
 	TEmployeeCareerHistory,
 	TEmployeeContract,
 	TEmployeeCreateInput,
 	TEmployeeList,
 	TEmployeeStats,
+	TMe,
+	TPosition,
 } from "@app/schemas";
 import { expect, beforeAll, describe, it } from "vitest";
 import { apiFetch, apiJson } from "../support/api-fetch.ts";
@@ -21,6 +24,9 @@ const EMPLOYEE: TEmployeeCreateInput = {
 	department: "Engineering",
 	position: "Software Engineer",
 	employmentStatus: "permanent",
+	workScheduleType: "5_days",
+	workStartTime: "08:00",
+	workEndTime: "17:00",
 	joinDate: "2024-01-01",
 	basicSalary: 10_000_000,
 	taxMethod: "gross",
@@ -30,9 +36,28 @@ const EMPLOYEE: TEmployeeCreateInput = {
 };
 
 let adminCookie = "";
+let adminUserId = "";
+let departmentId = "";
+let positionId = "";
 
 beforeAll(async (): Promise<void> => {
 	adminCookie = await signIn(SEED_CREDENTIALS.admin);
+	const me = await apiJson<TMe>({ path: "/me", cookie: adminCookie });
+	adminUserId = me.user.id;
+	const departments = await apiJson<TDepartment[]>({
+		path: "/departments",
+		cookie: adminCookie,
+	});
+	const positions = await apiJson<TPosition[]>({
+		path: "/positions",
+		cookie: adminCookie,
+	});
+	const department = departments.find(
+		(item) => item.name === EMPLOYEE.department,
+	);
+	const position = positions.find((item) => item.title === EMPLOYEE.position);
+	departmentId = department?.id ?? "";
+	positionId = position?.id ?? "";
 });
 
 describe("employee REST endpoints", () => {
@@ -41,12 +66,20 @@ describe("employee REST endpoints", () => {
 			path: "/employees",
 			cookie: adminCookie,
 			method: "POST",
-			body: EMPLOYEE,
+			body: {
+				...EMPLOYEE,
+				userId: adminUserId,
+				departmentId,
+				positionId,
+			},
 		});
 		expect(createResponse.status).toBe(200);
 		const created = (await createResponse.json()) as TEmployee;
 		expect(created.employeeCode).toBe(EMPLOYEE.employeeCode);
 		expect(created.pdpConsentGiven).toBe(true);
+		expect(created.userId).toBe(adminUserId);
+		expect(created.departmentId).toBe(departmentId);
+		expect(created.positionId).toBe(positionId);
 
 		const list = await apiJson<TEmployeeList>({
 			path: `/employees?page=1&pageSize=50&search=${EMPLOYEE.employeeCode}`,
@@ -131,6 +164,19 @@ describe("employee REST endpoints", () => {
 		expect(contractResponse.status).toBe(200);
 		const contract = (await contractResponse.json()) as TEmployeeContract;
 		expect(contract.contractNumber).toBe("E2E-CTR-001");
+
+		const conflict = await apiFetch({
+			path: "/employees",
+			cookie: adminCookie,
+			method: "POST",
+			body: {
+				...EMPLOYEE,
+				employeeCode: "E2E-EMP-LINK-CONFLICT",
+				email: "e2e-employee-conflict@test.app",
+				userId: adminUserId,
+			},
+		});
+		expect(conflict.status).toBe(409);
 
 		const deleteResponse = await apiFetch({
 			path: `/employees/${created.id}`,

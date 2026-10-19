@@ -5,6 +5,8 @@ export const EMPLOYEE_MESSAGE = {
 	NOT_FOUND: "Employee not found.",
 	CODE_TAKEN: "An employee with this employee code already exists.",
 	EMAIL_TAKEN: "An employee with this email already exists.",
+	USER_ALREADY_LINKED:
+		"This user account is already linked to another employee.",
 	NIK_TAKEN: "An employee with this NIK (KTP) already exists.",
 	EMPTY: "No employees registered yet.",
 	SEARCH_PLACEHOLDER: "Search by name, employee code, or department",

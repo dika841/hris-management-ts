@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+	WORK_SCHEDULE_TYPE,
+	workScheduleTypeSchema,
+} from "../attendance/overtime.ts";
 import { userIdSchema } from "../auth/auth.ts";
 import { baseSchema, type TEntityOf } from "../shared/base-schema.ts";
 import { paginated, paginationSchema } from "../shared/pagination.ts";
@@ -83,9 +87,14 @@ export const employeeSchema = baseSchema(employeeIdSchema).extend({
 	phone: z.string().nullable(),
 	gender: genderSchema,
 	dateOfBirth: z.string(), // YYYY-MM-DD
+	departmentId: z.string().nullable(),
 	department: z.string(),
+	positionId: z.string().nullable(),
 	position: z.string(),
 	employmentStatus: employmentStatusSchema,
+	workScheduleType: workScheduleTypeSchema,
+	workStartTime: z.string(),
+	workEndTime: z.string(),
 	joinDate: z.string(), // YYYY-MM-DD
 	endDate: z.string().nullable(),
 	managerId: employeeIdSchema.nullable(),
@@ -108,7 +117,7 @@ export const employeeSchema = baseSchema(employeeIdSchema).extend({
 export type TEmployee = TEntityOf<z.infer<typeof employeeSchema>>;
 
 export const employeeCreateInputSchema = z.object({
-	userId: userIdSchema.optional(),
+	userId: userIdSchema.nullable().optional(),
 	employeeCode: z.string().min(1).max(50),
 	idCardNumber: z.string().min(16).max(20),
 	fullName: z.string().min(1).max(100),
@@ -116,9 +125,22 @@ export const employeeCreateInputSchema = z.object({
 	phone: z.string().max(20).optional(),
 	gender: genderSchema,
 	dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+	departmentId: z.string().optional().nullable(),
 	department: z.string().min(1).max(100),
+	positionId: z.string().optional().nullable(),
 	position: z.string().min(1).max(100),
 	employmentStatus: employmentStatusSchema.default(EMPLOYMENT_STATUS.PERMANENT),
+	workScheduleType: workScheduleTypeSchema.default(
+		WORK_SCHEDULE_TYPE.FIVE_DAYS,
+	),
+	workStartTime: z
+		.string()
+		.regex(/^\d{2}:\d{2}$/)
+		.default("08:00"),
+	workEndTime: z
+		.string()
+		.regex(/^\d{2}:\d{2}$/)
+		.default("17:00"),
 	joinDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 	endDate: z
 		.string()
@@ -143,6 +165,7 @@ export const employeeUpdateInputSchema = employeeCreateInputSchema
 	.partial()
 	.extend({
 		id: employeeIdSchema,
+		userId: userIdSchema.nullable().optional(),
 	});
 export type TEmployeeUpdateInput = z.infer<typeof employeeUpdateInputSchema>;
 

@@ -228,6 +228,7 @@ export const getLongSickSalaryPercentage = (
 export const calculateWorkingDays = (
 	startDate: string,
 	endDate: string,
+	scheduleType: TWorkScheduleType = WORK_SCHEDULE_TYPE.FIVE_DAYS,
 ): number => {
 	const start = new Date(startDate);
 	const end = new Date(endDate);
@@ -235,7 +236,10 @@ export const calculateWorkingDays = (
 	const current = new Date(start);
 	while (current <= end) {
 		const dayOfWeek = current.getDay();
-		if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+		const isWorkday =
+			dayOfWeek !== 0 &&
+			(dayOfWeek !== 6 || scheduleType === WORK_SCHEDULE_TYPE.SIX_DAYS);
+		if (isWorkday) {
 			count++;
 		}
 		current.setDate(current.getDate() + 1);

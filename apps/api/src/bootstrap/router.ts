@@ -3,6 +3,7 @@ import { attendanceModule } from "#/attendance/index.ts";
 import { authModule } from "#/auth/index.ts";
 import { employeeModule } from "#/employee/index.ts";
 import { healthModule } from "#/health/index.ts";
+import { notificationModule } from "#/notification/index.ts";
 import { payrollModule } from "#/payroll/index.ts";
 import { permissionModule } from "#/permission/index.ts";
 import { roleModule } from "#/role/index.ts";
@@ -18,6 +19,7 @@ const appRouter = {
 	employee: employeeModule.routerBuild(),
 	payroll: payrollModule.routerBuild(),
 	attendance: attendanceModule.routerBuild(),
+	notification: notificationModule.routerBuild(),
 };
 
 export type TAppRouter = typeof appRouter;

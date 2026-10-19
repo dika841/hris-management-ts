@@ -4,6 +4,7 @@ import { ATTENDANCE_MESSAGE } from "@app/messages";
 import {
 	LEAVE_CODE,
 	LEAVE_REQUEST_STATUS,
+	NOTIFICATION_TYPE,
 	type TLeaveRequest,
 	type TLeaveRequestRejectInput,
 } from "@app/schemas";
@@ -14,6 +15,10 @@ import {
 	type TAttendanceRepoId,
 } from "#/attendance/domain/attendance.ts";
 import { EmployeeRepo, type TEmployeeRepoId } from "#/employee/index.ts";
+import {
+	notificationCreate,
+	type TNotificationRepoId,
+} from "#/notification/index.ts";
 import { MailService, type TMailServiceId } from "#/platform/mail/mailer.ts";
 import { logger } from "#/platform/observability/logger.ts";
 import {
@@ -28,7 +33,11 @@ export const leaveRequestReject = Effect.fn("leaveRequestReject")(function* (
 ): Effect.fn.Return<
 	TLeaveRequest,
 	ENotFound | EConflict | EDatabase,
-	TAttendanceRepoId | TActivityRecorderId | TEmployeeRepoId | TMailServiceId
+	| TAttendanceRepoId
+	| TActivityRecorderId
+	| TEmployeeRepoId
+	| TMailServiceId
+	| TNotificationRepoId
 > {
 	const attendanceRepo = yield* AttendanceRepo;
 	const activityRepo = yield* ActivityRecorder;
@@ -86,6 +95,15 @@ export const leaveRequestReject = Effect.fn("leaveRequestReject")(function* (
 	});
 
 	const employee = yield* employeeRepo.findById(request.employeeId);
+	if (employee !== null && employee.userId !== null) {
+		yield* notificationCreate({
+			userId: employee.userId,
+			type: NOTIFICATION_TYPE.LEAVE_STATUS,
+			title: "Leave request rejected",
+			body: `${leaveType?.name ?? "Leave"} ${request.startDate} - ${request.endDate}`,
+			link: "/attendance",
+		});
+	}
 	if (employee !== null) {
 		yield* Effect.promise(() =>
 			mailSendSafe(

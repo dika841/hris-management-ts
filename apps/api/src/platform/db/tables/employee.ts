@@ -5,6 +5,7 @@ import {
 	pgTable,
 	text,
 	timestamp,
+	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth.ts";
@@ -51,9 +52,18 @@ export const employee = pgTable(
 		phone: text("phone"),
 		gender: text("gender").notNull(), // "male" | "female"
 		dateOfBirth: text("date_of_birth").notNull(), // YYYY-MM-DD
+		departmentId: uuid("department_id").references(() => department.id, {
+			onDelete: "set null",
+		}),
 		department: text("department").notNull(),
+		positionId: uuid("position_id").references(() => position.id, {
+			onDelete: "set null",
+		}),
 		position: text("position").notNull(),
 		employmentStatus: text("employment_status").notNull().default("permanent"),
+		workScheduleType: text("work_schedule_type").notNull().default("5_days"),
+		workStartTime: text("work_start_time").notNull().default("08:00"),
+		workEndTime: text("work_end_time").notNull().default("17:00"),
 		joinDate: text("join_date").notNull(), // YYYY-MM-DD
 		endDate: text("end_date"),
 		managerId: uuid("manager_id"),
@@ -83,6 +93,7 @@ export const employee = pgTable(
 		index("employee_code_idx").on(table.employeeCode),
 		index("employee_email_idx").on(table.email),
 		index("employee_department_idx").on(table.department),
+		uniqueIndex("employee_user_id_idx").on(table.userId),
 	],
 );
 

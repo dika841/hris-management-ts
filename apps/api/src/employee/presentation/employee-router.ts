@@ -76,6 +76,7 @@ const employeeRouter = {
 				employeeGet(
 					input,
 					!context.permissions.includes(PERMISSION.EMPLOYEE_MANAGE),
+					context.session!.user.id,
 				),
 			),
 		),

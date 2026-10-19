@@ -38,6 +38,18 @@ test.describe("attendance flow", () => {
 			page.getByRole("heading", { name: "Time & Attendance" }),
 		).toBeVisible();
 
+		const row = page
+			.getByRole("row")
+			.filter({ hasText: ATTENDANCE_DATE })
+			.first();
+		await row.getByTitle("Koreksi presensi").click();
+		await expect(page).toHaveURL(/\/attendance\/log\/create\?/);
+		const checkInInput = page.getByLabel(/Jam Masuk/);
+		await expect(checkInInput).toHaveValue("08:15");
+		await checkInInput.fill("08:30");
+		await page.getByRole("button", { name: "Simpan Presensi" }).click();
+		await expect(page).toHaveURL(/\/attendance(\?.*)?$/);
+
 		await page.goto("/attendance/report");
 		await expect(
 			page.getByRole("heading", { name: "Rekap Absensi Bulanan" }),
@@ -51,6 +63,6 @@ test.describe("attendance flow", () => {
 		await page.getByLabel("Bulan").fill("10");
 		await page.getByLabel("Tahun").fill("2026");
 
-		await expect(page.getByText("15 menit")).toBeVisible();
+		await expect(page.getByText("30 menit")).toBeVisible();
 	});
 });

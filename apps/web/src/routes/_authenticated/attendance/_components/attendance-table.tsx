@@ -1,3 +1,4 @@
+import { Button } from "@app/components/ui/button";
 import {
 	Table,
 	TableBody,
@@ -7,7 +8,8 @@ import {
 	TableRow,
 } from "@app/components/ui/table";
 import type { TAttendanceLog, TAttendanceList } from "@app/schemas";
-import { Clock, User } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Clock, Pencil, User } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { AttendanceStatusBadge } from "./attendance-status-badge.tsx";
 
@@ -39,13 +41,16 @@ export const AttendanceTable: FC<TAttendanceTableProps> = ({
 							Keterlambatan
 						</TableHead>
 						<TableHead className="text-xs font-semibold">Catatan</TableHead>
+						<TableHead className="w-16 text-right text-xs font-semibold">
+							Aksi
+						</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
 					{list.items.length === 0 ? (
 						<TableRow>
 							<TableCell
-								colSpan={8}
+								colSpan={9}
 								className="py-10 text-center text-xs text-muted-foreground"
 							>
 								Belum ada catatan presensi. Klik "Catat Presensi Baru" untuk
@@ -106,6 +111,25 @@ export const AttendanceTable: FC<TAttendanceTableProps> = ({
 								</TableCell>
 								<TableCell className="text-xs text-muted-foreground max-w-xs truncate">
 									{log.notes || (log.isHoliday ? log.holidayName : "-")}
+								</TableCell>
+								<TableCell className="text-right">
+									<Button
+										variant="ghost"
+										size="sm"
+										asChild
+										className="size-8 p-0"
+										title="Koreksi presensi"
+									>
+										<Link
+											to="/attendance/log/create"
+											search={{
+												employeeId: log.employeeId,
+												date: log.attendanceDate,
+											}}
+										>
+											<Pencil className="size-3.5" />
+										</Link>
+									</Button>
 								</TableCell>
 							</TableRow>
 						))
