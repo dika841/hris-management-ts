@@ -4,6 +4,7 @@ export const ERROR_MESSAGE = {
 		"You have not been signed out. This is a connection problem, so nothing has been lost.",
 	SERVER_UNREACHABLE_NEXT:
 		"Your session is still valid. Try again once the connection is back.",
+	UPSTREAM: "Upstream service failed. Please try again.",
 	INTERNAL: "Something went wrong on our side. The failure has been logged.",
 	UNEXPECTED_TITLE: "Something went wrong",
 	UNEXPECTED_BODY: "This page could not be loaded.",

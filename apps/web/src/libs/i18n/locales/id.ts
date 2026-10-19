@@ -27,6 +27,8 @@ export const id: TTranslationSchema = {
 	},
 	nav: {
 		featureFlags: "Feature Flag",
+		aiAssistant: "Asisten AI",
+		aiGovernance: "Tata Kelola AI",
 		analytics: "Analitik",
 		dashboard: "Dasbor",
 		employees: "Karyawan",

@@ -164,6 +164,14 @@ export const envSchema = z
 			.number()
 			.int()
 			.default(STORAGE_MAX_BYTES_DEFAULT),
+		// --- DeepSeek (OpenAI-compatible) ---
+		// Leave the key empty to keep AI assistance disabled at the provider level.
+		DEEPSEEK_API_KEY: z.preprocess(
+			blankAsUndefined,
+			z.string().min(1).optional(),
+		),
+		DEEPSEEK_BASE_URL: z.url().default("https://api.deepseek.com"),
+		DEEPSEEK_MODEL: z.string().min(1).default("deepseek-chat"),
 	})
 	.superRefine((env, context): void => {
 		match(env.NODE_ENV)

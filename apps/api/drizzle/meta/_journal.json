@@ -113,6 +113,13 @@
       "when": 1792392654168,
       "tag": "0015_feature_flags",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1792393080980,
+      "tag": "0016_ai_governance",
+      "breakpoints": true
     }
   ]
 }

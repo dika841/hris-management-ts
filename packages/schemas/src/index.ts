@@ -1,4 +1,6 @@
 export * from "./activity/index.ts";
+export * from "./ai/index.ts";
+export * from "./ai-governance/index.ts";
 export * from "./analytics/index.ts";
 export * from "./notification/index.ts";
 export * from "./auth/index.ts";

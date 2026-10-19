@@ -1,6 +1,8 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { execSync } from "node:child_process";
 import { match, P } from "ts-pattern";
+import type { Server } from "node:http";
+import { startMockAiProvider } from "./mock-ai-provider.ts";
 
 import {
 	ADMIN_DATABASE_URL,
@@ -12,6 +14,8 @@ import {
 const HEALTH_URL = `http://127.0.0.1:${API_PORT}/healthz`;
 
 let apiProcess: ChildProcess | undefined;
+let aiProvider: Server | undefined;
+const AI_PROVIDER_PORT = 3110;
 
 const waitForHealth = async (timeoutMs = 15_000): Promise<void> => {
 	const deadline = Date.now() + timeoutMs;
@@ -27,9 +31,14 @@ const waitForHealth = async (timeoutMs = 15_000): Promise<void> => {
 	throw new Error(`API did not become healthy at ${HEALTH_URL} within ${timeoutMs}ms`);
 };
 
-const env = apiEnv({});
+const env = apiEnv({
+	DEEPSEEK_API_KEY: "e2e-deepseek-key",
+	DEEPSEEK_BASE_URL: `http://127.0.0.1:${AI_PROVIDER_PORT}`,
+	DEEPSEEK_MODEL: "deepseek-chat",
+});
 
 export const setup = async (): Promise<void> => {
+	aiProvider = await startMockAiProvider(AI_PROVIDER_PORT);
 	const dbName = new URL(E2E_DATABASE_URL).pathname.slice(1);
 	execSync(
 		`psql "${ADMIN_DATABASE_URL}" -c "DROP DATABASE IF EXISTS ${dbName}" -c "CREATE DATABASE ${dbName}"`,
@@ -59,6 +68,7 @@ export const setup = async (): Promise<void> => {
 };
 
 export const teardown = (): void => {
+	aiProvider?.close();
 	match(apiProcess?.pid)
 		.with(P.nullish, () => undefined)
 		.otherwise((pid) => {

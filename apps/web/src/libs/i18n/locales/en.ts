@@ -25,6 +25,8 @@ export const en = {
 	},
 	nav: {
 		featureFlags: "Feature Flags",
+		aiAssistant: "AI Assistant",
+		aiGovernance: "AI Governance",
 		analytics: "Analytics",
 		dashboard: "Dashboard",
 		employees: "Employees",

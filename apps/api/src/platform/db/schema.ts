@@ -6,3 +6,4 @@ export * from "./tables/payroll.ts";
 export * from "./tables/attendance.ts";
 export * from "./tables/notification.ts";
 export * from "./tables/feature-flag.ts";
+export * from "./tables/ai-governance.ts";

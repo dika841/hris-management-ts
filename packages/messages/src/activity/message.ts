@@ -66,6 +66,9 @@ export const ACTIVITY_ACTION_LABEL = {
 	[ACTIVITY_ACTION.FEATURE_FLAG_CREATE]: "Feature flag created",
 	[ACTIVITY_ACTION.FEATURE_FLAG_UPDATE]: "Feature flag updated",
 	[ACTIVITY_ACTION.FEATURE_FLAG_DELETE]: "Feature flag deleted",
+	[ACTIVITY_ACTION.AI_DECISION_CREATE]: "AI decision logged",
+	[ACTIVITY_ACTION.AI_DECISION_APPROVE]: "AI decision approved",
+	[ACTIVITY_ACTION.AI_DECISION_REJECT]: "AI decision rejected",
 } as const satisfies Record<TActivityAction, string>;
 
 export const ACTIVITY_ENTITY_LABEL = {
@@ -83,4 +86,5 @@ export const ACTIVITY_ENTITY_LABEL = {
 	[ACTIVITY_RESOURCE_TYPE.OVERTIME]: "Overtime",
 	[ACTIVITY_RESOURCE_TYPE.PUBLIC_HOLIDAY]: "Public Holiday",
 	[ACTIVITY_RESOURCE_TYPE.FEATURE_FLAG]: "Feature Flag",
+	[ACTIVITY_RESOURCE_TYPE.AI_DECISION]: "AI Decision",
 } as const satisfies Record<TActivityResourceType, string>;

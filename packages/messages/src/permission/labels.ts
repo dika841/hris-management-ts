@@ -17,6 +17,8 @@ export const PERMISSION_LABEL = {
 	"overtime:read": "View overtime requests",
 	"overtime:manage": "Submit overtime requests",
 	"overtime:approve": "Approve or reject overtime requests",
+	"ai:governance_read": "View AI decisions and review queue",
+	"ai:governance_manage": "Review and manage AI decisions",
 } as const satisfies Record<TPermission, string>;
 
 export const ROLE_LABEL = {

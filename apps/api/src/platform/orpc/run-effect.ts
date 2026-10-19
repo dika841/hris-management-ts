@@ -35,6 +35,11 @@ const toORPCError = (error: TDomainError): ORPCError<string, undefined> =>
 				new ORPCError("BAD_REQUEST", { message: e.message }),
 		)
 		.with(
+			{ _tag: ERROR_TAG.UPSTREAM },
+			(e): ORPCError<string, undefined> =>
+				new ORPCError("BAD_GATEWAY", { message: e.message }),
+		)
+		.with(
 			{
 				_tag: P.union(ERROR_TAG.DATABASE, ERROR_TAG.AUTH, ERROR_TAG.QUEUE),
 			},

@@ -10,4 +10,6 @@ export const REPO_TAG = {
 	NOTIFICATION: "app/NotificationRepo",
 	ANALYTICS: "app/AnalyticsRepo",
 	FEATURE_FLAG: "app/FeatureFlagRepo",
+	AI_DECISION: "app/AiDecisionRepo",
+	AI_PROVIDER: "app/AiProvider",
 } as const;

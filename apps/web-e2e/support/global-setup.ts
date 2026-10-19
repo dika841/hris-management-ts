@@ -1,4 +1,5 @@
 import { execSync, spawn, type ChildProcess } from "node:child_process";
+import { startMockAiProvider } from "./mock-ai-provider.ts";
 
 const API_PORT = 3108;
 const API_URL = `http://127.0.0.1:${API_PORT}`;
@@ -7,6 +8,7 @@ const BASE_DATABASE_URL =
 const DATABASE_URL = BASE_DATABASE_URL.replace(/\/[^/]+$/, "/app_web_e2e");
 
 let apiProcess: ChildProcess | undefined;
+const AI_PROVIDER_PORT = 3111;
 
 const env = {
 	...process.env,
@@ -19,6 +21,9 @@ const env = {
 	BETTER_AUTH_URL: API_URL,
 	BETTER_AUTH_SECRET: "web-e2e-test-secret-please-do-not-use-in-prod",
 	WEB_ORIGIN: "http://127.0.0.1:5273",
+	DEEPSEEK_API_KEY: "web-e2e-deepseek-key",
+	DEEPSEEK_BASE_URL: `http://127.0.0.1:${AI_PROVIDER_PORT}`,
+	DEEPSEEK_MODEL: "deepseek-chat",
 };
 
 const waitForHealth = async (timeoutMs = 15_000): Promise<void> => {
@@ -36,6 +41,7 @@ const waitForHealth = async (timeoutMs = 15_000): Promise<void> => {
 };
 
 const globalSetup = async (): Promise<void> => {
+	await startMockAiProvider(AI_PROVIDER_PORT);
 	const dbName = new URL(DATABASE_URL).pathname.slice(1);
 	const adminUrl = BASE_DATABASE_URL.replace(/\/[^/]+$/, "/postgres");
 

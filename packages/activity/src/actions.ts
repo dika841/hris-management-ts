@@ -13,6 +13,7 @@ export const ACTIVITY_RESOURCE_TYPE = {
 	OVERTIME: "overtime",
 	PUBLIC_HOLIDAY: "public_holiday",
 	FEATURE_FLAG: "feature_flag",
+	AI_DECISION: "ai_decision",
 } as const;
 
 export type TActivityResourceType =
@@ -64,6 +65,9 @@ export const ACTIVITY_ACTION = {
 	FEATURE_FLAG_CREATE: "feature_flag.create",
 	FEATURE_FLAG_UPDATE: "feature_flag.update",
 	FEATURE_FLAG_DELETE: "feature_flag.delete",
+	AI_DECISION_CREATE: "ai_decision.create",
+	AI_DECISION_APPROVE: "ai_decision.approve",
+	AI_DECISION_REJECT: "ai_decision.reject",
 } as const;
 
 export type TActivityAction =

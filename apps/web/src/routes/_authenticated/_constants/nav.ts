@@ -15,6 +15,8 @@ import {
 	UserRound,
 	LayoutDashboard,
 	Shield,
+	ShieldCheck,
+	Sparkles,
 	Users,
 } from "lucide-react";
 
@@ -22,6 +24,8 @@ export type TNavItemKey =
 	| "dashboard"
 	| "analytics"
 	| "featureFlags"
+	| "aiGovernance"
+	| "aiAssistant"
 	| "employees"
 	| "organization"
 	| "attendance"
@@ -104,6 +108,20 @@ export const NAV_ITEMS: readonly TNavItem[] = [
 		label: NAV_MESSAGE.PERMISSIONS,
 		permissions: [PERMISSION.USER_MANAGE],
 		icon: KeyRound,
+	},
+	{
+		to: "/ai-assistant",
+		key: "aiAssistant",
+		label: "AI Assistant",
+		permissions: [PERMISSION.AI_GOVERNANCE_MANAGE],
+		icon: Sparkles,
+	},
+	{
+		to: "/ai-governance",
+		key: "aiGovernance",
+		label: "AI Governance",
+		permissions: [PERMISSION.AI_GOVERNANCE_READ],
+		icon: ShieldCheck,
 	},
 	{
 		to: "/feature-flags",
