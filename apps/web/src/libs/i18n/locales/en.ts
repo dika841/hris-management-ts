@@ -24,6 +24,7 @@ export const en = {
 		all: "All",
 	},
 	nav: {
+		analytics: "Analytics",
 		dashboard: "Dashboard",
 		employees: "Employees",
 		organization: "Organization",

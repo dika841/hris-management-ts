@@ -4,6 +4,7 @@ import type { LinkProps } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import {
 	Activity,
+	BarChart3,
 	Building2,
 	CalendarCheck,
 	CircleUser,
@@ -18,6 +19,7 @@ import {
 
 export type TNavItemKey =
 	| "dashboard"
+	| "analytics"
 	| "employees"
 	| "organization"
 	| "attendance"
@@ -44,6 +46,13 @@ export const NAV_ITEMS: readonly TNavItem[] = [
 		label: NAV_MESSAGE.DASHBOARD,
 		permissions: [],
 		icon: LayoutDashboard,
+	},
+	{
+		to: "/analytics",
+		key: "analytics",
+		label: NAV_MESSAGE.ANALYTICS,
+		permissions: [PERMISSION.EMPLOYEE_READ],
+		icon: BarChart3,
 	},
 	{
 		to: "/employees",

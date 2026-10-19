@@ -26,6 +26,7 @@ export const id: TTranslationSchema = {
 		all: "Semua",
 	},
 	nav: {
+		analytics: "Analitik",
 		dashboard: "Dasbor",
 		employees: "Karyawan",
 		organization: "Organisasi",

@@ -1,5 +1,6 @@
 import { Layer, ManagedRuntime } from "effect";
 import { activityModule } from "#/activity/index.ts";
+import { analyticsModule } from "#/analytics/index.ts";
 import { attendanceModule } from "#/attendance/index.ts";
 import { authModule } from "#/auth/index.ts";
 import { employeeModule } from "#/employee/index.ts";
@@ -29,6 +30,7 @@ export const AppLayer = Layer.mergeAll(
 	payrollModule.layer,
 	attendanceModule.layer,
 	notificationModule.layer,
+	analyticsModule.layer,
 ) as Layer.Layer<
 	| Layer.Success<typeof dbServiceLayer>
 	| Layer.Success<typeof cacheServiceLayer>
@@ -44,6 +46,7 @@ export const AppLayer = Layer.mergeAll(
 	| Layer.Success<typeof payrollModule.layer>
 	| Layer.Success<typeof attendanceModule.layer>
 	| Layer.Success<typeof notificationModule.layer>
+	| Layer.Success<typeof analyticsModule.layer>
 >;
 
 export const appMemoMap = Layer.makeMemoMapUnsafe();

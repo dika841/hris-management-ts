@@ -1,5 +1,6 @@
 export const NAV_MESSAGE = {
 	DASHBOARD: "Dashboard",
+	ANALYTICS: "Analytics",
 	EMPLOYEES: "Employees",
 	ORGANIZATION: "Organization",
 	ATTENDANCE: "Waktu & Kehadiran",
