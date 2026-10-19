@@ -1,10 +1,13 @@
 import {
+	type TPayrollComponent,
 	type TPayrollItem,
 	type TPayrollPeriod,
+	payrollComponentSchema,
 	payrollItemSchema,
 	payrollPeriodSchema,
 } from "@app/schemas";
 import type {
+	TPayrollComponentRow,
 	TPayrollItemRow,
 	TPayrollPeriodRow,
 } from "#/payroll/domain/payroll.ts";
@@ -49,6 +52,20 @@ export const toPayrollItemDto = (row: TPayrollItemRow): TPayrollItem =>
 		deductionTotal: row.deductionTotal,
 		netPay: row.netPay,
 		calculationLog: row.calculationLog ?? undefined,
+		createdAt: row.createdAt.toISOString(),
+		updatedAt: row.updatedAt.toISOString(),
+	});
+
+export const toPayrollComponentDto = (
+	row: TPayrollComponentRow,
+): TPayrollComponent =>
+	payrollComponentSchema.parse({
+		id: row.id,
+		payrollPeriodId: row.payrollPeriodId,
+		employeeId: row.employeeId,
+		type: row.type,
+		amount: row.amount,
+		notes: row.notes,
 		createdAt: row.createdAt.toISOString(),
 		updatedAt: row.updatedAt.toISOString(),
 	});

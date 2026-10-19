@@ -3,8 +3,10 @@ import type { TPayrollPeriodListInput, TPayrollSort } from "@app/schemas";
 import { D } from "@mobily/ts-belt";
 import {
 	type UseMutationResult,
+	type UseQueryResult,
 	type UseSuspenseQueryOptions,
 	type UseSuspenseQueryResult,
+	useQuery,
 	useSuspenseQuery,
 } from "@tanstack/react-query";
 import { getRouteApi } from "@tanstack/react-router";
@@ -95,4 +97,74 @@ export const usePayrollStatusUpdate = (): UseMutationResult<
 	useProcedureMutation(orpc.payroll.updateStatus, {
 		message: PAYROLL_MESSAGE.PERIOD_APPROVED,
 		invalidates: payrollKeys(),
+	});
+
+export const payrollPayslipOptions = (
+	id: string,
+): UseSuspenseQueryOptions<TPayrollOut["getPayslip"]> =>
+	suspenseQueryOptionsFor(orpc.payroll.getPayslip, { id });
+
+export const usePayrollPayslip = (
+	id: string,
+): UseSuspenseQueryResult<TPayrollOut["getPayslip"]> =>
+	useSuspenseQuery(payrollPayslipOptions(id));
+
+export const usePayrollPayslipSend = (): UseMutationResult<
+	TPayrollOut["sendPayslip"],
+	TPayrollErr["sendPayslip"],
+	TPayrollIn["sendPayslip"]
+> =>
+	useProcedureMutation(orpc.payroll.sendPayslip, {
+		message: "Payslip email processed.",
+		invalidates: payrollKeys(),
+	});
+
+export const payrollReportItemsOptions = (
+	periodId: string,
+): UseSuspenseQueryOptions<TPayrollOut["reportItems"]> =>
+	suspenseQueryOptionsFor(orpc.payroll.reportItems, { id: periodId });
+
+export const usePayrollReportItems = (
+	periodId: string,
+): UseSuspenseQueryResult<TPayrollOut["reportItems"]> =>
+	useSuspenseQuery(payrollReportItemsOptions(periodId));
+
+export const payrollComponentListOptions = (
+	periodId: string,
+): UseSuspenseQueryOptions<TPayrollOut["listComponents"]> =>
+	suspenseQueryOptionsFor(orpc.payroll.listComponents, { periodId });
+
+export const usePayrollComponentList = (
+	periodId: string,
+): UseSuspenseQueryResult<TPayrollOut["listComponents"]> =>
+	useSuspenseQuery(payrollComponentListOptions(periodId));
+
+export const usePayrollComponentCreate = (): UseMutationResult<
+	TPayrollOut["createComponent"],
+	TPayrollErr["createComponent"],
+	TPayrollIn["createComponent"]
+> =>
+	useProcedureMutation(orpc.payroll.createComponent, {
+		message: PAYROLL_MESSAGE.COMPONENT_CREATED,
+		invalidates: payrollKeys(),
+	});
+
+export const usePayrollComponentDelete = (): UseMutationResult<
+	TPayrollOut["deleteComponent"],
+	TPayrollErr["deleteComponent"],
+	TPayrollIn["deleteComponent"]
+> =>
+	useProcedureMutation(orpc.payroll.deleteComponent, {
+		message: PAYROLL_MESSAGE.COMPONENT_DELETED,
+		invalidates: payrollKeys(),
+	});
+
+export const usePayrollBankExport = (
+	periodId: string,
+	enabled: boolean,
+): UseQueryResult<TPayrollOut["bankExport"]> =>
+	useQuery({
+		...orpc.payroll.bankExport.queryOptions({ input: { id: periodId } }),
+		queryKey: orpc.payroll.bankExport.key({ input: { id: periodId } }),
+		enabled,
 	});

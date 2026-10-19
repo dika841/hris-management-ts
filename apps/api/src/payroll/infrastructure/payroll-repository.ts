@@ -1,5 +1,6 @@
 import {
 	and,
+	asc,
 	count,
 	desc,
 	eq,
@@ -19,6 +20,8 @@ import { calculatePayroll } from "#/payroll/domain/payroll-calculator.ts";
 import {
 	PayrollRepo,
 	type TEmployeeTaxYtdRow,
+	type TPayrollBankRow,
+	type TPayrollComponentRow,
 	type TPayrollItemRow,
 	type TPayrollPeriodRow,
 	type TPayrollRepo,
@@ -33,6 +36,7 @@ import {
 import { employee, employeeContract } from "#/platform/db/tables/employee.ts";
 import {
 	employeeTaxYtd,
+	payrollComponent,
 	payrollItem,
 	payrollPeriod,
 } from "#/platform/db/tables/payroll.ts";
@@ -316,6 +320,23 @@ export const payrollRepoLayer = Layer.effect(
 						);
 					}
 
+					const componentRows = await activeDb
+						.select()
+						.from(payrollComponent)
+						.where(eq(payrollComponent.payrollPeriodId, periodId));
+					const componentsByEmployee = new Map<
+						string,
+						TPayrollComponentRow[]
+					>();
+					for (const component of componentRows) {
+						const current =
+							componentsByEmployee.get(component.employeeId) ?? [];
+						componentsByEmployee.set(component.employeeId, [
+							...current,
+							component as TPayrollComponentRow,
+						]);
+					}
+
 					const priorItems =
 						periodRow.month === 12
 							? await activeDb
@@ -382,7 +403,23 @@ export const payrollRepoLayer = Layer.effect(
 					>();
 
 					for (const emp of employees) {
-						const allowance = allowanceByEmployee.get(emp.id) ?? 0;
+						const components = componentsByEmployee.get(emp.id) ?? [];
+						const componentTotal = (
+							type: (typeof components)[number]["type"],
+						): number =>
+							components
+								.filter((component) => component.type === type)
+								.reduce((total, component) => total + component.amount, 0);
+
+						const allowance =
+							(allowanceByEmployee.get(emp.id) ?? 0) +
+							componentTotal("allowance");
+						const bonus =
+							componentTotal("bonus") +
+							componentTotal("thr") +
+							componentTotal("thirteenth_month");
+						const natura = componentTotal("natura");
+						const componentDeduction = componentTotal("deduction");
 						const overtime = overtimeByEmployee.get(emp.id) ?? {
 							minutes: 0,
 							amount: 0,
@@ -405,7 +442,8 @@ export const payrollRepoLayer = Layer.effect(
 									(100 - leave.salaryPercentageAtTime) / 100;
 								return total + Math.round(dailyWage * days * deductionRate);
 							}, 0);
-						const otherDeductions = absenceDeduction + leaveDeduction;
+						const otherDeductions =
+							absenceDeduction + leaveDeduction + componentDeduction;
 
 						const ytd = ytdByEmployee.get(emp.id);
 						const ytdContext =
@@ -424,6 +462,8 @@ export const payrollRepoLayer = Layer.effect(
 							taxMethod: emp.taxMethod as any,
 							allowances: allowance,
 							overtimePay: overtime.amount,
+							bonus,
+							natura,
 							otherDeductions,
 							jkkRiskGrade: emp.jkkRiskGrade,
 							month: periodRow.month,
@@ -432,7 +472,7 @@ export const payrollRepoLayer = Layer.effect(
 
 						const deductionNote =
 							otherDeductions > 0
-								? `Potongan ketidakhadiran Rp ${absenceDeduction.toLocaleString("id-ID")}, potongan cuti tidak berbayar Rp ${leaveDeduction.toLocaleString("id-ID")}.`
+								? `Potongan ketidakhadiran Rp ${absenceDeduction.toLocaleString("id-ID")}, potongan cuti tidak berbayar Rp ${leaveDeduction.toLocaleString("id-ID")}, potongan komponen Rp ${componentDeduction.toLocaleString("id-ID")}.`
 								: null;
 
 						await activeDb.insert(payrollItem).values({
@@ -588,6 +628,111 @@ export const payrollRepoLayer = Layer.effect(
 				catch: (cause) => new EDatabase({ cause }),
 			});
 
+		const listAllItems: TPayrollRepo["listAllItems"] = (periodId) =>
+			Effect.tryPromise({
+				try: async () => {
+					const rows = await dbActive(db)
+						.select()
+						.from(payrollItem)
+						.where(eq(payrollItem.payrollPeriodId, periodId))
+						.orderBy(asc(payrollItem.employeeName));
+					return rows as TPayrollItemRow[];
+				},
+				catch: (cause) => new EDatabase({ cause }),
+			});
+
+		const listComponents: TPayrollRepo["listComponents"] = (periodId) =>
+			Effect.tryPromise({
+				try: async () => {
+					const rows = await dbActive(db)
+						.select()
+						.from(payrollComponent)
+						.where(eq(payrollComponent.payrollPeriodId, periodId))
+						.orderBy(desc(payrollComponent.createdAt));
+					return rows as TPayrollComponentRow[];
+				},
+				catch: (cause) => new EDatabase({ cause }),
+			});
+
+		const listItemComponents: TPayrollRepo["listItemComponents"] = (
+			periodId,
+			employeeId,
+		) =>
+			Effect.tryPromise({
+				try: async () => {
+					const rows = await dbActive(db)
+						.select()
+						.from(payrollComponent)
+						.where(
+							and(
+								eq(payrollComponent.payrollPeriodId, periodId),
+								eq(payrollComponent.employeeId, employeeId),
+							),
+						)
+						.orderBy(desc(payrollComponent.createdAt));
+					return rows as TPayrollComponentRow[];
+				},
+				catch: (cause) => new EDatabase({ cause }),
+			});
+
+		const createComponent: TPayrollRepo["createComponent"] = (data) =>
+			Effect.tryPromise({
+				try: async () => {
+					const [row] = await dbActive(db)
+						.insert(payrollComponent)
+						.values(data)
+						.returning();
+					return row as TPayrollComponentRow;
+				},
+				catch: (cause) => new EDatabase({ cause }),
+			});
+
+		const findComponentById: TPayrollRepo["findComponentById"] = (id) =>
+			Effect.tryPromise({
+				try: async () => {
+					const [row] = await dbActive(db)
+						.select()
+						.from(payrollComponent)
+						.where(eq(payrollComponent.id, id))
+						.limit(1);
+					return (row as TPayrollComponentRow) ?? null;
+				},
+				catch: (cause) => new EDatabase({ cause }),
+			});
+
+		const removeComponent: TPayrollRepo["removeComponent"] = (id) =>
+			Effect.tryPromise({
+				try: async () => {
+					const rows = await dbActive(db)
+						.delete(payrollComponent)
+						.where(eq(payrollComponent.id, id))
+						.returning({ id: payrollComponent.id });
+					return rows.length > 0;
+				},
+				catch: (cause) => new EDatabase({ cause }),
+			});
+
+		const listBankRows: TPayrollRepo["listBankRows"] = (periodId) =>
+			Effect.tryPromise({
+				try: async () => {
+					const rows = await dbActive(db)
+						.select({
+							employeeId: payrollItem.employeeId,
+							employeeCode: payrollItem.employeeCode,
+							employeeName: payrollItem.employeeName,
+							bankName: employee.bankName,
+							bankAccountNumber: employee.bankAccountNumber,
+							bankAccountHolder: employee.bankAccountHolder,
+							netPay: payrollItem.netPay,
+						})
+						.from(payrollItem)
+						.innerJoin(employee, eq(payrollItem.employeeId, employee.id))
+						.where(eq(payrollItem.payrollPeriodId, periodId));
+					return rows as TPayrollBankRow[];
+				},
+				catch: (cause) => new EDatabase({ cause }),
+			});
+
 		return PayrollRepo.of({
 			createPeriod,
 			findPeriodById,
@@ -596,6 +741,13 @@ export const payrollRepoLayer = Layer.effect(
 			calculatePeriod,
 			listItems,
 			findItemById,
+			listAllItems,
+			listComponents,
+			listItemComponents,
+			createComponent,
+			findComponentById,
+			removeComponent,
+			listBankRows,
 			findTaxYtd,
 		});
 	}),

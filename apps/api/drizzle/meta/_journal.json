@@ -78,6 +78,13 @@
       "when": 1792386058875,
       "tag": "0010_attendance_leave_unique_targets",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792387913311,
+      "tag": "0011_payroll_components",
+      "breakpoints": true
     }
   ]
 }

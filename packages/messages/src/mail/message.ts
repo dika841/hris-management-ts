@@ -17,4 +17,8 @@ export const MAIL_MESSAGE = {
 	OVERTIME_STATUS_REJECTED: "Your overtime request has been rejected.",
 	CONTRACT_EXPIRY_SUBJECT: "Employment contract expiry reminder",
 	CONTRACT_EXPIRY_BODY: "Your employment contract is approaching its end date.",
+	PAYSLIP_SUBJECT: "Your payslip is available",
+	PAYSLIP_BODY:
+		"Your payslip for this payroll period is available at the link below.",
+	PAYSLIP_ACTION: "Open payslip",
 } as const;

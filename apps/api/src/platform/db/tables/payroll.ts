@@ -81,6 +81,32 @@ export const payrollItem = pgTable(
 	],
 );
 
+export const payrollComponent = pgTable(
+	"payroll_component",
+	{
+		id: uuid("id").primaryKey().defaultRandom(),
+		payrollPeriodId: uuid("payroll_period_id")
+			.notNull()
+			.references(() => payrollPeriod.id, { onDelete: "cascade" }),
+		employeeId: uuid("employee_id")
+			.notNull()
+			.references(() => employee.id, { onDelete: "cascade" }),
+		type: text("type").notNull(),
+		amount: integer("amount").notNull().default(0),
+		notes: text("notes"),
+		createdAt: timestamp("created_at", { withTimezone: true })
+			.notNull()
+			.defaultNow(),
+		updatedAt: timestamp("updated_at", { withTimezone: true })
+			.notNull()
+			.defaultNow(),
+	},
+	(table) => [
+		index("payroll_component_period_idx").on(table.payrollPeriodId),
+		index("payroll_component_employee_idx").on(table.employeeId),
+	],
+);
+
 export const employeeTaxYtd = pgTable(
 	"employee_tax_ytd",
 	{

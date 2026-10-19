@@ -14,6 +14,9 @@ export const PAYROLL_MESSAGE = {
 	PERIOD_STATUS_INVALID:
 		"The requested payroll status transition is not allowed.",
 	PERIOD_HAS_NO_ITEMS: "Calculate payroll before approving this period.",
+	PERIOD_NOT_EDITABLE: "This payroll period can no longer be edited.",
+	COMPONENT_CREATED: "Payroll component added.",
+	COMPONENT_DELETED: "Payroll component removed.",
 	DECEMBER_RECONCILIATION_NOTE:
 		"December payroll calculation includes annual reconciliation using Article 17 progressive rates.",
 } as const;

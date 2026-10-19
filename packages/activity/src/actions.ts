@@ -39,6 +39,9 @@ export const ACTIVITY_ACTION = {
 	PAYROLL_APPROVE: "payroll.approve",
 	PAYROLL_PAY: "payroll.pay",
 	PAYROLL_LOCK: "payroll.lock",
+	PAYROLL_COMPONENT_CREATE: "payroll.component_create",
+	PAYROLL_COMPONENT_DELETE: "payroll.component_delete",
+	PAYROLL_PAYSLIP_SEND: "payroll.payslip_send",
 	// Fase 2: Cuti & Kehadiran
 	LEAVE_TYPE_CREATE: "leave_type.create",
 	LEAVE_TYPE_UPDATE: "leave_type.update",

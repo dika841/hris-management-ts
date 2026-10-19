@@ -1,6 +1,7 @@
 import type {
 	TBpjsBreakdown,
 	TPayrollCalculateInput,
+	TPayrollComponentType,
 	TPayrollItemListInput,
 	TPayrollPeriodCreateInput,
 	TPayrollPeriodListInput,
@@ -51,6 +52,24 @@ export type TPayrollItemRow = TBaseRow & {
 	calculationLog: string | null;
 };
 
+export type TPayrollComponentRow = TBaseRow & {
+	payrollPeriodId: string;
+	employeeId: string;
+	type: TPayrollComponentType;
+	amount: number;
+	notes: string | null;
+};
+
+export type TPayrollBankRow = {
+	employeeId: string;
+	employeeCode: string;
+	employeeName: string;
+	bankName: string | null;
+	bankAccountNumber: string | null;
+	bankAccountHolder: string | null;
+	netPay: number;
+};
+
 export type TEmployeeTaxYtdRow = TBaseRow & {
 	employeeId: string;
 	taxYear: number;
@@ -85,6 +104,26 @@ export type TPayrollRepo = {
 	findItemById: (
 		id: string,
 	) => Effect.Effect<TPayrollItemRow | null, EDatabase>;
+	listAllItems: (
+		periodId: string,
+	) => Effect.Effect<readonly TPayrollItemRow[], EDatabase>;
+	listComponents: (
+		periodId: string,
+	) => Effect.Effect<readonly TPayrollComponentRow[], EDatabase>;
+	listItemComponents: (
+		periodId: string,
+		employeeId: string,
+	) => Effect.Effect<readonly TPayrollComponentRow[], EDatabase>;
+	createComponent: (
+		data: Omit<TPayrollComponentRow, "id" | "createdAt" | "updatedAt">,
+	) => Effect.Effect<TPayrollComponentRow, EDatabase>;
+	findComponentById: (
+		id: string,
+	) => Effect.Effect<TPayrollComponentRow | null, EDatabase>;
+	removeComponent: (id: string) => Effect.Effect<boolean, EDatabase>;
+	listBankRows: (
+		periodId: string,
+	) => Effect.Effect<readonly TPayrollBankRow[], EDatabase>;
 	findTaxYtd: (
 		employeeId: string,
 		taxYear: number,

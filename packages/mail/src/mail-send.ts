@@ -8,6 +8,7 @@ export const MAIL_TEMPLATE = {
 	LEAVE_STATUS: "leave-status",
 	OVERTIME_STATUS: "overtime-status",
 	CONTRACT_EXPIRY: "contract-expiry",
+	PAYSLIP: "payslip",
 } as const;
 
 export type TMailTemplate = (typeof MAIL_TEMPLATE)[keyof typeof MAIL_TEMPLATE];

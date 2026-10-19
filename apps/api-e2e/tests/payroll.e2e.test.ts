@@ -1,8 +1,11 @@
 import type {
 	TEmployee,
 	TEmployeeCreateInput,
+	TPayrollBankRow,
+	TPayrollComponent,
 	TPayrollItem,
 	TPayrollItemList,
+	TPayrollPayslip,
 	TPayrollPeriod,
 	TPayrollPeriodCreateInput,
 	TTaxSimulationResult,
@@ -137,6 +140,106 @@ describe("payroll REST endpoints", () => {
 			body: { id: period.id, status: "approved" },
 		});
 		expect(invalid.status).toBe(409);
+	});
+
+	it("adds payroll components, includes them in calculation, and exposes payslip and bank export", async (): Promise<void> => {
+		const period = await apiJson<TPayrollPeriod>({
+			path: "/payroll/periods",
+			cookie: adminCookie,
+			method: "POST",
+			body: { ...PERIOD, name: "E2E Payroll Components 2026" },
+		});
+
+		const componentInputs = [
+			{ type: "allowance", amount: 1_000_000 },
+			{ type: "bonus", amount: 2_000_000 },
+			{ type: "natura", amount: 500_000 },
+			{ type: "deduction", amount: 300_000 },
+			{ type: "thr", amount: 3_000_000 },
+		] as const;
+
+		const components: TPayrollComponent[] = [];
+		for (const component of componentInputs) {
+			const created = await apiJson<TPayrollComponent>({
+				path: "/payroll/components",
+				cookie: adminCookie,
+				method: "POST",
+				body: {
+					payrollPeriodId: period.id,
+					employeeId: employee.id,
+					...component,
+				},
+			});
+			components.push(created);
+		}
+
+		const listedComponents = await apiJson<TPayrollComponent[]>({
+			path: `/payroll/components?periodId=${period.id}`,
+			cookie: adminCookie,
+		});
+		expect(listedComponents).toHaveLength(componentInputs.length);
+
+		await apiJson<TPayrollPeriod>({
+			path: "/payroll/calculate",
+			cookie: adminCookie,
+			method: "POST",
+			body: { periodId: period.id, employeeIds: [employee.id] },
+		});
+
+		const items = await apiJson<TPayrollItemList>({
+			path: `/payroll/items?periodId=${period.id}&page=1&pageSize=20`,
+			cookie: adminCookie,
+		});
+		const item = items.items[0] as TPayrollItem;
+		expect(item.allowanceTotal).toBe(1_000_000);
+		expect(item.bonusTotal).toBe(5_000_000);
+		expect(item.naturaTotal).toBe(500_000);
+		expect(item.deductionTotal).toBeGreaterThanOrEqual(300_000);
+
+		const itemById = await apiJson<TPayrollItem>({
+			path: `/payroll/items/${item.id}`,
+			cookie: adminCookie,
+		});
+		expect(itemById.id).toBe(item.id);
+
+		const payslip = await apiJson<TPayrollPayslip>({
+			path: `/payroll/items/${item.id}/payslip`,
+			cookie: adminCookie,
+		});
+		expect(payslip.item.id).toBe(item.id);
+		expect(payslip.components).toHaveLength(componentInputs.length);
+
+		const reportItems = await apiJson<TPayrollItem[]>({
+			path: `/payroll/periods/${period.id}/report-items`,
+			cookie: adminCookie,
+		});
+		expect(reportItems).toHaveLength(1);
+		expect(reportItems[0]?.id).toBe(item.id);
+
+		const sentPayslip = await apiFetch({
+			path: `/payroll/items/${item.id}/payslip/send`,
+			cookie: adminCookie,
+			method: "POST",
+			body: { id: item.id },
+		});
+		expect(sentPayslip.status).toBe(200);
+
+		const bankRows = await apiJson<TPayrollBankRow[]>({
+			path: `/payroll/periods/${period.id}/bank-export`,
+			cookie: adminCookie,
+		});
+		const bankRow = bankRows.find((row) => row.employeeId === employee.id);
+		expect(bankRow?.employeeCode).toBe(EMPLOYEE.employeeCode);
+		expect(bankRow?.netPay).toBe(item.netPay);
+
+		for (const component of components) {
+			const deleted = await apiFetch({
+				path: `/payroll/components/${component.id}`,
+				cookie: adminCookie,
+				method: "DELETE",
+			});
+			expect(deleted.status).toBe(200);
+		}
 	});
 
 	it("simulates PPh 21 TER take-home pay", async (): Promise<void> => {

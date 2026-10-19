@@ -42,6 +42,9 @@ export const ACTIVITY_ACTION_LABEL = {
 	[ACTIVITY_ACTION.PAYROLL_APPROVE]: "Payroll approved",
 	[ACTIVITY_ACTION.PAYROLL_PAY]: "Payroll marked as paid",
 	[ACTIVITY_ACTION.PAYROLL_LOCK]: "Payroll locked",
+	[ACTIVITY_ACTION.PAYROLL_COMPONENT_CREATE]: "Payroll component added",
+	[ACTIVITY_ACTION.PAYROLL_COMPONENT_DELETE]: "Payroll component removed",
+	[ACTIVITY_ACTION.PAYROLL_PAYSLIP_SEND]: "Payslip email sent",
 	// Fase 2
 	[ACTIVITY_ACTION.LEAVE_TYPE_CREATE]: "Leave type created",
 	[ACTIVITY_ACTION.LEAVE_TYPE_UPDATE]: "Leave type updated",

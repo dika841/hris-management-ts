@@ -75,6 +75,64 @@ export type TPayrollPeriodStatusUpdateInput = z.infer<
 	typeof payrollPeriodStatusUpdateInputSchema
 >;
 
+export const PAYROLL_COMPONENT_TYPE = {
+	ALLOWANCE: "allowance",
+	BONUS: "bonus",
+	NATURA: "natura",
+	DEDUCTION: "deduction",
+	THR: "thr",
+	THIRTEENTH_MONTH: "thirteenth_month",
+} as const;
+export type TPayrollComponentType =
+	(typeof PAYROLL_COMPONENT_TYPE)[keyof typeof PAYROLL_COMPONENT_TYPE];
+
+export const payrollComponentTypeSchema = z.enum([
+	PAYROLL_COMPONENT_TYPE.ALLOWANCE,
+	PAYROLL_COMPONENT_TYPE.BONUS,
+	PAYROLL_COMPONENT_TYPE.NATURA,
+	PAYROLL_COMPONENT_TYPE.DEDUCTION,
+	PAYROLL_COMPONENT_TYPE.THR,
+	PAYROLL_COMPONENT_TYPE.THIRTEENTH_MONTH,
+]);
+
+export const payrollComponentSchema = baseSchema(
+	payrollComponentIdSchema,
+).extend({
+	payrollPeriodId: payrollPeriodIdSchema,
+	employeeId: employeeIdSchema,
+	type: payrollComponentTypeSchema,
+	amount: z.number().int().nonnegative(),
+	notes: z.string().nullable(),
+});
+export type TPayrollComponent = TEntityOf<
+	z.infer<typeof payrollComponentSchema>
+>;
+
+export const payrollComponentCreateInputSchema = z.object({
+	payrollPeriodId: payrollPeriodIdSchema,
+	employeeId: employeeIdSchema,
+	type: payrollComponentTypeSchema,
+	amount: z.number().int().positive(),
+	notes: z.string().max(500).optional(),
+});
+export type TPayrollComponentCreateInput = z.infer<
+	typeof payrollComponentCreateInputSchema
+>;
+
+export const payrollComponentListInputSchema = z.object({
+	periodId: payrollPeriodIdSchema,
+});
+export type TPayrollComponentListInput = z.infer<
+	typeof payrollComponentListInputSchema
+>;
+
+export const payrollComponentDeleteInputSchema = z.object({
+	id: payrollComponentIdSchema,
+});
+export type TPayrollComponentDeleteInput = z.infer<
+	typeof payrollComponentDeleteInputSchema
+>;
+
 // Rincian Komponen BPJS
 export const bpjsBreakdownSchema = z.object({
 	// BPJS Kesehatan
@@ -148,6 +206,24 @@ export const payrollItemSchema = baseSchema(payrollItemIdSchema).extend({
 	calculationLog: z.string().optional(),
 });
 export type TPayrollItem = TEntityOf<z.infer<typeof payrollItemSchema>>;
+
+export const payrollPayslipSchema = z.object({
+	period: payrollPeriodSchema,
+	item: payrollItemSchema,
+	components: z.array(payrollComponentSchema),
+});
+export type TPayrollPayslip = z.infer<typeof payrollPayslipSchema>;
+
+export const payrollBankRowSchema = z.object({
+	employeeId: employeeIdSchema,
+	employeeCode: z.string(),
+	employeeName: z.string(),
+	bankName: z.string().nullable(),
+	bankAccountNumber: z.string().nullable(),
+	bankAccountHolder: z.string().nullable(),
+	netPay: z.number().int(),
+});
+export type TPayrollBankRow = z.infer<typeof payrollBankRowSchema>;
 
 export const payrollCalculateInputSchema = z.object({
 	periodId: payrollPeriodIdSchema,

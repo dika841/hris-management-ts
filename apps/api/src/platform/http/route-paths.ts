@@ -36,6 +36,12 @@ export const ROUTE_PATH = {
 	PAYROLL_CALCULATE: `${RESOURCE.PAYROLL}/calculate`,
 	PAYROLL_ITEMS: `${RESOURCE.PAYROLL}/items`,
 	PAYROLL_ITEM: `${RESOURCE.PAYROLL}/items/{id}`,
+	PAYROLL_PAYSLIP: `${RESOURCE.PAYROLL}/items/{id}/payslip`,
+	PAYROLL_PAYSLIP_SEND: `${RESOURCE.PAYROLL}/items/{id}/payslip/send`,
+	PAYROLL_REPORT_ITEMS: `${RESOURCE.PAYROLL}/periods/{id}/report-items`,
+	PAYROLL_COMPONENTS: `${RESOURCE.PAYROLL}/components`,
+	PAYROLL_COMPONENT: `${RESOURCE.PAYROLL}/components/{id}`,
+	PAYROLL_BANK_EXPORT: `${RESOURCE.PAYROLL}/periods/{id}/bank-export`,
 	PAYROLL_SIMULATE: `${RESOURCE.PAYROLL}/simulate`,
 } as const;
 export type TRoutePath = (typeof ROUTE_PATH)[keyof typeof ROUTE_PATH];

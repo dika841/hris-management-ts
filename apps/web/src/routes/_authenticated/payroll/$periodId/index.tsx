@@ -4,9 +4,19 @@ import { Button } from "@app/components/ui/button";
 import {
 	Card,
 	CardContent,
+	CardDescription,
 	CardHeader,
 	CardTitle,
 } from "@app/components/ui/card";
+import { Input } from "@app/components/ui/input";
+import { Label } from "@app/components/ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@app/components/ui/select";
 import {
 	Table,
 	TableBody,
@@ -17,23 +27,38 @@ import {
 } from "@app/components/ui/table";
 import { formatDate, formatRupiah } from "@app/format";
 import { PERMISSION } from "@app/permissions";
-import type { TPayrollPeriodStatus } from "@app/schemas";
+import {
+	PAYROLL_COMPONENT_TYPE,
+	type TPayrollComponentType,
+	type TPayrollPeriodStatus,
+} from "@app/schemas";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
 	ArrowLeft,
 	CheckCircle2,
 	Coins,
-	FileText,
+	Download,
 	Lock,
 	Play,
+	Plus,
+	ReceiptText,
+	BarChart3,
+	Trash2,
 	Wallet,
 } from "lucide-react";
-import type { FC, ReactElement } from "react";
+import { useState, type FC, type ReactElement } from "react";
 import { checkRoutePermissions } from "#/libs/auth/route-guard.ts";
+import { orpc } from "#/libs/orpc/client.ts";
+import { suspenseQueryOptionsFor } from "#/libs/orpc/procedure-query.ts";
 import {
 	payrollItemListOptions,
 	payrollPeriodGetOptions,
+	usePayrollBankExport,
 	usePayrollCalculate,
+	usePayrollComponentCreate,
+	usePayrollComponentDelete,
+	usePayrollComponentList,
 	usePayrollItemList,
 	usePayrollPeriodGet,
 	usePayrollStatusUpdate,
@@ -61,6 +86,20 @@ const STATUS_LABEL: Record<TPayrollPeriodStatus, string> = {
 	locked: "Terkunci",
 };
 
+const COMPONENT_LABEL: Record<TPayrollComponentType, string> = {
+	allowance: "Tunjangan",
+	bonus: "Bonus",
+	natura: "Natura",
+	deduction: "Potongan",
+	thr: "THR",
+	thirteenth_month: "Gaji ke-13",
+};
+
+const csvEscape = (value: string | number | null): string => {
+	const text = value === null ? "" : String(value);
+	return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+};
+
 const PayrollPeriodDetailPage: FC = (): ReactElement => {
 	const { periodId } = Route.useParams();
 	const { data: period } = usePayrollPeriodGet(periodId);
@@ -71,6 +110,82 @@ const PayrollPeriodDetailPage: FC = (): ReactElement => {
 	});
 	const calculateMutation = usePayrollCalculate();
 	const statusMutation = usePayrollStatusUpdate();
+	const components = usePayrollComponentList(periodId);
+	const createComponent = usePayrollComponentCreate();
+	const deleteComponent = usePayrollComponentDelete();
+	const employeesQuery = useSuspenseQuery(
+		suspenseQueryOptionsFor(orpc.employee.list, { page: 1, pageSize: 100 }),
+	);
+	const employees = employeesQuery.data.items;
+	const bankRows = usePayrollBankExport(periodId, true);
+
+	const [componentEmployeeId, setComponentEmployeeId] = useState(
+		employees[0]?.id ?? "",
+	);
+	const [componentType, setComponentType] = useState<TPayrollComponentType>(
+		PAYROLL_COMPONENT_TYPE.ALLOWANCE,
+	);
+	const [componentAmount, setComponentAmount] = useState(0);
+	const [componentNotes, setComponentNotes] = useState("");
+
+	const canEditComponents =
+		period.status === "draft" || period.status === "calculating";
+
+	const submitComponent = (): void => {
+		if (!componentEmployeeId || componentAmount <= 0) return;
+		createComponent.mutate(
+			{
+				payrollPeriodId: period.id,
+				employeeId: componentEmployeeId,
+				type: componentType,
+				amount: componentAmount,
+				notes: componentNotes.trim() ? componentNotes : undefined,
+			},
+			{
+				onSuccess: () => {
+					setComponentAmount(0);
+					setComponentNotes("");
+				},
+			},
+		);
+	};
+
+	const downloadBankCsv = (): void => {
+		const rows = bankRows.data ?? [];
+		if (rows.length === 0) return;
+		const header = [
+			"Kode Karyawan",
+			"Nama",
+			"Bank",
+			"No Rekening",
+			"Atas Nama",
+			"Net Pay",
+		];
+		const lines = [
+			header.join(","),
+			...rows.map((row) =>
+				[
+					row.employeeCode,
+					row.employeeName,
+					row.bankName,
+					row.bankAccountNumber,
+					row.bankAccountHolder,
+					row.netPay,
+				]
+					.map(csvEscape)
+					.join(","),
+			),
+		];
+		const blob = new Blob([`\uFEFF${lines.join("\n")}`], {
+			type: "text/csv;charset=utf-8",
+		});
+		const url = URL.createObjectURL(blob);
+		const anchor = document.createElement("a");
+		anchor.href = url;
+		anchor.download = `transfer-bank-${period.name}.csv`;
+		anchor.click();
+		URL.revokeObjectURL(url);
+	};
 
 	const canCalculate =
 		period.status === "draft" || period.status === "calculating";
@@ -159,6 +274,26 @@ const PayrollPeriodDetailPage: FC = (): ReactElement => {
 							</Button>
 						</Guard>
 					)}
+					<Guard permissions={[PERMISSION.PAYROLL_READ]}>
+						<Button size="sm" variant="outline" asChild>
+							<Link
+								to="/payroll/$periodId/report"
+								params={{ periodId: period.id }}
+							>
+								<BarChart3 className="size-3.5" />
+								Laporan Payroll
+							</Link>
+						</Button>
+						<Button
+							size="sm"
+							variant="outline"
+							onClick={downloadBankCsv}
+							disabled={(bankRows.data ?? []).length === 0}
+						>
+							<Download className="size-3.5" />
+							Export Transfer Bank
+						</Button>
+					</Guard>
 				</div>
 			</div>
 
@@ -210,6 +345,171 @@ const PayrollPeriodDetailPage: FC = (): ReactElement => {
 					</CardContent>
 				</Card>
 			</div>
+
+			<Card>
+				<CardHeader>
+					<CardTitle className="text-sm font-semibold">
+						Komponen Gaji & Penyesuaian
+					</CardTitle>
+					<CardDescription className="text-xs">
+						Tunjangan, bonus, natura, THR, gaji ke-13, dan potongan tambahan.
+						Hitung ulang payroll setelah mengubah komponen.
+					</CardDescription>
+				</CardHeader>
+				<CardContent className="grid gap-6 lg:grid-cols-5">
+					{canEditComponents && (
+						<Guard permissions={[PERMISSION.PAYROLL_MANAGE]}>
+							<div className="flex flex-col gap-3 lg:col-span-2">
+								<div className="space-y-1.5">
+									<Label className="text-xs">Karyawan</Label>
+									<Select
+										value={componentEmployeeId}
+										onValueChange={setComponentEmployeeId}
+									>
+										<SelectTrigger className="text-xs">
+											<SelectValue placeholder="Pilih karyawan" />
+										</SelectTrigger>
+										<SelectContent>
+											{employees.map((employee) => (
+												<SelectItem key={employee.id} value={employee.id}>
+													{employee.fullName} ({employee.employeeCode})
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+								</div>
+
+								<div className="grid gap-3 sm:grid-cols-2">
+									<div className="space-y-1.5">
+										<Label className="text-xs">Jenis Komponen</Label>
+										<Select
+											value={componentType}
+											onValueChange={(value) =>
+												setComponentType(value as TPayrollComponentType)
+											}
+										>
+											<SelectTrigger className="text-xs">
+												<SelectValue />
+											</SelectTrigger>
+											<SelectContent>
+												{Object.values(PAYROLL_COMPONENT_TYPE).map((value) => (
+													<SelectItem key={value} value={value}>
+														{COMPONENT_LABEL[value]}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+									</div>
+									<div className="space-y-1.5">
+										<Label htmlFor="componentAmount" className="text-xs">
+											Nominal (IDR)
+										</Label>
+										<Input
+											id="componentAmount"
+											type="number"
+											min={0}
+											step={50_000}
+											value={componentAmount}
+											onChange={(e) =>
+												setComponentAmount(Number(e.target.value))
+											}
+											className="font-mono text-xs"
+										/>
+									</div>
+								</div>
+
+								<div className="space-y-1.5">
+									<Label htmlFor="componentNotes" className="text-xs">
+										Catatan
+									</Label>
+									<Input
+										id="componentNotes"
+										value={componentNotes}
+										onChange={(e) => setComponentNotes(e.target.value)}
+										placeholder="Contoh: THR 2026, bonus kinerja..."
+										className="text-xs"
+									/>
+								</div>
+
+								<Button
+									size="sm"
+									onClick={submitComponent}
+									disabled={createComponent.isPending || componentAmount <= 0}
+									className="w-fit gap-1.5 text-xs"
+								>
+									<Plus className="size-3.5" />
+									Tambah Komponen
+								</Button>
+							</div>
+						</Guard>
+					)}
+
+					<div
+						className={canEditComponents ? "lg:col-span-3" : "lg:col-span-5"}
+					>
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead className="text-xs">Karyawan</TableHead>
+									<TableHead className="text-xs">Komponen</TableHead>
+									<TableHead className="text-right text-xs">Nominal</TableHead>
+									<TableHead className="text-xs">Catatan</TableHead>
+									<TableHead className="w-12 text-right text-xs" />
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{components.data.length === 0 ? (
+									<TableRow>
+										<TableCell
+											colSpan={5}
+											className="py-8 text-center text-xs text-muted-foreground"
+										>
+											Belum ada komponen tambahan untuk periode ini.
+										</TableCell>
+									</TableRow>
+								) : (
+									components.data.map((component) => (
+										<TableRow key={component.id}>
+											<TableCell className="text-xs">
+												{employees.find(
+													(employee) => employee.id === component.employeeId,
+												)?.fullName ?? component.employeeId}
+											</TableCell>
+											<TableCell className="text-xs">
+												{COMPONENT_LABEL[component.type]}
+											</TableCell>
+											<TableCell className="text-right font-mono text-xs">
+												{formatRupiah(component.amount)}
+											</TableCell>
+											<TableCell className="text-xs text-muted-foreground">
+												{component.notes ?? "-"}
+											</TableCell>
+											<TableCell className="text-right">
+												{canEditComponents && (
+													<Guard permissions={[PERMISSION.PAYROLL_MANAGE]}>
+														<Button
+															size="sm"
+															variant="ghost"
+															onClick={() =>
+																deleteComponent.mutate({ id: component.id })
+															}
+															disabled={deleteComponent.isPending}
+															className="size-7 p-0 text-muted-foreground hover:text-destructive"
+															title="Hapus komponen"
+														>
+															<Trash2 className="size-3.5" />
+														</Button>
+													</Guard>
+												)}
+											</TableCell>
+										</TableRow>
+									))
+								)}
+							</TableBody>
+						</Table>
+					</div>
+				</CardContent>
+			</Card>
 
 			<Card className="overflow-hidden">
 				<CardHeader className="flex flex-row items-center gap-2 pb-3">
@@ -294,15 +594,19 @@ const PayrollPeriodDetailPage: FC = (): ReactElement => {
 											<Button
 												variant="ghost"
 												size="sm"
+												asChild
 												className="size-8 p-0"
-												title="Lihat rincian perhitungan"
-												onClick={() => {
-													if (item.calculationLog) {
-														window.alert(item.calculationLog);
-													}
-												}}
+												title="Buka slip gaji"
 											>
-												<FileText className="size-3.5" />
+												<Link
+													to="/payroll/$periodId/payslip/$itemId"
+													params={{
+														periodId: period.id,
+														itemId: item.id,
+													}}
+												>
+													<ReceiptText className="size-3.5" />
+												</Link>
 											</Button>
 										</TableCell>
 									</TableRow>
