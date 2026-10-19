@@ -33,6 +33,7 @@ export const en = {
 		roles: "Roles",
 		permissions: "Permissions",
 		activity: "Activity Log",
+		me: "My Space",
 		account: "Account",
 	},
 	auth: {

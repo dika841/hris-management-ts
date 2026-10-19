@@ -641,6 +641,21 @@ export const payrollRepoLayer = Layer.effect(
 				catch: (cause) => new EDatabase({ cause }),
 			});
 
+		const listItemsByEmployee: TPayrollRepo["listItemsByEmployee"] = (
+			employeeId,
+		) =>
+			Effect.tryPromise({
+				try: async () => {
+					const rows = await dbActive(db)
+						.select()
+						.from(payrollItem)
+						.where(eq(payrollItem.employeeId, employeeId))
+						.orderBy(desc(payrollItem.createdAt));
+					return rows as TPayrollItemRow[];
+				},
+				catch: (cause) => new EDatabase({ cause }),
+			});
+
 		const listComponents: TPayrollRepo["listComponents"] = (periodId) =>
 			Effect.tryPromise({
 				try: async () => {
@@ -742,6 +757,7 @@ export const payrollRepoLayer = Layer.effect(
 			listItems,
 			findItemById,
 			listAllItems,
+			listItemsByEmployee,
 			listComponents,
 			listItemComponents,
 			createComponent,

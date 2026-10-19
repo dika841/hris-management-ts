@@ -107,6 +107,9 @@ export type TPayrollRepo = {
 	listAllItems: (
 		periodId: string,
 	) => Effect.Effect<readonly TPayrollItemRow[], EDatabase>;
+	listItemsByEmployee: (
+		employeeId: string,
+	) => Effect.Effect<readonly TPayrollItemRow[], EDatabase>;
 	listComponents: (
 		periodId: string,
 	) => Effect.Effect<readonly TPayrollComponentRow[], EDatabase>;

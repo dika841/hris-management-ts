@@ -7,6 +7,7 @@ import { notificationModule } from "#/notification/index.ts";
 import { payrollModule } from "#/payroll/index.ts";
 import { permissionModule } from "#/permission/index.ts";
 import { roleModule } from "#/role/index.ts";
+import { selfServiceModule } from "#/self-service/index.ts";
 import { userModule } from "#/user/index.ts";
 
 const appRouter = {
@@ -20,6 +21,7 @@ const appRouter = {
 	payroll: payrollModule.routerBuild(),
 	attendance: attendanceModule.routerBuild(),
 	notification: notificationModule.routerBuild(),
+	self: selfServiceModule.routerBuild(),
 };
 
 export type TAppRouter = typeof appRouter;

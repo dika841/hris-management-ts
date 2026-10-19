@@ -9,3 +9,4 @@ export * from "./role/index.ts";
 export * from "./shared/index.ts";
 export * from "./user/index.ts";
 export * from "./attendance/index.ts";
+export * from "./self-service/index.ts";

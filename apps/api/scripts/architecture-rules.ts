@@ -24,6 +24,7 @@ export const MODULE = {
 	PAYROLL: "payroll",
 	PERMISSION: "permission",
 	ROLE: "role",
+	SELF_SERVICE: "self-service",
 	USER: "user",
 } as const;
 
@@ -49,6 +50,7 @@ export const MODULE_MAY_IMPORT: Readonly<Record<TModule, readonly TModule[]>> =
 		],
 		[MODULE.PERMISSION]: [],
 		[MODULE.ROLE]: [],
+		[MODULE.SELF_SERVICE]: [MODULE.ATTENDANCE, MODULE.EMPLOYEE, MODULE.PAYROLL],
 		[MODULE.USER]: [MODULE.AUTH, MODULE.ROLE],
 	};
 

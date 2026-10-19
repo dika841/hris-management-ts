@@ -7,6 +7,8 @@ export const EMPLOYEE_MESSAGE = {
 	EMAIL_TAKEN: "An employee with this email already exists.",
 	USER_ALREADY_LINKED:
 		"This user account is already linked to another employee.",
+	SELF_NOT_LINKED:
+		"This account is not linked to an employee record yet. Contact HR.",
 	NIK_TAKEN: "An employee with this NIK (KTP) already exists.",
 	EMPTY: "No employees registered yet.",
 	SEARCH_PLACEHOLDER: "Search by name, employee code, or department",

@@ -35,6 +35,7 @@ export const id: TTranslationSchema = {
 		roles: "Peran",
 		permissions: "Izin Akses",
 		activity: "Log Aktivitas",
+		me: "Ruang Saya",
 		account: "Akun",
 	},
 	auth: {

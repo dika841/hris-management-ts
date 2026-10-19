@@ -10,6 +10,7 @@ import {
 	Coins,
 	ContactRound,
 	KeyRound,
+	UserRound,
 	LayoutDashboard,
 	Shield,
 	Users,
@@ -25,6 +26,7 @@ export type TNavItemKey =
 	| "roles"
 	| "permissions"
 	| "activity"
+	| "me"
 	| "account";
 
 export type TNavItem = {
@@ -98,6 +100,13 @@ export const NAV_ITEMS: readonly TNavItem[] = [
 		label: NAV_MESSAGE.ACTIVITY,
 		permissions: [PERMISSION.ACTIVITY_READ],
 		icon: Activity,
+	},
+	{
+		to: "/me",
+		key: "me",
+		label: NAV_MESSAGE.MY_SPACE,
+		permissions: [],
+		icon: UserRound,
 	},
 	{
 		to: "/account",

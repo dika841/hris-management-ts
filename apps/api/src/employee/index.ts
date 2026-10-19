@@ -15,3 +15,6 @@ export {
 	type TEmployeeRepo,
 	type TEmployeeRow,
 } from "#/employee/domain/employee.ts";
+
+export { employeeGetByUserId } from "#/employee/application/employee-get-by-user-id.ts";
+export { toEmployeeDto } from "#/employee/application/to-employee-dto.ts";

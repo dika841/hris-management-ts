@@ -13,3 +13,7 @@ export const payrollModule: {
 	layer: payrollRepoLayer,
 	routerBuild: payrollRouterBuild,
 };
+
+export { payrollItemListByEmployee } from "#/payroll/application/payroll-item-list-by-employee.ts";
+export { payrollPayslipGet } from "#/payroll/application/payroll-payslip-get.ts";
+export { PayrollRepo, type TPayrollRepoId } from "#/payroll/domain/payroll.ts";

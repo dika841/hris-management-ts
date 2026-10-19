@@ -8,5 +8,6 @@ export const NAV_MESSAGE = {
 	ROLES: "Roles",
 	PERMISSIONS: "Permissions",
 	ACTIVITY: "Activity",
+	MY_SPACE: "My Space",
 	ACCOUNT: "Account",
 } as const;
