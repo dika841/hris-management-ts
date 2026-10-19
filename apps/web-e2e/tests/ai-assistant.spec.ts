@@ -25,12 +25,17 @@ test.describe("AI assistant", () => {
 			page.getByRole("heading", { name: /AI Assistant|Asisten AI/ }),
 		).toBeVisible();
 		await page
-			.getByLabel(/Instruction|Instruksi/)
+			.getByLabel(/Question|Pertanyaan/)
 			.fill("Summarize attendance for budi@example.com.");
 		await page
-			.getByLabel(/JSON context|Konteks JSON/)
-			.fill('{"period":"2026-10"}');
-		await page.getByRole("button", { name: /Run|Jalankan/ }).click();
+			.getByRole("button", {
+				name: /Add supporting data|Tambahkan data pendukung/,
+			})
+			.click();
+		await page
+			.getByLabel(/Supporting data|Data pendukung/)
+			.fill("Period 2026-10, 4 late arrivals.");
+		await page.getByRole("button", { name: /Ask AI|Tanya AI/ }).click();
 
 		await expect(page.getByText("Mock summary from DeepSeek.")).toBeVisible();
 		await expect(
@@ -41,5 +46,8 @@ test.describe("AI assistant", () => {
 		).toBeVisible();
 		await expect(page.getByText(/82%/)).toBeVisible();
 		await expect(page.getByText(/PII redacted/)).toBeVisible();
+
+		await page.getByRole("button", { name: /Approve|Setujui/ }).click();
+		await expect(page.getByText(/^(Approved|Disetujui)$/)).toBeVisible();
 	});
 });

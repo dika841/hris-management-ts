@@ -80,6 +80,15 @@ export const aiAssist = Effect.fn("aiAssist")(function* (
 	const redactedMessage = redactPii(input.message);
 	const redactedContext =
 		input.context === undefined ? undefined : redactPii(input.context);
+	const redactedFeature = String(redactPii(input.feature));
+	const redactedSubjectType =
+		input.subjectType === undefined
+			? undefined
+			: String(redactPii(input.subjectType));
+	const redactedSubjectId =
+		input.subjectId === undefined
+			? undefined
+			: String(redactPii(input.subjectId));
 	const contextText =
 		redactedContext === undefined ? "" : JSON.stringify(redactedContext);
 	const userContent =
@@ -105,11 +114,14 @@ export const aiAssist = Effect.fn("aiAssist")(function* (
 			? (redactedDecision as typeof parsed)
 			: parsed;
 
+	// Only the prompt hash is persisted. The raw message and supporting
+	// context stay in memory for this request and are never written to the
+	// database or the activity log.
 	const record = yield* aiDecisionCreate(
 		{
-			feature: input.feature,
-			subjectType: input.subjectType,
-			subjectId: input.subjectId,
+			feature: redactedFeature,
+			subjectType: redactedSubjectType,
+			subjectId: redactedSubjectId,
 			promptHash,
 			model: completion.model,
 			decision,

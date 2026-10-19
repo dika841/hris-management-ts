@@ -47,6 +47,8 @@ describe("AI assist", () => {
 				message:
 					"Summarize attendance for budi@example.com and call 081234567890.",
 				context: { period: "2026-10", lateCount: 4 },
+				subjectType: "employee",
+				subjectId: "budi@example.com",
 			},
 		});
 
@@ -64,6 +66,10 @@ describe("AI assist", () => {
 		expect(decisions.total).toBe(1);
 		expect(decisions.items[0]?.promptHash.startsWith("sha256:")).toBe(true);
 		expect(decisions.items[0]?.id).toBe(assisted.decisionId);
+		const serialized = JSON.stringify(decisions);
+		expect(serialized).not.toContain("budi@example.com");
+		expect(serialized).not.toContain("081234567890");
+		expect(serialized).not.toContain("lateCount");
 
 		await apiFetch({
 			path: `/feature-flags/${flag.id}`,
