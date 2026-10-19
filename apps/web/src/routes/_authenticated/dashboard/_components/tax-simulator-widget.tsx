@@ -158,10 +158,11 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 										key={code}
 										type="button"
 										onClick={() => setPtkpCode(code)}
-										className={`py-1.5 px-2 rounded-md text-xs font-medium border transition-colors ${ptkpCode === code
-											? "bg-primary text-primary-foreground border-primary"
-											: "bg-muted/40 text-muted-foreground border-border/60 hover:bg-muted"
-											}`}
+										className={`py-1.5 px-2 rounded-md text-xs font-medium border transition-colors ${
+											ptkpCode === code
+												? "bg-primary text-primary-foreground border-primary"
+												: "bg-muted/40 text-muted-foreground border-border/60 hover:bg-muted"
+										}`}
 									>
 										{code}
 									</button>
@@ -179,10 +180,11 @@ export const TaxSimulatorWidget: FC = (): ReactElement => {
 										key={method.id}
 										type="button"
 										onClick={() => setTaxMethod(method.id)}
-										className={`p-2 rounded-lg text-left border transition-all ${taxMethod === method.id
-											? "bg-primary/5 border-primary text-primary dark:bg-primary/10"
-											: "bg-muted/20 border-border/60 text-muted-foreground hover:bg-muted/40"
-											}`}
+										className={`p-2 rounded-lg text-left border transition-all ${
+											taxMethod === method.id
+												? "bg-primary/5 border-primary text-primary dark:bg-primary/10"
+												: "bg-muted/20 border-border/60 text-muted-foreground hover:bg-muted/40"
+										}`}
 									>
 										<div className="text-xs font-semibold">{method.label}</div>
 										<div className="text-[10px] text-muted-foreground">
